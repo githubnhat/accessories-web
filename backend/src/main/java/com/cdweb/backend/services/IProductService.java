@@ -2,24 +2,25 @@ package com.cdweb.backend.services;
 
 
 import com.cdweb.backend.entities.Products;
+import com.cdweb.backend.payloads.requests.ProductRequest;
+import com.cdweb.backend.payloads.responses.ProductResponse;
+import com.cdweb.backend.repositories.ProductRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 public interface IProductService {
-    List<Products> findAll();
 
-    List<Products> findAll(Pageable pageable);
+    List<ProductResponse> findAll(Pageable pageable);
 
     int totalItem();
 
-    Products findById(Long id);
+    ProductResponse findById(Long id);
 
-    List<Products> findByProductName(String productName);
+    List<ProductResponse> findByProductName(String productName);
 
-    Products save(Products dto);
+    ProductResponse save(ProductRequest request);
 
     boolean delete(Long[] ids);
 }
