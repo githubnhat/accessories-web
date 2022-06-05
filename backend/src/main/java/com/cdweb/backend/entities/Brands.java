@@ -13,9 +13,9 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Branches extends BaseEntity {
+public class Brands extends BaseEntity {
     private String name;
     private String code;
-    @OneToMany(mappedBy = "branches")
+    @OneToMany(mappedBy = "brands")
     private Set<Products> products = new HashSet<>();
 }

@@ -1,12 +1,10 @@
 package com.cdweb.backend.converters;
 
-import com.cdweb.backend.entities.Branches;
-import com.cdweb.backend.entities.Categories;
 import com.cdweb.backend.entities.ProductGalleries;
 import com.cdweb.backend.entities.Products;
 import com.cdweb.backend.payloads.requests.ProductRequest;
 import com.cdweb.backend.payloads.responses.ProductResponse;
-import com.cdweb.backend.repositories.BranchRepository;
+import com.cdweb.backend.repositories.BrandRepository;
 import com.cdweb.backend.repositories.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -19,7 +17,7 @@ import java.util.List;
 public class ProductConverter {
     private final CategoryRepository categoryRepository;
 
-    private final BranchRepository branchRepository;
+    private final BrandRepository brandRepository;
 
     public Products toEntity(ProductRequest request) {
         return Products.builder()
@@ -27,7 +25,7 @@ public class ProductConverter {
                 .price(request.getPrice())
                 .year(request.getYear())
                 .categories(categoryRepository.findByName(request.getCategoryName()))
-                .branches(branchRepository.findByName(request.getBranchName()))
+                .brands(brandRepository.findByName(request.getBranchName()))
                 .build();
     }
     public ProductResponse toResponse(Products entity, List<ProductGalleries> productGalleries) {
@@ -40,7 +38,7 @@ public class ProductConverter {
                 .price(entity.getPrice())
                 .imageLinks(imageLinks)
                 .categoryName(entity.getCategories().getName())
-                .branchName(entity.getBranches().getName())
+                .branchName(entity.getBrands().getName())
                 .createdDate(entity.getCreatedDate())
                 .modifiedDate(entity.getModifiedDate())
                 .build();

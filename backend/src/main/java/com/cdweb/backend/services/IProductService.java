@@ -23,4 +23,6 @@ public interface IProductService {
     ProductResponse save(ProductRequest request);
 
     boolean delete(Long[] ids);
+
+    List<ProductResponse> getArrivalProducts();
 }

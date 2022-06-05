@@ -23,8 +23,8 @@ public class Products extends BaseEntity {
     private Categories categories;
 
     @ManyToOne
-    @JoinColumn(name = "branches_id")
-    private Branches branches;
+    @JoinColumn(name = "brands_id")
+    private Brands brands;
 
     @OneToMany(mappedBy = "products")
     private Set<ProductGalleries> productGalleries = new HashSet<>();

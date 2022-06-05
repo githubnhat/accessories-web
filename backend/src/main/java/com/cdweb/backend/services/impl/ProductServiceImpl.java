@@ -1,13 +1,13 @@
 package com.cdweb.backend.services.impl;
 
 import com.cdweb.backend.converters.ProductConverter;
-import com.cdweb.backend.entities.Branches;
+import com.cdweb.backend.entities.Brands;
 import com.cdweb.backend.entities.Categories;
 import com.cdweb.backend.entities.ProductGalleries;
 import com.cdweb.backend.entities.Products;
 import com.cdweb.backend.payloads.requests.ProductRequest;
 import com.cdweb.backend.payloads.responses.ProductResponse;
-import com.cdweb.backend.repositories.BranchRepository;
+import com.cdweb.backend.repositories.BrandRepository;
 import com.cdweb.backend.repositories.CategoryRepository;
 import com.cdweb.backend.repositories.ProductGalleryRepository;
 import com.cdweb.backend.repositories.ProductRepository;
@@ -19,8 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +31,7 @@ public class ProductServiceImpl implements IProductService {
 
     private final CategoryRepository categoryRepository;
 
-    private final BranchRepository branchRepository;
+    private final BrandRepository brandRepository;
 
     private final ProductGalleryRepository productGalleryRepository;
 
@@ -79,7 +77,7 @@ public class ProductServiceImpl implements IProductService {
         if (entity.getId() != null) {
            Products oldProductEntity = productRepository.findById(entity.getId()).orElseThrow(()-> new IllegalArgumentException("Not found product!"));
            Categories category = categoryRepository.findByName(request.getCategoryName());
-           Branches branch = branchRepository.findByName(request.getBranchName());
+           Brands branch = brandRepository.findByName(request.getBranchName());
             List<ProductGalleries> productGalleries = new ArrayList<>();
             List<ProductGalleries> oldProductGalleries = productGalleryRepository.findByProducts(oldProductEntity);
 
@@ -89,7 +87,7 @@ public class ProductServiceImpl implements IProductService {
                     .year(entity.getYear())
                     .price(entity.getPrice())
                     .categories(category)
-                    .branches(branch)
+                    .brands(branch)
                     .build();
             entity.setId(request.getId());// chu ý cần sửa
         } else {
@@ -124,5 +122,10 @@ public class ProductServiceImpl implements IProductService {
             }
         }
         return exists;
+    }
+
+    @Override
+    public List<ProductResponse> getArrivalProducts() {
+        return null;
     }
 }
