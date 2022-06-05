@@ -1,15 +1,11 @@
 package com.cdweb.backend.filter;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.cdweb.backend.common.Constant;
 import com.cdweb.backend.common.JwtService;
 import com.cdweb.backend.entities.Users;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -29,7 +25,7 @@ import java.util.Map;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-
+//@RequiredArgsConstructor
 @Slf4j
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 

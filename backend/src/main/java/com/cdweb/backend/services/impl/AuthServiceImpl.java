@@ -6,24 +6,20 @@ import com.cdweb.backend.entities.Users;
 import com.cdweb.backend.payloads.requests.AuthRequest;
 import com.cdweb.backend.payloads.requests.RegistrationRequest;
 import com.cdweb.backend.payloads.responses.AuthResponse;
-import com.cdweb.backend.repositories.RolesRepository;
-import com.cdweb.backend.repositories.UsersRepository;
+import com.cdweb.backend.repositories.RoleRepository;
+import com.cdweb.backend.repositories.UserRepository;
 import com.cdweb.backend.services.IAuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AuthServiceImpl implements IAuthService {
-    private final UsersRepository usersRepository;
-    private final RolesRepository rolesRepository;
+    private final UserRepository usersRepository;
+    private final RoleRepository rolesRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 

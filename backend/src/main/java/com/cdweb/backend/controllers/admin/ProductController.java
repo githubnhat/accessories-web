@@ -29,7 +29,6 @@ public class ProductController {
     // this request is: http://localhost:8081/api/v1/products?page=1&limit=3
     @GetMapping("")
     ResponseEntity<?> showProduct(@RequestParam("page") int page, @RequestParam("limit") int limit) {
-
         PageResponse<ProductResponse> response = new PageResponse<>();
         response.setPage(page);
         Pageable pageable = PageRequest.of(page - 1, limit);

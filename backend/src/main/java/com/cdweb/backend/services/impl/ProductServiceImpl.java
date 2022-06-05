@@ -1,31 +1,55 @@
 package com.cdweb.backend.services.impl;
 
 import com.cdweb.backend.converters.ProductConverter;
+import com.cdweb.backend.entities.Branches;
+import com.cdweb.backend.entities.Categories;
+import com.cdweb.backend.entities.ProductGalleries;
 import com.cdweb.backend.entities.Products;
 import com.cdweb.backend.payloads.requests.ProductRequest;
 import com.cdweb.backend.payloads.responses.ProductResponse;
+import com.cdweb.backend.repositories.BranchRepository;
+import com.cdweb.backend.repositories.CategoryRepository;
+import com.cdweb.backend.repositories.ProductGalleryRepository;
 import com.cdweb.backend.repositories.ProductRepository;
 import com.cdweb.backend.services.IProductService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProductServiceImpl implements IProductService {
 
     private final ProductRepository productRepository;
 
     private final ProductConverter productConverter;
 
+    private final CategoryRepository categoryRepository;
+
+    private final BranchRepository branchRepository;
+
+    private final ProductGalleryRepository productGalleryRepository;
+
     @Override
     public List<ProductResponse> findAll(Pageable pageable) {
-        return productRepository.findAll(pageable).getContent()
-                .stream().map(productConverter::toResponse).collect(Collectors.toList());
+        List<ProductResponse> response = new ArrayList<>();
+        List<Products> entities = productRepository.findAll(pageable).getContent();
+        List<Products> result = new ArrayList<>();
+        for (Products p :
+                entities) {
+            if (p.isActive()){
+                result.add(p);
+            }
+        }
+        result.forEach(p -> response.add(productConverter.toResponse(p, productGalleryRepository.findByProducts(p))));
+        return response;
     }
 
     @Override
@@ -35,15 +59,17 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public ProductResponse findById(Long id) {
-        Optional<Products> foundEntity = productRepository.findById(id);
-        return (foundEntity.isPresent()) ? productConverter.toResponse(foundEntity.get()) : null;
+        Products foundEntity = productRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("Not found product!"));
+        return (foundEntity!= null) ? productConverter.toResponse(foundEntity, productGalleryRepository.findByProducts(foundEntity)) : null;
 
     }
 
     @Override
     public List<ProductResponse> findByProductName(String productName) {
-        return productRepository.findByProductName(productName)
-                .stream().map(productConverter::toResponse).collect(Collectors.toList());
+        List<ProductResponse> response = new ArrayList<>();
+        List<Products> entities = productRepository.findByProductNameAndIsActiveTrue(productName);
+        entities.forEach(p -> response.add(productConverter.toResponse(p, productGalleryRepository.findByProducts(p))));
+        return response;
     }
 
     @Override
@@ -51,19 +77,35 @@ public class ProductServiceImpl implements IProductService {
         Products entity = productConverter.toEntity(request);
         entity.setId(request.getId());
         if (entity.getId() != null) {
-            Optional<Products> oldProductEntity = productRepository.findById(entity.getId());
-            entity = oldProductEntity.get()
+           Products oldProductEntity = productRepository.findById(entity.getId()).orElseThrow(()-> new IllegalArgumentException("Not found product!"));
+           Categories category = categoryRepository.findByName(request.getCategoryName());
+           Branches branch = branchRepository.findByName(request.getBranchName());
+            List<ProductGalleries> productGalleries = new ArrayList<>();
+            List<ProductGalleries> oldProductGalleries = productGalleryRepository.findByProducts(oldProductEntity);
+
+           entity = oldProductEntity
                     .builder()
                     .productName(entity.getProductName())
                     .year(entity.getYear())
-                    .url(entity.getUrl())
                     .price(entity.getPrice())
+                    .categories(category)
+                    .branches(branch)
                     .build();
             entity.setId(request.getId());// chu ý cần sửa
         } else {
             entity = productConverter.toEntity(request);
+            entity.setActive(true);
         }
-        return productConverter.toResponse(productRepository.save(entity));
+        Products insertedProduct = productRepository.save(entity);
+        List<ProductGalleries> productGalleries = new ArrayList<>();
+        request.getImageLinks().forEach(e -> productGalleries
+                .add(productGalleryRepository
+                        .save(ProductGalleries.builder()
+                                .imageLink(e)
+                                .products(insertedProduct)
+                                .build())));
+
+        return productConverter.toResponse(insertedProduct, productGalleries);
     }
 
 
@@ -76,7 +118,9 @@ public class ProductServiceImpl implements IProductService {
         if (exists) {
             for (Long id :
                     ids) {
-                productRepository.deleteById(id);
+               Products entity = productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Not found product"));
+               entity.setActive(false);
+               productRepository.save(entity);
             }
         }
         return exists;
