@@ -4,7 +4,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,7 +16,9 @@ public class ProductResponse {
     private String productName;
     private int year;
     private Double price;
-    private String url;
+    private String branchName;
+    private String categoryName;
+    private List<String> imageLinks;
     private Date createdDate;
     private Date modifiedDate;
 }

@@ -2,7 +2,7 @@ package com.cdweb.backend.services.impl;
 
 import com.cdweb.backend.entities.Users;
 import com.cdweb.backend.payloads.responses.UserResponse;
-import com.cdweb.backend.repositories.UsersRepository;
+import com.cdweb.backend.repositories.UserRepository;
 import com.cdweb.backend.services.IUsersService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,8 +12,8 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UsersServiceImpl implements IUsersService {
-    private final UsersRepository usersRepository;
+public class UserServiceImpl implements IUsersService {
+    private final UserRepository usersRepository;
 
     @Override
     public List<UserResponse> getAllUsers() {

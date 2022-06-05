@@ -9,7 +9,8 @@ import java.util.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public class Roles extends BaseEntity {
 
         @Column(name = "role_name")

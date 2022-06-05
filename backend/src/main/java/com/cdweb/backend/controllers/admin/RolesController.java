@@ -3,7 +3,7 @@ package com.cdweb.backend.controllers.admin;
 import com.cdweb.backend.common.ErrorResponse;
 import com.cdweb.backend.payloads.requests.RoleRequest;
 import com.cdweb.backend.payloads.responses.ResponseObject;
-import com.cdweb.backend.services.IRolesService;
+import com.cdweb.backend.services.IRoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 public class RolesController {
-    private final IRolesService rolesService;
+    private final IRoleService rolesService;
 
 //    @GetMapping("")
 //    public ResponseEntity<?> getAll() {

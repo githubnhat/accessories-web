@@ -1,20 +1,31 @@
 package com.cdweb.backend.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Builder
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public class Products extends BaseEntity {
     private String productName;
     private int year;
     private Double price;
-    private String url;
+    @Column(name = "is_active")
+    private boolean isActive;
+    @ManyToOne
+    @JoinColumn(name = "categories_id")
+    private Categories categories;
+
+    @ManyToOne
+    @JoinColumn(name = "branches_id")
+    private Branches branches;
+
+    @OneToMany(mappedBy = "products")
+    private Set<ProductGalleries> productGalleries = new HashSet<>();
 }

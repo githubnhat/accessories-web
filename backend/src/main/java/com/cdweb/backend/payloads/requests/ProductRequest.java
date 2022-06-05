@@ -3,6 +3,8 @@ package com.cdweb.backend.payloads.requests;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class ProductRequest {
@@ -10,5 +12,7 @@ public class ProductRequest {
     private String productName;
     private int year;
     private Double price;
-    private String url;
+    private List<String> imageLinks;
+    private String branchName;
+    private String categoryName;
 }

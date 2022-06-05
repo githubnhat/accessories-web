@@ -3,23 +3,17 @@ package com.cdweb.backend.services.impl;
 import com.cdweb.backend.entities.Roles;
 import com.cdweb.backend.payloads.requests.RoleRequest;
 import com.cdweb.backend.payloads.responses.RoleResponse;
-import com.cdweb.backend.repositories.RolesRepository;
-import com.cdweb.backend.services.IRolesService;
+import com.cdweb.backend.repositories.RoleRepository;
+import com.cdweb.backend.services.IRoleService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.TemporalType;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class RolesServiceImpl implements IRolesService {
-    private final RolesRepository rolesRepository;
+public class RolesServiceImpl implements IRoleService {
+    private final RoleRepository rolesRepository;
 
 //    @Override
 //    public List<RoleResponse> getAllRoles() {
