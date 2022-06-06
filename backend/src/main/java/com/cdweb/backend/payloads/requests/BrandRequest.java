@@ -6,5 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class BrandRequest {
-    String code;
+    private Long id;
+    private String name;
+    private String code;
 }

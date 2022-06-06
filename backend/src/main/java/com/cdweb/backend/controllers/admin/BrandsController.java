@@ -3,7 +3,6 @@ package com.cdweb.backend.controllers.admin;
 import com.cdweb.backend.payloads.requests.BrandRequest;
 import com.cdweb.backend.payloads.responses.BrandResponse;
 import com.cdweb.backend.payloads.responses.PageResponse;
-import com.cdweb.backend.payloads.responses.ProductResponse;
 import com.cdweb.backend.payloads.responses.ResponseObject;
 import com.cdweb.backend.services.IBrandService;
 import lombok.RequiredArgsConstructor;
@@ -12,12 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/admin/brand")
@@ -27,9 +21,36 @@ public class BrandsController {
 
     public final IBrandService brandService;
 
-    @GetMapping("")
-    ResponseEntity<?> getAll() {
-        List<BrandResponse> response = brandService.getAll();
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", null, response));
+    @GetMapping("/{page}/{limit}")
+    ResponseEntity<?> getAll(@PathVariable("page") int page, @PathVariable("limit") int limit) {
+        Pageable pageable = PageRequest.of(page - 1, limit);
+        PageResponse<BrandResponse> response = PageResponse.<BrandResponse>builder()
+                .page(page)
+                .totalPage((int) Math.ceil((double) (brandService.totalItem()) / limit))
+                .data(brandService.findAll(pageable))
+                .build();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                (response.getData() != null)
+                        ? new ResponseObject("Success", null, response)
+                        : new ResponseObject("Success", "Have no brand", null));
+    }
+
+    @PostMapping("")
+    ResponseEntity<?> insertBrand(@RequestBody BrandRequest request) {
+        BrandResponse response = brandService.save(request);
+        return
+                ResponseEntity.status(HttpStatus.OK).body((response != null)
+                        ? new ResponseObject("Success", null, response)
+                        : new ResponseObject("Failed", "Brand name already taken", null));
+    }
+
+    @PutMapping("/{id}")
+    ResponseEntity<?> updateBrand(@PathVariable("id") Long id,@RequestBody BrandRequest request) {
+        request.setId(id);
+        BrandResponse response = brandService.save(request);
+        return
+                ResponseEntity.status(HttpStatus.OK).body((response != null)
+                        ? new ResponseObject("Success", null, response)
+                        : new ResponseObject("Failed", "Brand name already taken", null));
     }
 }
