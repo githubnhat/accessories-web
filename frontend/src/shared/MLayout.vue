@@ -3,10 +3,8 @@
     <div class="m-layout">
       <m-header />
       <div class="m-layout-container">
-        <v-container class="mt-10" fluid>
-          <v-layout align-center justify-center>
-            <slot />
-          </v-layout>
+        <v-container class="mt-10 scrollable" fluid>
+          <slot />
         </v-container>
       </div>
       <m-footer />
@@ -25,4 +23,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.scrollable {
+  overflow-y: scroll;
+}
+</style>

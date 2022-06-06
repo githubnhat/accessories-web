@@ -38,7 +38,7 @@
       <m-user-menu></m-user-menu>
     </v-app-bar>
 
-    <v-navigation-drawer v-model="drawer" absolute bottom temporary app hide-overlay>
+    <v-navigation-drawer fixed v-model="drawer" absolute bottom temporary app hide-overlay>
       <v-list nav dense>
         <v-list-item v-for="item in links" :key="item.text" router :to="item.route">
           <v-list-item-action>
