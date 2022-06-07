@@ -15,7 +15,7 @@
       </v-stepper-header>
 
       <v-stepper-content step="1">
-        <v-card color="grey lighten-1" class="mb-12 pa-5">
+        <v-card elevation="2" outlined class="mb-12 pa-5">
           <v-card-title>
             <span class="text-h5">Biến thể sản phẩm</span>
           </v-card-title>
@@ -121,6 +121,7 @@ export default {
       completeStep: [],
       variants: [],
       files: [],
+      numberVariants: 0,
     };
   },
   components: {
@@ -130,7 +131,7 @@ export default {
   methods: {
     handleAddVariant() {
       //
-      let newVariant = { nameVar: 'Biến thể ' + this.variants.length, vars: '' };
+      let newVariant = { nameVar: 'Biến thể ' + this.numberVariants++, vars: '' };
       this.variants = [...this.variants, newVariant];
     },
     handleDeleteVariant(name) {
