@@ -21,7 +21,7 @@ public class BrandsController {
 
     public final IBrandService brandService;
 
-    @GetMapping("/{page}/{limit}")
+    @GetMapping("/page/{page}/limit/{limit}")
     ResponseEntity<?> getAll(@PathVariable("page") int page, @PathVariable("limit") int limit) {
         Pageable pageable = PageRequest.of(page - 1, limit);
         PageResponse<BrandResponse> response = PageResponse.<BrandResponse>builder()

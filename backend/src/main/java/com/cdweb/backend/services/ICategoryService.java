@@ -1,0 +1,15 @@
+package com.cdweb.backend.services;
+
+import com.cdweb.backend.payloads.requests.CategoryRequest;
+import com.cdweb.backend.payloads.responses.CategoryResponse;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
+
+public interface ICategoryService {
+    List<CategoryResponse> findAll(Pageable pageable);
+
+    CategoryResponse save(CategoryRequest request);
+
+    int totalItem();
+}
