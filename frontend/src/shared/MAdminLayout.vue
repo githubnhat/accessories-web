@@ -3,7 +3,7 @@
     <div class="m-layout">
       <m-admin-header />
       <div class="m-layout-container">
-        <v-container class="mt-12 pa-0" fluid>
+        <v-container class="mt-10 mb-13 pa-0" fluid>
           <slot />
         </v-container>
       </div>
