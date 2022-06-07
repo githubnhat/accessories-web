@@ -1,5 +1,5 @@
 <template>
-  <v-text-field v-bind="$attrs" class="nde-text-field" outlined dense hide-details="auto" clearable>
+  <v-text-field v-bind="$attrs" @input="handleInput" outlined dense hide-details="auto" clearable>
     <template v-slot:prepend>
       <slot name="prepend" />
     </template>
@@ -13,7 +13,17 @@
 <script>
 export default {
   name: 'MTextField',
-  methods: {},
+  props: {
+    nameVar: {
+      type: String,
+      default: () => '',
+    },
+  },
+  methods: {
+    handleInput(value) {
+      this.$emit('input', value, this.nameVar);
+    },
+  },
 };
 </script>
 
