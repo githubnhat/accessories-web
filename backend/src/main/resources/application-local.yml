@@ -14,6 +14,6 @@ spring:
         format_sql: true
     show-sql: true
 token:
-  access-life-time: 5
+  access-life-time: 500
   refresh-life-time: 1440
 

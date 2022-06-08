@@ -78,8 +78,8 @@ public class ProductServiceImpl implements IProductService {
            Products oldProductEntity = productRepository.findById(entity.getId()).orElseThrow(()-> new IllegalArgumentException("Not found product!"));
            Categories category = categoryRepository.findByName(request.getCategoryName());
            Brands branch = brandRepository.findByName(request.getBranchName());
-            List<ProductGalleries> productGalleries = new ArrayList<>();
-            List<ProductGalleries> oldProductGalleries = productGalleryRepository.findByProducts(oldProductEntity);
+//            List<ProductGalleries> productGalleries = new ArrayList<>();
+//            List<ProductGalleries> oldProductGalleries = productGalleryRepository.findByProducts(oldProductEntity);
 
            entity = oldProductEntity
                     .builder()
