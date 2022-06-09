@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface IVariantService {
     VariantResponse save(VariantRequest request);
+    VariantResponse update(VariantRequest request, Long id);
     List<VariantResponse> findByAttributeIdAndIsActiveTrue(Long attributeId);
 }

@@ -8,5 +8,9 @@ import java.util.List;
 public interface IAttributeService {
     AttributeResponse save(AttributeRequest request);
 
+    AttributeResponse update(AttributeRequest request, Long id);
+
     List<AttributeResponse> findByIsActiveTrue();
+
+
 }
