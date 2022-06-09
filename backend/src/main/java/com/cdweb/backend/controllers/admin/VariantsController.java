@@ -39,9 +39,8 @@ public class VariantsController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> insertVariants(@RequestBody VariantRequest request, @PathVariable("id") Long id){
-        request.setId(id);
-        VariantResponse response = variantService.save(request);
+    public ResponseEntity<?> updateVariants(@RequestBody VariantRequest request, @PathVariable("id") Long id){
+        VariantResponse response = variantService.update(request, id);
         return ResponseEntity.status(HttpStatus.OK).body(
                 (response==null) ?
                         new ResponseObject("Failed", "Variant name already taken", "") :

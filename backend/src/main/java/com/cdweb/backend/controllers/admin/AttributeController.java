@@ -30,17 +30,17 @@ public class AttributeController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> insertVariants(@RequestBody AttributeRequest request){
+    public ResponseEntity<?> insertAttribute(@RequestBody AttributeRequest request){
         AttributeResponse response = attributeService.save(request);
         return ResponseEntity.status(HttpStatus.OK).body(
                 (response==null) ?
                         new ResponseObject("Failed", "Attribute name already taken", "") :
                         new ResponseObject("Success", "Insert Attribute Successfully", response));
     }
+
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateVariants(@RequestBody AttributeRequest request, @PathVariable("id") Long id){
-        request.setId(id);
-        AttributeResponse response = attributeService.save(request);
+    public ResponseEntity<?> updateAttribute(@RequestBody AttributeRequest request, @PathVariable("id") Long id){
+        AttributeResponse response = attributeService.update(request, id);
         return ResponseEntity.status(HttpStatus.OK).body(
                 (response==null) ?
                         new ResponseObject("Failed", "Attribute name already taken", "") :

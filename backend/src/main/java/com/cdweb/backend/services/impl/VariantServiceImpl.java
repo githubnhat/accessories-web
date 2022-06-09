@@ -26,8 +26,6 @@ public class VariantServiceImpl implements IVariantService {
 
     @Override
     public VariantResponse save(VariantRequest request) {
-        Variants oldEntity = variantRepository.findByVariantNameAndIsActiveTrue(request.getVariantName());
-        if (oldEntity == null) {
             Variants entity = variantRepository.findByIdAndIsActiveTrue(request.getId());
             if (entity == null) {
                 Variants newEntity = variantConverter.toEntity(request);
@@ -38,16 +36,20 @@ public class VariantServiceImpl implements IVariantService {
                 VariantResponse response = variantConverter.toResponse(savedEntity);
                 response.setAttributeId(savedEntity.getAttribute().getId());
                 return response;
-            } else {
-                Attributes attribute = attributeRepository.findById(request.getAttributeId())
-                        .orElseThrow(() -> new IllegalArgumentException("Not found attribute!"));
-                entity.setVariantName(request.getVariantName());
-                entity.setAttribute(attribute);
-                Variants updatedEntity = variantRepository.save(entity);
-                VariantResponse response = variantConverter.toResponse(updatedEntity);
-                response.setAttributeId(updatedEntity.getAttribute().getId());
-                return response;
-            }
+        }
+        return null;
+    }
+
+    @Override
+    public VariantResponse update(VariantRequest request, Long id) {
+        Variants oldEntity = variantRepository.findByVariantNameAndIsActiveTrue(request.getVariantName());
+        Variants entity = variantRepository.findByIdAndIsActiveTrue(id);
+        if (oldEntity == null && entity != null) {
+            entity.setVariantName(request.getVariantName());
+            Variants updatedEntity = variantRepository.save(entity);
+            VariantResponse response = variantConverter.toResponse(updatedEntity);
+            response.setAttributeId(updatedEntity.getAttribute().getId());
+            return response;
         }
         return null;
     }

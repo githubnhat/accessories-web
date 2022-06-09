@@ -19,17 +19,24 @@ import java.util.stream.Collectors;
 public class AttributeServiceImpl implements IAttributeService {
     private final AttributeRepository attributeRepository;
     private final AttributeConverter attributeConverter;
+
     @Override
     public AttributeResponse save(AttributeRequest request) {
         Attributes entity = attributeRepository.findByAttributeNameAndIsActiveTrue(request.getAttributeName());
-        if (entity==null) {
-            Attributes oldEntity = attributeRepository.findByIdAndIsActiveTrue(request.getId());
-            if (oldEntity == null) {
-                Attributes newEntity = attributeConverter.toEntity(request);
-                newEntity.setActive(true);
-                Attributes savedEntity = attributeRepository.save(newEntity);
-                return attributeConverter.toResponse(savedEntity);
-            }
+        if (entity == null) {
+            Attributes newEntity = attributeConverter.toEntity(request);
+            newEntity.setActive(true);
+            Attributes savedEntity = attributeRepository.save(newEntity);
+            return attributeConverter.toResponse(savedEntity);
+        }
+        return null;
+    }
+
+    @Override
+    public AttributeResponse update(AttributeRequest request, Long id) {
+        Attributes entity = attributeRepository.findByAttributeNameAndIsActiveTrue(request.getAttributeName());
+        Attributes oldEntity = attributeRepository.findByIdAndIsActiveTrue(id);
+        if (entity == null && oldEntity != null) {
             oldEntity.setAttributeName(request.getAttributeName());
             attributeRepository.save(oldEntity);
             return attributeConverter.toResponse(oldEntity);
@@ -39,6 +46,6 @@ public class AttributeServiceImpl implements IAttributeService {
 
     @Override
     public List<AttributeResponse> findByIsActiveTrue() {
-        return attributeRepository.findByIsActiveTrue().stream().map(attributeConverter :: toResponse).collect(Collectors.toList());
+        return attributeRepository.findByIsActiveTrue().stream().map(attributeConverter::toResponse).collect(Collectors.toList());
     }
 }
