@@ -1,17 +1,14 @@
 package com.cdweb.backend.services.impl;
 
+import com.cdweb.backend.converters.ProductAttributeConverter;
+import com.cdweb.backend.converters.ProductAttributeVariantConverter;
 import com.cdweb.backend.converters.ProductConverter;
-import com.cdweb.backend.entities.Brands;
-import com.cdweb.backend.entities.Categories;
-import com.cdweb.backend.entities.ProductGalleries;
-import com.cdweb.backend.entities.Products;
+import com.cdweb.backend.entities.*;
+import com.cdweb.backend.payloads.requests.AttributeAndVariantsRequest;
 import com.cdweb.backend.payloads.requests.ProductRequest;
-import com.cdweb.backend.payloads.responses.ProductResponse;
-import com.cdweb.backend.repositories.BrandRepository;
-import com.cdweb.backend.repositories.CategoryRepository;
-import com.cdweb.backend.repositories.ProductGalleryRepository;
-import com.cdweb.backend.repositories.ProductRepository;
-import com.cdweb.backend.services.IProductService;
+import com.cdweb.backend.payloads.responses.*;
+import com.cdweb.backend.repositories.*;
+import com.cdweb.backend.services.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +31,21 @@ public class ProductServiceImpl implements IProductService {
 
     private final BrandRepository brandRepository;
 
-    private final ProductGalleryRepository productGalleryRepository;
+    private final IAttributeService attributeService;
+
+    private final IVariantService variantService;
+
+    private final IProductAttributeService productAttributeService;
+
+    private final IProductGalleryService productGalleryService;
+
+    private final IProductAttributeVariantService productAttributeVariantService;
+
+    private final IProductCombinationService productCombinationService;
+
+    private final ProductAttributeConverter productAttributeConverter;
+
+
 
     @Override
     public List<ProductResponse> findAll(Pageable pageable) {
@@ -42,11 +54,11 @@ public class ProductServiceImpl implements IProductService {
         List<Products> result = new ArrayList<>();
         for (Products p :
                 entities) {
-            if (p.isActive()){
+            if (p.isActive()) {
                 result.add(p);
             }
         }
-        result.forEach(p -> response.add(productConverter.toResponse(p, productGalleryRepository.findByProducts(p))));
+//        result.forEach(p -> response.add(productConverter.toResponse(p, productGalleryRepository.findByProduct(p))));
         return response;
     }
 
@@ -57,55 +69,77 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public ProductResponse findById(Long id) {
-        Products foundEntity = productRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("Not found product!"));
-        return (foundEntity!= null) ? productConverter.toResponse(foundEntity, productGalleryRepository.findByProducts(foundEntity)) : null;
+//        Products foundEntity = productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Not found product!"));
+//        return (foundEntity != null) ? productConverter.toResponse(foundEntity, productGalleryRepository.findByProduct(foundEntity)) : null;
+        return null;
 
     }
 
     @Override
-    public List<ProductResponse> findByProductName(String productName) {
-        List<ProductResponse> response = new ArrayList<>();
-        List<Products> entities = productRepository.findByProductNameAndIsActiveTrue(productName);
-        entities.forEach(p -> response.add(productConverter.toResponse(p, productGalleryRepository.findByProducts(p))));
-        return response;
+    public ProductResponse findByProductName(String productName) {
+        Products entity = productRepository.findByProductNameAndIsActiveTrue(productName);
+//        return productConverter.toResponse(entity, productGalleryRepository.findByProduct(entity));
+        return null;
     }
 
     @Override
     public ProductResponse save(ProductRequest request) {
-        Products entity = productConverter.toEntity(request);
-        entity.setId(request.getId());
-        if (entity.getId() != null) {
-           Products oldProductEntity = productRepository.findById(entity.getId()).orElseThrow(()-> new IllegalArgumentException("Not found product!"));
-           Categories category = categoryRepository.findByName(request.getCategoryName());
-           Brands branch = brandRepository.findByName(request.getBranchName());
-//            List<ProductGalleries> productGalleries = new ArrayList<>();
-//            List<ProductGalleries> oldProductGalleries = productGalleryRepository.findByProducts(oldProductEntity);
+        Products entity = productRepository.findByProductNameAndIsActiveTrue(request.getProductName());
+        if (entity == null) {
+            Products newEntity = productConverter.toEntity(request);
+            Categories category = categoryRepository.findByName(request.getCategoryName());
+            Brands brand = brandRepository.findByName(request.getBrandName());
+            newEntity.setCategories(category);
+            newEntity.setBrands(brand);
+            newEntity.setActive(true);
 
-           entity = oldProductEntity
-                    .builder()
-                    .productName(entity.getProductName())
-                    .year(entity.getYear())
-                    .price(entity.getPrice())
-                    .categories(category)
-                    .brands(branch)
-                    .build();
-            entity.setId(request.getId());// chu ý cần sửa
-        } else {
-            entity = productConverter.toEntity(request);
-            entity.setActive(true);
+            //lưu san phẩm
+            Products savedEntity = productRepository.save(newEntity);
+            //Lưu hình
+            List<ProductGalleryResponse> productGalleryResponses = productGalleryService.save(savedEntity, request.getImageLinks());
+
+            List<String> listOfAttributeNames = new ArrayList<>();
+            List<AttributeAndVariantsRequest> attributesAndVariantsRequest = new ArrayList<>();
+            request.getAttributes().forEach(a -> {
+                listOfAttributeNames.add(a.getAttributeName());
+                attributesAndVariantsRequest.add(a);
+            });
+            //lưu attribute
+            List<AttributeResponse> savedAttribute = attributeService.saveListAttribute(listOfAttributeNames);
+            //Lưu variant theo attribute
+            List<AttributeAndVariantsResponse> listVariantOfAttrRs = variantService.checkAndSaveListVariants(attributesAndVariantsRequest);
+
+            List<Attributes> listAttributes = new ArrayList<>();
+            savedAttribute.forEach(a -> {
+                Attributes attr = Attributes.builder()
+                        .attributeName(a.getAttributeName())
+                        .build();
+                attr.setId(a.getId());
+                listAttributes.add(attr);
+            });
+
+            //lưu product_attribute
+            List<ProductAttributes> productAttributes = productAttributeService.saveListProductAttribute(listAttributes, savedEntity);
+            List<ProductAttributeResponse> productAttributeRs = productAttributes.stream()
+                    .map(productAttributeConverter :: toResponse).collect(Collectors.toList());
+            List<Variants> variants = new ArrayList<>();
+
+            // tìm list variant theo tên và attributeName
+            listVariantOfAttrRs.forEach(variantOfAttribute -> variantOfAttribute.getVariantNames().forEach(variantName -> {
+                Attributes attributes = attributeService.findByAttributeNameAndIsActiveTrue(variantOfAttribute.getAttributeName());
+                Variants variantEntity = variantService.findByVariantNameAndAttributeIdAndIsActiveTrue(variantName,attributes.getId() );
+                variants.add(variantEntity);
+            }));
+
+            // so sanh attributeId của hai bảng product_attribute và bảng variant để lưu bảng product_attribute_variant
+            List<ProductAttributeVariantResponse> proAttrVarRs = productAttributeVariantService.save(productAttributes, variants);
+
+            //lưu product combination
+            List<ProductCombinationResponse> proComRs = productCombinationService.saveListCombinations(savedEntity, request.getCombinations());
+            return productConverter.toResponse(savedEntity, productGalleryResponses, listVariantOfAttrRs, proComRs);
         }
-        Products insertedProduct = productRepository.save(entity);
-        List<ProductGalleries> productGalleries = new ArrayList<>();
-        request.getImageLinks().forEach(e -> productGalleries
-                .add(productGalleryRepository
-                        .save(ProductGalleries.builder()
-                                .imageLink(e)
-                                .products(insertedProduct)
-                                .build())));
-
-        return productConverter.toResponse(insertedProduct, productGalleries);
+        return null;
     }
-
 
     @Override
     public boolean delete(Long[] ids) {
@@ -116,9 +150,9 @@ public class ProductServiceImpl implements IProductService {
         if (exists) {
             for (Long id :
                     ids) {
-               Products entity = productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Not found product"));
-               entity.setActive(false);
-               productRepository.save(entity);
+                Products entity = productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Not found product"));
+                entity.setActive(false);
+                productRepository.save(entity);
             }
         }
         return exists;

@@ -14,8 +14,9 @@ import java.util.Set;
 @Setter
 public class Products extends BaseEntity {
     private String productName;
-    private int year;
-    private Double price;
+    private String description;
+    private Double originalPrice;
+    private int originalQuantity;
     @Column(name = "is_active")
     private boolean isActive;
     @ManyToOne
@@ -26,9 +27,12 @@ public class Products extends BaseEntity {
     @JoinColumn(name = "brands_id")
     private Brands brands;
 
-    @OneToMany(mappedBy = "products")
+    @OneToMany(mappedBy = "product")
     private Set<ProductGalleries> productGalleries = new HashSet<>();
 
     @OneToMany(mappedBy = "product")
     private Set<ProductAttributes> productAttributes = new HashSet<>();
+
+    @OneToMany(mappedBy = "product")
+    private Set<ProductCombinations> productCombinations = new HashSet<>();
 }

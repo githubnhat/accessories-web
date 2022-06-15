@@ -23,6 +23,8 @@ public class ProductAttributes extends BaseEntity{
     @JoinColumn(name = "attribute_id")
     private Attributes attribute;
 
+    private boolean isActive;
+
     @OneToMany(mappedBy = "productAttribute")
     private Set<ProductAttributeVariants> productAttributeVariants = new HashSet<>();
 }

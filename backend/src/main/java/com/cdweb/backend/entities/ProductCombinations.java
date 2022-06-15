@@ -12,9 +12,13 @@ import javax.persistence.ManyToOne;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ProductGalleries extends BaseEntity {
-    private String imageLink;
+public class ProductCombinations extends BaseEntity {
+    private String productVariantName;
+    private String uniqueStringId;
+    private Double price;
+    private int quantity;
+
     @ManyToOne
-    @JoinColumn(name = "products_id")
+    @JoinColumn(name = "product_id")
     private Products product;
 }
