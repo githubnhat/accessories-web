@@ -3,7 +3,9 @@ package com.cdweb.backend.services.impl;
 import com.cdweb.backend.converters.VariantConverter;
 import com.cdweb.backend.entities.Attributes;
 import com.cdweb.backend.entities.Variants;
+import com.cdweb.backend.payloads.requests.AttributeAndVariantsRequest;
 import com.cdweb.backend.payloads.requests.VariantRequest;
+import com.cdweb.backend.payloads.responses.AttributeAndVariantsResponse;
 import com.cdweb.backend.payloads.responses.VariantResponse;
 import com.cdweb.backend.repositories.AttributeRepository;
 import com.cdweb.backend.repositories.VariantRepository;
@@ -13,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,19 +26,51 @@ public class VariantServiceImpl implements IVariantService {
     private final AttributeRepository attributeRepository;
 
     @Override
+    public Variants findByVariantNameAndAttributeIdAndIsActiveTrue(String variantName, Long attributeId) {
+        return variantRepository.findByVariantNameAndAttributeIdAndIsActiveTrue(variantName, attributeId);
+    }
+
+    @Override
     public VariantResponse save(VariantRequest request) {
-            Variants entity = variantRepository.findByIdAndIsActiveTrue(request.getId());
-            if (entity == null) {
-                Variants newEntity = variantConverter.toEntity(request);
-                Attributes attribute = attributeRepository.findByIdAndIsActiveTrue(request.getAttributeId());
-                newEntity.setAttribute(attribute);
-                newEntity.setActive(true);
-                Variants savedEntity = variantRepository.save(newEntity);
-                VariantResponse response = variantConverter.toResponse(savedEntity);
-                response.setAttributeId(savedEntity.getAttribute().getId());
-                return response;
+        Variants entity = variantRepository.findByIdAndIsActiveTrue(request.getId());
+        if (entity == null) {
+            Variants newEntity = variantConverter.toEntity(request);
+            Attributes attribute = attributeRepository.findByIdAndIsActiveTrue(request.getAttributeId());
+            newEntity.setAttribute(attribute);
+            newEntity.setActive(true);
+            Variants savedEntity = variantRepository.save(newEntity);
+            VariantResponse response = variantConverter.toResponse(savedEntity);
+            response.setAttributeId(savedEntity.getAttribute().getId());
+            return response;
         }
         return null;
+    }
+
+    @Override
+    public List<AttributeAndVariantsResponse> checkAndSaveListVariants(List<AttributeAndVariantsRequest> request) {
+        List<AttributeAndVariantsResponse> response = new ArrayList<>();
+        request.forEach(a -> {
+            Attributes attribute = attributeRepository.findByAttributeNameAndIsActiveTrue(a.getAttributeName());
+            AttributeAndVariantsResponse result =  AttributeAndVariantsResponse.builder().attributeName(attribute.getAttributeName()).build();
+            List<String> variantNames = new ArrayList<>();
+            for (String v : a.getVariantNames()) {
+                Variants entity = variantRepository.findByVariantNameAndAttributeIdAndIsActiveTrue(v, attribute.getId());
+                if (entity == null) {
+                    Variants newEntity = Variants.builder()
+                            .variantName(v)
+                            .attribute(attribute)
+                            .isActive(true)
+                            .build();
+                    Variants savedEntity = variantRepository.save(newEntity);
+                    variantNames.add(savedEntity.getVariantName());
+                } else {
+                    variantNames.add(entity.getVariantName());
+                }
+            }
+            result.setVariantNames(variantNames);
+            response.add(result);
+        });
+        return response;
     }
 
     @Override

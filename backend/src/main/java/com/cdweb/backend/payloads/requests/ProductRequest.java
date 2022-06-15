@@ -10,9 +10,12 @@ import java.util.List;
 public class ProductRequest {
     private Long id;
     private String productName;
-    private int year;
-    private Double price;
+    private String description;
+    private Double originalPrice;
+    private int originalQuantity;
     private List<String> imageLinks;
-    private String branchName;
+    private List<AttributeAndVariantsRequest> attributes;
+    private List<ProductCombinationRequest> combinations;
+    private String brandName;
     private String categoryName;
 }

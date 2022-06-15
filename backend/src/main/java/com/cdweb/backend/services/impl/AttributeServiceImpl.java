@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,25 @@ public class AttributeServiceImpl implements IAttributeService {
     }
 
     @Override
+    public List<AttributeResponse> saveListAttribute(List<String> attributeNames) {
+        List<AttributeResponse> response = new ArrayList<>();
+        attributeNames.forEach(attributeName -> {
+            Attributes entity = attributeRepository.findByAttributeNameAndIsActiveTrue(attributeName);
+            if (entity == null) {
+                Attributes newEntity = Attributes.builder()
+                        .attributeName(attributeName)
+                        .isActive(true)
+                        .build();
+                Attributes savedEntity = attributeRepository.save(newEntity);
+                 response.add(attributeConverter.toResponse(savedEntity));
+            }
+        }
+        );
+        return response;
+    }
+
+
+    @Override
     public AttributeResponse update(AttributeRequest request, Long id) {
         Attributes entity = attributeRepository.findByAttributeNameAndIsActiveTrue(request.getAttributeName());
         Attributes oldEntity = attributeRepository.findByIdAndIsActiveTrue(id);
@@ -47,5 +67,10 @@ public class AttributeServiceImpl implements IAttributeService {
     @Override
     public List<AttributeResponse> findByIsActiveTrue() {
         return attributeRepository.findByIsActiveTrue().stream().map(attributeConverter::toResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    public Attributes findByAttributeNameAndIsActiveTrue(String attributeName) {
+        return attributeRepository.findByAttributeNameAndIsActiveTrue(attributeName);
     }
 }

@@ -39,12 +39,11 @@ public class ProductController {
 
     @PostMapping("/insert")
     ResponseEntity<?> insertProduct(@RequestBody ProductRequest request) {
-        List<ProductResponse> foundProducts = productService.findByProductName(request.getProductName());
+        ProductResponse response = productService.save(request);
         return ResponseEntity.status(HttpStatus.OK).body(
-                foundProducts.size() > 0 ?
+               response==null ?
                         new ResponseObject("Failed", "Product name already taken", "") :
-                        new ResponseObject("Success", "Insert Product Successfully",
-                                productService.save(request)));
+                        new ResponseObject("Success", "Insert Product Successfully", response));
     }
 
     @PutMapping("/{id}")

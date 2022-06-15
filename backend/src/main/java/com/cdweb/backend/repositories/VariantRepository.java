@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+
 public interface VariantRepository extends JpaRepository<Variants, Long> {
 
     List<Variants> findByAttributeIdAndIsActiveTrue(Long attributeId);
@@ -14,4 +14,6 @@ public interface VariantRepository extends JpaRepository<Variants, Long> {
     Variants findByVariantNameAndIsActiveTrue(String variantName);
 
     Variants findByIdAndIsActiveTrue(Long id);
+
+    Variants findByVariantNameAndAttributeIdAndIsActiveTrue(String variantName, Long attributeId);
 }
