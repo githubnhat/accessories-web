@@ -1,25 +1,36 @@
 <template>
-  <v-app>
-    <div class="m-layout">
-      <m-admin-header />
-      <div class="m-layout-container">
-        <v-container class="mt-10 mb-13 pa-0" fluid>
-          <slot />
-        </v-container>
-      </div>
-      <m-footer />
-    </div>
+  <v-app id="inspire">
+    <m-admin-side-bar :drawer="drawer" @changeControl="handleControlAdmin" />
+
+    <v-main>
+      <m-admin-header :drawer="drawer" @onClickDrawer="handleDrawer" />
+      <v-container class="pa-3" fluid>
+        <slot />
+      </v-container>
+    </v-main>
   </v-app>
 </template>
 
 <script>
-import MFooter from '@/components/Partitions/MFooter.vue';
 import MAdminHeader from '@/components/Partitions/MAdminHeader.vue';
+import MAdminSideBar from '@/components/Partitions/MAdminSideBar.vue';
 
 export default {
+  data: () => ({
+    drawer: true,
+    cards: ['Today', 'Yesterday'],
+  }),
+  methods: {
+    handleDrawer(drawer) {
+      this.drawer = drawer;
+    },
+    handleControlAdmin(control) {
+      this.$emit('changeControl', control);
+    },
+  },
   components: {
     MAdminHeader,
-    MFooter,
+    MAdminSideBar,
   },
 };
 </script>
