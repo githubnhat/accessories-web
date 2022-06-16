@@ -1,3 +1,4 @@
+import router from '@/router';
 import axios from 'axios';
 
 type User = {
@@ -13,6 +14,7 @@ export async function doLogin(path: string, dataForm: object) {
     const { data, status } = await axios.post<GetUsersResponse>(path, dataForm);
     // console.log(JSON.stringify(data, null, 10));
     localStorage.setItem('accessToken', data?.data?.accessToken || '');
+    router.push('/');
     // 👇️ "response status is: 200"
     console.log('response status is: ', status);
 
