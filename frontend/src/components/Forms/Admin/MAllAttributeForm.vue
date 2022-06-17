@@ -110,7 +110,9 @@ export default {
 
   methods: {
     async initialize() {
-      this.data = await getAllAttributes('http://localhost:8081/api/v1/admin/attribute');
+      this.data = await getAllAttributes(
+        'http://localhost:8081/api/v1/admin/attribute/listVariants',
+      );
       console.log('return data', this.data);
     },
 
