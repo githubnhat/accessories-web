@@ -2,6 +2,7 @@ package com.cdweb.backend.services;
 
 import com.cdweb.backend.entities.Attributes;
 import com.cdweb.backend.payloads.requests.AttributeRequest;
+import com.cdweb.backend.payloads.responses.AttributeAndVariantsResponse;
 import com.cdweb.backend.payloads.responses.AttributeResponse;
 
 import java.util.List;
@@ -16,6 +17,8 @@ public interface IAttributeService {
     List<AttributeResponse> findByIsActiveTrue();
 
     Attributes findByAttributeNameAndIsActiveTrue(String attributeName);
+
+    List<AttributeAndVariantsResponse> findAllAttributeAndVariants();
 
 
 }
