@@ -21,17 +21,17 @@ import java.util.List;
 public class AttributeController {
     private final IAttributeService attributeService;
 
-//    @GetMapping("")
-//    public ResponseEntity<?> getAll(){
-//        List<AttributeResponse> response = attributeService.findByIsActiveTrue();
-//        return ResponseEntity.status(HttpStatus.OK).body(
-//                (response.size()>0) ?
-//                        new ResponseObject("Success", null, response) :
-//                        new ResponseObject("Failed", "Have no attribute", ""));
-//    }
-
-
     @GetMapping("")
+    public ResponseEntity<?> getAll(){
+        List<AttributeResponse> response = attributeService.findByIsActiveTrue();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                (response.size()>0) ?
+                        new ResponseObject("Success", null, response) :
+                        new ResponseObject("Failed", "Have no attribute", ""));
+    }
+
+
+    @GetMapping("/listVariants")
     public ResponseEntity<?> getAllAttrAndVariants(){
         List<AttributeAndVariantsResponse> response = attributeService.findAllAttributeAndVariants();
         return ResponseEntity.status(HttpStatus.OK).body(
