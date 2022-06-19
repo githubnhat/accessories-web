@@ -2,6 +2,7 @@ package com.cdweb.backend.controllers.admin;
 
 import com.cdweb.backend.payloads.requests.AttributeRequest;
 import com.cdweb.backend.payloads.requests.VariantRequest;
+import com.cdweb.backend.payloads.responses.AttributeAndVariantsResponse;
 import com.cdweb.backend.payloads.responses.AttributeResponse;
 import com.cdweb.backend.payloads.responses.ResponseObject;
 import com.cdweb.backend.payloads.responses.VariantResponse;
@@ -23,6 +24,16 @@ public class AttributeController {
     @GetMapping("")
     public ResponseEntity<?> getAll(){
         List<AttributeResponse> response = attributeService.findByIsActiveTrue();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                (response.size()>0) ?
+                        new ResponseObject("Success", null, response) :
+                        new ResponseObject("Failed", "Have no attribute", ""));
+    }
+
+
+    @GetMapping("/listVariants")
+    public ResponseEntity<?> getAllAttrAndVariants(){
+        List<AttributeAndVariantsResponse> response = attributeService.findAllAttributeAndVariants();
         return ResponseEntity.status(HttpStatus.OK).body(
                 (response.size()>0) ?
                         new ResponseObject("Success", null, response) :

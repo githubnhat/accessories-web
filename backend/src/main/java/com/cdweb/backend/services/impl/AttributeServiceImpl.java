@@ -1,10 +1,14 @@
 package com.cdweb.backend.services.impl;
 
 import com.cdweb.backend.converters.AttributeConverter;
+import com.cdweb.backend.converters.VariantConverter;
 import com.cdweb.backend.entities.Attributes;
+import com.cdweb.backend.entities.Variants;
 import com.cdweb.backend.payloads.requests.AttributeRequest;
+import com.cdweb.backend.payloads.responses.AttributeAndVariantsResponse;
 import com.cdweb.backend.payloads.responses.AttributeResponse;
 import com.cdweb.backend.repositories.AttributeRepository;
+import com.cdweb.backend.repositories.VariantRepository;
 import com.cdweb.backend.services.IAttributeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +23,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AttributeServiceImpl implements IAttributeService {
     private final AttributeRepository attributeRepository;
+    private final VariantRepository variantRepository;
     private final AttributeConverter attributeConverter;
+    private final VariantConverter variantConverter;
+
 
     @Override
     public AttributeResponse save(AttributeRequest request) {
@@ -37,16 +44,16 @@ public class AttributeServiceImpl implements IAttributeService {
     public List<AttributeResponse> saveListAttribute(List<String> attributeNames) {
         List<AttributeResponse> response = new ArrayList<>();
         attributeNames.forEach(attributeName -> {
-            Attributes entity = attributeRepository.findByAttributeNameAndIsActiveTrue(attributeName);
-            if (entity == null) {
-                Attributes newEntity = Attributes.builder()
-                        .attributeName(attributeName)
-                        .isActive(true)
-                        .build();
-                Attributes savedEntity = attributeRepository.save(newEntity);
-                 response.add(attributeConverter.toResponse(savedEntity));
-            }
-        }
+                    Attributes entity = attributeRepository.findByAttributeNameAndIsActiveTrue(attributeName);
+                    if (entity == null) {
+                        Attributes newEntity = Attributes.builder()
+                                .attributeName(attributeName)
+                                .isActive(true)
+                                .build();
+                        Attributes savedEntity = attributeRepository.save(newEntity);
+                        response.add(attributeConverter.toResponse(savedEntity));
+                    }
+                }
         );
         return response;
     }
@@ -72,5 +79,23 @@ public class AttributeServiceImpl implements IAttributeService {
     @Override
     public Attributes findByAttributeNameAndIsActiveTrue(String attributeName) {
         return attributeRepository.findByAttributeNameAndIsActiveTrue(attributeName);
+    }
+
+    @Override
+    public List<AttributeAndVariantsResponse> findAllAttributeAndVariants() {
+        List<Attributes> attrs = attributeRepository.findByIsActiveTrue();
+        List<AttributeAndVariantsResponse> response = new ArrayList<>();
+        attrs.forEach(a -> {
+            List<Variants> variants = variantRepository.findByAttributeIdAndIsActiveTrue(a.getId());
+            List<String> variantNames = variants.stream().map((Variants::getVariantName)).collect(Collectors.toList());
+            AttributeAndVariantsResponse attrAndVar = AttributeAndVariantsResponse.builder()
+                    .id(a.getId())
+                    .attributeName(a.getAttributeName())
+                    .variantNames(variantNames)
+                    .build();
+            response.add(attrAndVar);
+
+        });
+        return response;
     }
 }
