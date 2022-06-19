@@ -13,7 +13,7 @@
 
         <v-divider></v-divider>
 
-        <v-stepper-step :editable="completeStep.includes(3)" step="3">
+        <v-stepper-step :editable="completeStep.includes(2)" step="3">
           Chi tiết biến thể
         </v-stepper-step>
       </v-stepper-header>
@@ -73,7 +73,7 @@
                     <v-col cols="12" md="6">
                       <validation-provider
                         name="Discount"
-                        rules="between:1,100|required"
+                        rules="between:0,100|required"
                         v-slot="{ errors }"
                       >
                         <v-text-field
@@ -155,29 +155,29 @@
                   Thêm thuộc tính
                 </v-btn>
               </v-col>
-              <!-- <v-col cols="2"></v-col> -->
             </v-row>
           </v-card-title>
-          <v-row v-for="(item, n) in variants" :key="n">
+          <v-row v-for="(item, n) in attributes" :key="n">
             <v-col cols="2">
               <m-text-field
-                :nameVar="item.nameVariant"
+                :nameVar="item.attributeName"
                 label="Tên thuộc tính"
                 @input="handleInputName"
-                v-model="item.nameVariant"
+                v-model="item.attributeName"
                 :disabled="!!!item.disable"
               ></m-text-field>
             </v-col>
             <v-col cols="8">
-              <m-text-field
-                :nameVar="item.nameVariant"
+              <m-auto-complete
+                v-model="item.selectedVariants"
                 label="Danh sách biến thể"
+                :variantItems="item.variantNames"
+                :nameAttribute="item.attributeName"
                 @input="handleInputVariants"
-                v-model="item.variantValues"
-              ></m-text-field>
+              ></m-auto-complete>
             </v-col>
             <v-col cols="2">
-              <v-btn color="primary" @click="handleDeleteVariant(item.nameVariant)"> Xóa </v-btn>
+              <v-btn color="primary" @click="handleDeleteVariant(item.attributeName)"> Xóa </v-btn>
             </v-col>
           </v-row>
         </v-card>
@@ -201,6 +201,7 @@
 
 <script>
 import MTextField from '@/components/TextFields/MTextField.vue';
+import MAutoComplete from '@/components/TextFields/MAutoComplete.vue';
 import { VARIANTS } from '@/utils/mocks/';
 import { getProductAttributes } from '@/services/admin';
 
@@ -215,9 +216,9 @@ export default {
       selectedAttribute: VARIANTS[0],
       step: 2,
       completeStep: [],
-      variants: [],
+      attributes: [],
       files: [],
-      numberVariants: 0,
+      numberAttributes: 0,
       listVariant: VARIANTS,
     };
   },
@@ -227,45 +228,51 @@ export default {
   },
   components: {
     MTextField,
+    MAutoComplete,
   },
   methods: {
     async getAttributes() {
-      let data = await getProductAttributes('http://localhost:8081/api/v1/admin/attribute');
+      let data = await getProductAttributes(
+        'http://localhost:8081/api/v1/admin/attribute/listVariants',
+      );
       let existedVariant = data?.data;
+      // console.log('attribute', existedVariant);
       this.listVariant = this.listVariant.concat(existedVariant);
     },
     handleAddVariant() {
-      let newVariant =
+      let newAttribute =
         this.selectedAttribute.id !== -1
           ? {
-              nameVariant: this.selectedAttribute.attributeName,
-              variantValues: '',
+              attributeName: this.selectedAttribute.attributeName,
+              variantNames: this.selectedAttribute.variantNames,
             }
           : {
-              nameVariant: this.selectedAttribute.attributeName + ' ' + this.numberVariants++,
-              variantValues: '',
+              attributeName: this.selectedAttribute.attributeName + ' ' + this.numberAttributes++,
+              variantNames: [],
               disable: true,
             };
       let isExisted =
-        this.variants.filter((e) => e.nameVariant === this.selectedAttribute.attributeName).length >
-        0;
-      this.variants = isExisted ? [...this.variants] : [...this.variants, newVariant];
+        this.attributes.filter((e) => e.attributeName === this.selectedAttribute.attributeName)
+          .length > 0;
+      this.attributes = isExisted ? [...this.attributes] : [...this.attributes, newAttribute];
     },
     handleDeleteVariant(name) {
-      this.variants = this.variants.filter((item) => item.nameVariant !== name);
+      this.attributes = this.attributes.filter((item) => item.attributeName !== name);
     },
     handleInputName(value, name) {
-      this.variants = this.variants.map((item) => {
-        if (item.nameVariant === name) {
-          return { ...item, nameVariant: value };
+      this.attributes = this.attributes.map((item) => {
+        if (item.attributeName === name) {
+          return { ...item, attributeName: value };
         }
         return item;
       });
     },
     handleInputVariants(value, name) {
-      this.variants = this.variants.map((item) => {
-        if (item.nameVariant === name) {
-          return { ...item, variantValues: value };
+      console.log('value', value);
+      console.log('name', name);
+      this.attributes = this.attributes.map((item) => {
+        if (item.attributeName === name) {
+          return { ...item, selectedVariants: value };
         }
         return item;
       });
@@ -275,7 +282,7 @@ export default {
       this.completeStep = [1, ...this.completeStep];
     },
     onSubmitStep2() {
-      console.log('submit', JSON.stringify(this.variants));
+      console.log('submit', JSON.stringify(this.attributes));
       this.step = 3;
       this.completeStep = [2, ...this.completeStep];
     },
