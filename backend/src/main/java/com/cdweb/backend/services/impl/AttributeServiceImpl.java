@@ -4,6 +4,7 @@ import com.cdweb.backend.converters.AttributeConverter;
 import com.cdweb.backend.converters.VariantConverter;
 import com.cdweb.backend.entities.Attributes;
 import com.cdweb.backend.entities.Variants;
+import com.cdweb.backend.payloads.requests.AttributeAndVariantsRequest;
 import com.cdweb.backend.payloads.requests.AttributeRequest;
 import com.cdweb.backend.payloads.responses.AttributeAndVariantsResponse;
 import com.cdweb.backend.payloads.responses.AttributeResponse;
@@ -25,17 +26,38 @@ public class AttributeServiceImpl implements IAttributeService {
     private final AttributeRepository attributeRepository;
     private final VariantRepository variantRepository;
     private final AttributeConverter attributeConverter;
-    private final VariantConverter variantConverter;
 
 
     @Override
-    public AttributeResponse save(AttributeRequest request) {
+    public AttributeAndVariantsResponse save(AttributeAndVariantsRequest request) {
         Attributes entity = attributeRepository.findByAttributeNameAndIsActiveTrue(request.getAttributeName());
-        if (entity == null) {
-            Attributes newEntity = attributeConverter.toEntity(request);
-            newEntity.setActive(true);
-            Attributes savedEntity = attributeRepository.save(newEntity);
-            return attributeConverter.toResponse(savedEntity);
+        if (entity == null && request.getAttributeName() != "") {
+            Attributes newAttrEntity = Attributes.builder().attributeName(request.getAttributeName()).isActive(true).build();
+            Attributes savedAttrEntity = attributeRepository.save(newAttrEntity);
+            AttributeAndVariantsResponse response = AttributeAndVariantsResponse.builder()
+                    .id(savedAttrEntity.getId())
+                    .attributeName(savedAttrEntity.getAttributeName())
+                    .build();
+            List<String> variantNames = new ArrayList<>();
+            for (String v : request.getVariantNames()) {
+                if (v != null) {
+                    Variants varEntity = variantRepository.findByVariantNameAndAttributeIdAndIsActiveTrue(v, savedAttrEntity.getId());
+                    if (varEntity == null) {
+                        Variants newEntity = Variants.builder()
+                                .variantName(v)
+                                .attribute(savedAttrEntity)
+                                .isActive(true)
+                                .build();
+                        Variants savedEntity = variantRepository.save(newEntity);
+                        variantNames.add(savedEntity.getVariantName());
+                    }
+                }
+//                else {
+//                    variantNames.add(varEntity.getVariantName());
+//                }
+            }
+            response.setVariantNames(variantNames);
+            return response;
         }
         return null;
     }

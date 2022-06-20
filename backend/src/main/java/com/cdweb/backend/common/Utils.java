@@ -15,7 +15,6 @@ public class Utils {
     }
 
     public static String getUniqueStringId(String productVariantName) {
-
         String[] list = removeAccent(productVariantName).split("-");
         String str1 = "";
         for (String str : list) {

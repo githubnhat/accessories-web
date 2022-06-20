@@ -1,5 +1,6 @@
 package com.cdweb.backend.controllers.admin;
 
+import com.cdweb.backend.payloads.requests.AttributeAndVariantsRequest;
 import com.cdweb.backend.payloads.requests.AttributeRequest;
 import com.cdweb.backend.payloads.requests.VariantRequest;
 import com.cdweb.backend.payloads.responses.AttributeAndVariantsResponse;
@@ -27,7 +28,7 @@ public class AttributeController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 (response.size()>0) ?
                         new ResponseObject("Success", null, response) :
-                        new ResponseObject("Failed", "Have no attribute", ""));
+                        new ResponseObject("Failed", "Have no attribute", null));
     }
 
 
@@ -37,15 +38,15 @@ public class AttributeController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 (response.size()>0) ?
                         new ResponseObject("Success", null, response) :
-                        new ResponseObject("Failed", "Have no attribute", ""));
+                        new ResponseObject("Failed", "Have no attribute", null));
     }
 
     @PostMapping("")
-    public ResponseEntity<?> insertAttribute(@RequestBody AttributeRequest request){
-        AttributeResponse response = attributeService.save(request);
+    public ResponseEntity<?> insertAttributeAndVariants(@RequestBody AttributeAndVariantsRequest request){
+        AttributeAndVariantsResponse response = attributeService.save(request);
         return ResponseEntity.status(HttpStatus.OK).body(
                 (response==null) ?
-                        new ResponseObject("Failed", "Attribute name already taken", "") :
+                        new ResponseObject("Failed", "Attribute name already taken", null) :
                         new ResponseObject("Success", "Insert Attribute Successfully", response));
     }
 

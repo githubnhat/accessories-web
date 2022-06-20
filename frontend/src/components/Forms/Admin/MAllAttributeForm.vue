@@ -24,17 +24,23 @@
                       label="Tên thuộc tính"
                     ></v-text-field>
                   </v-col>
+                  <v-col cols="12" sm="6" md="12">
+                    <v-text-field
+                      v-model="editedItem.variantNames"
+                      label="Các giá trị được cách nhau bằng dấu phẩy (,)"
+                    ></v-text-field>
+                  </v-col>
                 </v-row>
               </v-container>
             </v-card-text>
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
+              <v-btn color="blue darken-1" text @click="close"> Trở lại </v-btn>
               <v-btn color="blue darken-1" text v-if="formAction === 'save'" @click="save">
-                Save
+                Lưu
               </v-btn>
-              <v-btn color="blue darken-1" text v-else @click="update"> Update </v-btn>
+              <v-btn color="blue darken-1" text v-else @click="update"> Cập nhật </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -80,9 +86,11 @@ export default {
     editedIndex: -1,
     editedItem: {
       attributeName: '',
+      variantNames: '',
     },
     defaultItem: {
       attributeName: '',
+      variantNames: '',
     },
   }),
 
@@ -150,11 +158,31 @@ export default {
     },
 
     async save() {
+      var listVariantNames = this.editedItem.variantNames.split(',').map((a) => a.trim());
+      var res = [];
+      listVariantNames.forEach(function (i) {
+        let isInclude = false;
+        res.forEach((_x) => {
+          if (_x.toLowerCase() == i.toLowerCase()) {
+            isInclude = true;
+          }
+        });
+        if (!isInclude) {
+          res.push(i);
+        }
+      });
+      listVariantNames = res.filter(function (element) {
+        return element !== '';
+      });
+      let request = {
+        attributeName: this.editedItem.attributeName,
+        variantNames: listVariantNames,
+      };
       const newData = await addNewAttributes(
         'http://localhost:8081/api/v1/admin/attribute',
-        this.editedItem,
+        request,
       );
-      this.data = [...this.data, newData];
+      if (newData !== null) this.data = [...this.data, newData];
       this.close();
     },
 
@@ -169,5 +197,6 @@ export default {
   },
 };
 </script>
+
 <style>
 </style>
