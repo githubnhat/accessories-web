@@ -9,6 +9,8 @@ import java.util.List;
 public interface ICategoryService {
     List<CategoryResponse> findAll(Pageable pageable);
 
+    List<CategoryResponse> findByIsActiveTrue();
+
     CategoryResponse save(CategoryRequest request);
 
     int totalItem();

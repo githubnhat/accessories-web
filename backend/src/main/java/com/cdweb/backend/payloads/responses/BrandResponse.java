@@ -13,8 +13,4 @@ public class BrandResponse {
     private Long id;
     private String name;
     private String code;
-    private String createdBy;
-    private Date createdDate;
-    private String modifiedBy;
-    private Date modifiedDate;
 }
