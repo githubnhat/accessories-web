@@ -31,13 +31,20 @@ public class CategoryServiceImpl implements ICategoryService {
     }
 
     @Override
+    public List<CategoryResponse> findByIsActiveTrue() {
+        return categoryRepository.findByIsActiveTrue().stream().map(categoryConverter :: toResponse).collect(Collectors.toList());
+    }
+
+    @Override
     public CategoryResponse save(CategoryRequest request) {
         CategoryResponse response = null;
         // id null mean insert, otherwise mean update
         if(request.getId() == null) {
-            Categories category = categoryRepository.findByCode(request.getCode());
+            Categories category = categoryRepository.findByCodeAndIsActiveTrue(request.getCode());
             if (category == null) {
-                Categories entity = categoryRepository.save(categoryConverter.toEntity(request));
+                Categories newCategory = categoryConverter.toEntity(request);
+                newCategory.setActive(true);
+                Categories entity = categoryRepository.save(newCategory);
                 response =  categoryConverter.toResponse(entity);
             } return response;
         } else {

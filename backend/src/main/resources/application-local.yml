@@ -13,6 +13,17 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: true
+mail:
+  host: smtp.gmail.com
+  username: codejava.net@gmail.com
+  password: {your_email_password}
+  port: 587
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
 token:
   access-life-time: 500
   refresh-life-time: 1440

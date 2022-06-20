@@ -16,6 +16,7 @@ import java.util.Set;
 public class Brands extends BaseEntity {
     private String name;
     private String code;
+    private boolean isActive;
     @OneToMany(mappedBy = "brands")
     private Set<Products> products = new HashSet<>();
 }

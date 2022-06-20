@@ -87,8 +87,8 @@ public class ProductServiceImpl implements IProductService {
         Products entity = productRepository.findByProductNameAndIsActiveTrue(request.getProductName());
         if (entity == null) {
             Products newEntity = productConverter.toEntity(request);
-            Categories category = categoryRepository.findByName(request.getCategoryName());
-            Brands brand = brandRepository.findByName(request.getBrandName());
+            Categories category = categoryRepository.findByNameAndIsActiveTrue(request.getCategoryName());
+            Brands brand = brandRepository.findByNameAndIsActiveTrue(request.getBrandName());
             newEntity.setCategories(category);
             newEntity.setBrands(brand);
             newEntity.setActive(true);

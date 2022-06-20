@@ -25,10 +25,6 @@ public class CategoryConverter {
                 .id(entity.getId())
                 .code(entity.getCode())
                 .name(entity.getName())
-                .createdDate(entity.getCreatedDate())
-                .modifiedDate(entity.getModifiedDate())
-                .createdBy(entity.getCreatedBy())
-                .modifiedBy(entity.getModifiedBy())
                 .build();
     }
 }

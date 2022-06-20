@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/admin/category")
 @RequiredArgsConstructor
@@ -36,12 +38,21 @@ public class CategoriesController {
                         : new ResponseObject("Success", "Have no category", null));
     }
 
+    @GetMapping("")
+    ResponseEntity<?> getAllIsActiveCategory(){
+        List<CategoryResponse> response = categoryService.findByIsActiveTrue();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                (response != null)
+                        ? new ResponseObject("Success", null, response)
+                        : new ResponseObject("Success", "Have no category", null));
+    }
+
     @PostMapping("")
     ResponseEntity<?> insertCategory(@RequestBody CategoryRequest request) {
         CategoryResponse response = categoryService.save(request);
         return
                 ResponseEntity.status(HttpStatus.OK).body((response != null)
-                        ? new ResponseObject("Success", null, response)
+                        ? new ResponseObject("Success", "Insert Category Successfully", response)
                         : new ResponseObject("Failed", "Category name already taken", null));
     }
 
@@ -52,6 +63,6 @@ public class CategoriesController {
         return
                 ResponseEntity.status(HttpStatus.OK).body((response != null)
                         ? new ResponseObject("Success", null, response)
-                        : new ResponseObject("Failed", "Category name already taken", null));
+                        : new ResponseObject("Failed", "Have no category", null));
     }
 }

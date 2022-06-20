@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/admin/brand")
 @RequiredArgsConstructor
@@ -35,12 +37,21 @@ public class BrandsController {
                         : new ResponseObject("Success", "Have no brand", null));
     }
 
+    @GetMapping("")
+    ResponseEntity<?> getAllIsActiveBrands(){
+        List<BrandResponse> response = brandService.findByIsActiveTrue();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                (response != null)
+                        ? new ResponseObject("Success", null, response)
+                        : new ResponseObject("Success", "Have no brand", null));
+    }
+
     @PostMapping("")
     ResponseEntity<?> insertBrand(@RequestBody BrandRequest request) {
         BrandResponse response = brandService.save(request);
         return
                 ResponseEntity.status(HttpStatus.OK).body((response != null)
-                        ? new ResponseObject("Success", null, response)
+                        ? new ResponseObject("Success", "Insert Brand Successfully", response)
                         : new ResponseObject("Failed", "Brand name already taken", null));
     }
 

@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class BrandConverter {
 
-    private final BrandRepository brandRepository;
-
     public Brands toEntity(BrandRequest request){
         return Brands.builder()
                 .code(request.getCode())
@@ -25,10 +23,6 @@ public class BrandConverter {
                 .id(entity.getId())
                 .code(entity.getCode())
                 .name(entity.getName())
-                .createdDate(entity.getCreatedDate())
-                .modifiedDate(entity.getModifiedDate())
-                .createdBy(entity.getCreatedBy())
-                .modifiedBy(entity.getModifiedBy())
                 .build();
     }
 }

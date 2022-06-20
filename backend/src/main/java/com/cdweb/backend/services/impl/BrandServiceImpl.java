@@ -23,12 +23,8 @@ public class BrandServiceImpl implements IBrandService {
     private final BrandConverter brandConverter;
 
     @Override
-    public List<BrandResponse> getAll() {
-        List<Brands> response = brandRepository.findAll();
-        List<BrandResponse> rs = new ArrayList<>();
-        for (Brands b : response)
-            rs.add(brandConverter.toResponse(b));
-        return rs;
+    public List<BrandResponse> findByIsActiveTrue() {
+        return brandRepository.findByIsActiveTrue().stream().map(brandConverter :: toResponse).collect(Collectors.toList());
     }
 
     @Override
@@ -36,9 +32,11 @@ public class BrandServiceImpl implements IBrandService {
         BrandResponse response = null;
         // id null mean insert, otherwise mean update
         if(request.getId() == null) {
-            Brands brand = brandRepository.findByCode(request.getCode());
+            Brands brand = brandRepository.findByCodeAndIsActiveTrue(request.getCode());
             if (brand == null) {
-                Brands entity = brandRepository.save(brandConverter.toEntity(request));
+                Brands newBrands = brandConverter.toEntity(request);
+                newBrands.setActive(true);
+                Brands entity = brandRepository.save(newBrands);
                 response =  brandConverter.toResponse(entity);
             } return response;
         } else {
