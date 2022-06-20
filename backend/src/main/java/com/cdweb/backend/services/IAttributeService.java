@@ -1,6 +1,7 @@
 package com.cdweb.backend.services;
 
 import com.cdweb.backend.entities.Attributes;
+import com.cdweb.backend.payloads.requests.AttributeAndVariantsRequest;
 import com.cdweb.backend.payloads.requests.AttributeRequest;
 import com.cdweb.backend.payloads.responses.AttributeAndVariantsResponse;
 import com.cdweb.backend.payloads.responses.AttributeResponse;
@@ -8,7 +9,7 @@ import com.cdweb.backend.payloads.responses.AttributeResponse;
 import java.util.List;
 
 public interface IAttributeService {
-    AttributeResponse save(AttributeRequest request);
+    AttributeAndVariantsResponse save(AttributeAndVariantsRequest request);
 
     List<AttributeResponse> saveListAttribute(List<String> attributeNames);
 
