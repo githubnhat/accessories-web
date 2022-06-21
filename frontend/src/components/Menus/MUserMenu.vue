@@ -57,10 +57,10 @@ export default {
       if (item.action === 'log-out') {
         localStorage.removeItem('accessToken');
         console.log('log out');
+        router.push('/login');
       }
       if (item.action === 'profile') {
         router.push('/profile');
-        console.log('log out');
       }
     },
   },

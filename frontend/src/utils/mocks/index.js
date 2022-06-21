@@ -64,10 +64,12 @@ export const VARIANTS = [
   {
     id: -1,
     attributeName: 'Thêm thuộc tính mới',
+    variantNames: [],
   },
   {
     id: 0,
     attributeName: 'Mặc định',
+    variantNames: [],
   },
 ];
 

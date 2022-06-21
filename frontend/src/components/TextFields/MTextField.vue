@@ -1,5 +1,5 @@
 <template>
-  <v-text-field v-bind="$attrs" @input="handleInput" outlined dense hide-details="auto" clearable>
+  <v-text-field v-bind="$attrs" @input="handleInput" outlined dense hide-details="auto">
     <template v-slot:prepend>
       <slot name="prepend" />
     </template>
