@@ -13,6 +13,7 @@ public class ProductRequest {
     private String description;
     private Double originalPrice;
     private int originalQuantity;
+    private int discount;
     private List<String> imageLinks;
     private List<AttributeAndVariantsRequest> attributes;
     private List<ProductCombinationRequest> combinations;

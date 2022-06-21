@@ -35,7 +35,7 @@ public class AttributeServiceImpl implements IAttributeService {
             Attributes newAttrEntity = Attributes.builder().attributeName(request.getAttributeName()).isActive(true).build();
             Attributes savedAttrEntity = attributeRepository.save(newAttrEntity);
             AttributeAndVariantsResponse response = AttributeAndVariantsResponse.builder()
-                    .id(savedAttrEntity.getId())
+                    .attributeId(savedAttrEntity.getId())
                     .attributeName(savedAttrEntity.getAttributeName())
                     .build();
             List<String> variantNames = new ArrayList<>();
@@ -74,7 +74,10 @@ public class AttributeServiceImpl implements IAttributeService {
                                 .build();
                         Attributes savedEntity = attributeRepository.save(newEntity);
                         response.add(attributeConverter.toResponse(savedEntity));
+                    } else {
+                        response.add(attributeConverter.toResponse(entity));
                     }
+
                 }
         );
         return response;
@@ -111,7 +114,7 @@ public class AttributeServiceImpl implements IAttributeService {
             List<Variants> variants = variantRepository.findByAttributeIdAndIsActiveTrue(a.getId());
             List<String> variantNames = variants.stream().map((Variants::getVariantName)).collect(Collectors.toList());
             AttributeAndVariantsResponse attrAndVar = AttributeAndVariantsResponse.builder()
-                    .id(a.getId())
+                    .attributeId(a.getId())
                     .attributeName(a.getAttributeName())
                     .variantNames(variantNames)
                     .build();
@@ -119,5 +122,12 @@ public class AttributeServiceImpl implements IAttributeService {
 
         });
         return response;
+    }
+
+    @Override
+    public List<AttributeResponse> findByProductIdAndIsActive(Long productId) {
+        return attributeRepository.findByProductIdAndIsActive(productId)
+                .stream().map(attributeConverter :: toResponse)
+                .collect(Collectors.toList());
     }
 }

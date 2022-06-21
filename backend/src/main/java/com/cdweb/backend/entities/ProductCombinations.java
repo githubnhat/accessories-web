@@ -17,6 +17,7 @@ public class ProductCombinations extends BaseEntity {
     private String uniqueStringId;
     private Double price;
     private int quantity;
+    private boolean isActive;
 
     @ManyToOne
     @JoinColumn(name = "product_id")

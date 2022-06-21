@@ -1,13 +1,13 @@
 package com.cdweb.backend.converters;
 
-import com.cdweb.backend.entities.ProductGalleries;
-import com.cdweb.backend.payloads.responses.ProductGalleryResponse;
+import com.cdweb.backend.entities.Thumbnails;
+import com.cdweb.backend.payloads.responses.ThumbnailResponse;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProductGalleryConverter {
-    public ProductGalleryResponse toResponse(ProductGalleries entity){
-        return ProductGalleryResponse
+public class ThumbnailConverter {
+    public ThumbnailResponse toResponse(Thumbnails entity){
+        return ThumbnailResponse
                 .builder()
                     .id(entity.getId())
                     .productId(entity.getProduct().getId())

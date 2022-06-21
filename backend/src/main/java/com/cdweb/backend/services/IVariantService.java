@@ -14,4 +14,5 @@ public interface IVariantService {
     VariantResponse update(VariantRequest request, Long id);
     List<AttributeAndVariantsResponse> checkAndSaveListVariants(List<AttributeAndVariantsRequest> request);
     List<VariantResponse> findByAttributeIdAndIsActiveTrue(Long attributeId);
+    List<VariantResponse> findByProductIdAndIsActive(Long productId, Long attributeId);
 }

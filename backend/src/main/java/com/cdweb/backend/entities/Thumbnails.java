@@ -12,8 +12,9 @@ import javax.persistence.ManyToOne;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ProductGalleries extends BaseEntity {
+public class Thumbnails extends BaseEntity {
     private String imageLink;
+    private boolean isActive;
     @ManyToOne
     @JoinColumn(name = "products_id")
     private Products product;

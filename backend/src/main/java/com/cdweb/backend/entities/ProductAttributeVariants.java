@@ -13,8 +13,9 @@ import javax.persistence.ManyToOne;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductAttributeVariants extends BaseEntity {
+    private boolean isActive;
     @ManyToOne
-    @JoinColumn(name="product_variant_id")
+    @JoinColumn(name="product_attribute_id")
     private ProductAttributes productAttribute;
     @ManyToOne
     @JoinColumn(name="variant_id")

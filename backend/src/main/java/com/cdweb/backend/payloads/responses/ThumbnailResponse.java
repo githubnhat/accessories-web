@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class ProductGalleryResponse {
+public class ThumbnailResponse {
     private Long id;
     private Long productId;
     private String imageLink;
