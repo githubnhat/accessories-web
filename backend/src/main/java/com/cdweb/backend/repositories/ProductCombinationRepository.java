@@ -1,7 +1,12 @@
 package com.cdweb.backend.repositories;
 
 import com.cdweb.backend.entities.ProductCombinations;
+import com.cdweb.backend.entities.Products;
+import com.cdweb.backend.payloads.responses.ProductCombinationResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface ProductCombinationRepository extends JpaRepository<ProductCombinations, Long> {
+    List<ProductCombinations> findByProductAndIsActiveTrue(Products product);
 }

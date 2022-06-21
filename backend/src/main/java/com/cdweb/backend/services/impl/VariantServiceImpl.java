@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +52,9 @@ public class VariantServiceImpl implements IVariantService {
         List<AttributeAndVariantsResponse> response = new ArrayList<>();
         request.forEach(a -> {
             Attributes attribute = attributeRepository.findByAttributeNameAndIsActiveTrue(a.getAttributeName());
-            AttributeAndVariantsResponse result =  AttributeAndVariantsResponse.builder().attributeName(attribute.getAttributeName()).build();
+            AttributeAndVariantsResponse result =  AttributeAndVariantsResponse.builder()
+                    .attributeId(attribute.getId())
+                    .attributeName(attribute.getAttributeName()).build();
             List<String> variantNames = new ArrayList<>();
             for (String v : a.getVariantNames()) {
                 Variants entity = variantRepository.findByVariantNameAndAttributeIdAndIsActiveTrue(v, attribute.getId());
@@ -98,5 +101,12 @@ public class VariantServiceImpl implements IVariantService {
                                 .attributeId(v.getAttribute().getId())
                                 .build()));
         return response;
+    }
+
+    @Override
+    public List<VariantResponse> findByProductIdAndIsActive(Long productId, Long attributeId) {
+        return variantRepository.findByProductIdAndIsActive(productId, attributeId)
+                .stream().map(variantConverter :: toResponse)
+                .collect(Collectors.toList());
     }
 }

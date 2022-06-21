@@ -17,6 +17,7 @@ public class Products extends BaseEntity {
     private String description;
     private Double originalPrice;
     private int originalQuantity;
+    private int discount;
     @Column(name = "is_active")
     private boolean isActive;
     @ManyToOne
@@ -28,7 +29,7 @@ public class Products extends BaseEntity {
     private Brands brands;
 
     @OneToMany(mappedBy = "product")
-    private Set<ProductGalleries> productGalleries = new HashSet<>();
+    private Set<Thumbnails> thumbnails = new HashSet<>();
 
     @OneToMany(mappedBy = "product")
     private Set<ProductAttributes> productAttributes = new HashSet<>();

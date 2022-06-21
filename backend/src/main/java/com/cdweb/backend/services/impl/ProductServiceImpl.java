@@ -1,7 +1,6 @@
 package com.cdweb.backend.services.impl;
 
 import com.cdweb.backend.converters.ProductAttributeConverter;
-import com.cdweb.backend.converters.ProductAttributeVariantConverter;
 import com.cdweb.backend.converters.ProductConverter;
 import com.cdweb.backend.entities.*;
 import com.cdweb.backend.payloads.requests.AttributeAndVariantsRequest;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +37,7 @@ public class ProductServiceImpl implements IProductService {
 
     private final IProductAttributeService productAttributeService;
 
-    private final IProductGalleryService productGalleryService;
+    private final IThumbnailService productGalleryService;
 
     private final IProductAttributeVariantService productAttributeVariantService;
 
@@ -45,20 +45,32 @@ public class ProductServiceImpl implements IProductService {
 
     private final ProductAttributeConverter productAttributeConverter;
 
-
-
     @Override
     public List<ProductResponse> findAll(Pageable pageable) {
         List<ProductResponse> response = new ArrayList<>();
         List<Products> entities = productRepository.findAll(pageable).getContent();
-        List<Products> result = new ArrayList<>();
-        for (Products p :
-                entities) {
-            if (p.isActive()) {
-                result.add(p);
-            }
-        }
-//        result.forEach(p -> response.add(productConverter.toResponse(p, productGalleryRepository.findByProduct(p))));
+       if (entities.size() > 0) {
+           entities.forEach(entity -> {
+               if (entity.isActive()) {
+                   List<ThumbnailResponse> productGalleries = productGalleryService.findByProductAndIsActiveTrue(entity);
+                   List<AttributeResponse> attributes = attributeService.findByProductIdAndIsActive(entity.getId());
+                   List<AttributeAndVariantsResponse> attrAndVarRs= new ArrayList<>();
+                   attributes.forEach(a -> {
+                       List<String> variants = variantService.findByProductIdAndIsActive(entity.getId(), a.getId())
+                               .stream().map(VariantResponse :: getVariantName).collect(Collectors.toList());
+                       AttributeAndVariantsResponse attrAndVar = AttributeAndVariantsResponse.builder()
+                               .attributeId(a.getId())
+                               .attributeName(a.getAttributeName())
+                               .variantNames(variants)
+                               .build();
+                       attrAndVarRs.add(attrAndVar);
+                   });
+                   List<ProductCombinationResponse> proComRs = productCombinationService.findByProductAndIsActiveTrue(entity);
+                   ProductResponse product = productConverter.toResponse(entity, productGalleries, attrAndVarRs, proComRs);
+                   response.add(product);
+               }
+           });
+       }
         return response;
     }
 
@@ -96,7 +108,7 @@ public class ProductServiceImpl implements IProductService {
             //lưu san phẩm
             Products savedEntity = productRepository.save(newEntity);
             //Lưu hình
-            List<ProductGalleryResponse> productGalleryResponses = productGalleryService.save(savedEntity, request.getImageLinks());
+            List<ThumbnailResponse> thumbnailRespons = productGalleryService.save(savedEntity, request.getImageLinks());
 
             List<String> listOfAttributeNames = new ArrayList<>();
             List<AttributeAndVariantsRequest> attributesAndVariantsRequest = new ArrayList<>();
@@ -120,8 +132,8 @@ public class ProductServiceImpl implements IProductService {
 
             //lưu product_attribute
             List<ProductAttributes> productAttributes = productAttributeService.saveListProductAttribute(listAttributes, savedEntity);
-            List<ProductAttributeResponse> productAttributeRs = productAttributes.stream()
-                    .map(productAttributeConverter :: toResponse).collect(Collectors.toList());
+//            List<ProductAttributeResponse> productAttributeRs = productAttributes.stream()
+//                    .map(productAttributeConverter :: toResponse).collect(Collectors.toList());
             List<Variants> variants = new ArrayList<>();
 
             // tìm list variant theo tên và attributeName
@@ -136,7 +148,7 @@ public class ProductServiceImpl implements IProductService {
 
             //lưu product combination
             List<ProductCombinationResponse> proComRs = productCombinationService.saveListCombinations(savedEntity, request.getCombinations());
-            return productConverter.toResponse(savedEntity, productGalleryResponses, listVariantOfAttrRs, proComRs);
+            return productConverter.toResponse(savedEntity, thumbnailRespons, listVariantOfAttrRs, proComRs);
         }
         return null;
     }

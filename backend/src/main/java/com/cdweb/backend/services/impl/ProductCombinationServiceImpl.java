@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,8 +30,16 @@ public class ProductCombinationServiceImpl implements IProductCombinationService
             ProductCombinations newEntity = productCombinationConverter.toEntity(r);
             newEntity.setUniqueStringId(Utils.getUniqueStringId(r.getProductVariantName()));
             newEntity.setProduct(product);
+            newEntity.setActive(true);
             response.add(productCombinationConverter.toResponse(productCombinationRepository.save(newEntity)));
         });
         return response;
+    }
+
+    @Override
+    public List<ProductCombinationResponse> findByProductAndIsActiveTrue(Products product) {
+        return productCombinationRepository.findByProductAndIsActiveTrue(product)
+                .stream().map(productCombinationConverter :: toResponse)
+                .collect(Collectors.toList());
     }
 }

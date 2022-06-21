@@ -19,6 +19,7 @@ public class ProductResponse {
     private String description;
     private Double originalPrice;
     private int originalQuantity;
+    private int discount;
     private List<String> imageLinks;
     private List<AttributeAndVariantsResponse> attributeAndVariants;
     private List<ProductCombinationResponse> combinations;

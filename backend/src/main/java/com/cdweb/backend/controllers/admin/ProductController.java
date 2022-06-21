@@ -27,8 +27,19 @@ public class ProductController {
     private final ProductConverter productConverter;
 
     // this request is: http://localhost:8081/api/v1/products?page=1&limit=3
-    @GetMapping("")
-    ResponseEntity<?> showProduct(@RequestParam("page") int page, @RequestParam("limit") int limit) {
+//    @GetMapping("")
+//    ResponseEntity<?> showProduct(@RequestParam("page") int page, @RequestParam("limit") int limit) {
+//        PageResponse<ProductResponse> response = new PageResponse<>();
+//        response.setPage(page);
+//        Pageable pageable = PageRequest.of(page - 1, limit);
+//        response.setTotalPage((int) Math.ceil((double) (productService.totalItem()) / limit));
+//        response.setData(productService.findAll(pageable));
+//        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", null, response));
+//    }
+
+    // this request is: http://localhost:8081/api/v1/products?page=1&limit=3
+    @GetMapping("/{page}/{limit}")
+    ResponseEntity<?> showAllProduct(@PathVariable("page") int page, @PathVariable("limit") int limit) {
         PageResponse<ProductResponse> response = new PageResponse<>();
         response.setPage(page);
         Pageable pageable = PageRequest.of(page - 1, limit);

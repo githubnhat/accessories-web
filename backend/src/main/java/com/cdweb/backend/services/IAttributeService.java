@@ -21,5 +21,7 @@ public interface IAttributeService {
 
     List<AttributeAndVariantsResponse> findAllAttributeAndVariants();
 
+    List<AttributeResponse> findByProductIdAndIsActive(Long productId);
+
 
 }

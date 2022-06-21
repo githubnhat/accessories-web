@@ -10,7 +10,7 @@ import java.util.List;
 @Setter
 @Builder
 public class AttributeAndVariantsResponse {
-    private Long id;
+    private Long attributeId;
     private String attributeName;
     private List<String> variantNames;
 }

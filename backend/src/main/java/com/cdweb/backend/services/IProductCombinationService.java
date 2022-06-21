@@ -9,4 +9,6 @@ import java.util.List;
 public interface IProductCombinationService {
 
     List<ProductCombinationResponse> saveListCombinations(Products product, List<ProductCombinationRequest> request);
+
+    List<ProductCombinationResponse> findByProductAndIsActiveTrue(Products product);
 }

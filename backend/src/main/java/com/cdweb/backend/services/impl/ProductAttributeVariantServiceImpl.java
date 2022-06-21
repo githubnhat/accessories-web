@@ -29,6 +29,7 @@ public class ProductAttributeVariantServiceImpl implements IProductAttributeVari
                                     .builder()
                                     .productAttribute(productAttribute)
                                     .variant(variant)
+                                    .isActive(true)
                                     .build());
                    response.add(productAttributeVariantConverter.toResponse(productAttributeVariantRepository.save(entity)));
                 }

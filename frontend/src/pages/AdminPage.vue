@@ -60,7 +60,7 @@ export default {
   components: {
     MAdminLayout,
     MAddProductForm,
-    MAllAttributeForm
+    MAllAttributeForm,
   },
   created() {
     // authentication
