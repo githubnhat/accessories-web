@@ -14,7 +14,7 @@
         <v-divider></v-divider>
 
         <v-stepper-step :editable="completeStep.includes(2)" step="3">
-          Chi tiết biến thể
+          Chi tiết các biến thể kết hợp
         </v-stepper-step>
       </v-stepper-header>
 
@@ -29,11 +29,7 @@
                 <v-container>
                   <v-row dense>
                     <v-col cols="12" md="6">
-                      <validation-provider
-                        name="Product Name"
-                        rules="required|alpha_spaces"
-                        v-slot="{ errors }"
-                      >
+                      <validation-provider name="Product Name" rules="required" v-slot="{ errors }">
                         <v-text-field
                           label="Tên sản phẩm"
                           v-model="productName"
@@ -47,15 +43,16 @@
                     <v-col cols="12" md="6">
                       <validation-provider
                         name="Price"
-                        rules="required|numeric|min:0"
+                        rules="required|numeric|min_value:0"
                         v-slot="{ errors }"
                       >
                         <v-text-field
                           label="Giá gốc (VNĐ)"
-                          v-model="price"
+                          v-model="originalPrice"
                           outlined
                           dense
                           :error-messages="errors"
+                          suffix="VNĐ"
                         ></v-text-field>
                       </validation-provider>
                     </v-col>
@@ -83,23 +80,25 @@
                           :error-messages="errors"
                           outlined
                           dense
+                          suffix="%"
                         ></v-text-field>
                       </validation-provider>
                     </v-col>
                     <v-col cols="12" md="6">
                       <validation-provider
                         name="Quantity"
-                        rules="required|numeric|min:0"
+                        rules="required|numeric|min_value:1"
                         v-slot="{ errors }"
                       >
                         <v-text-field
                           label="Số lượng"
-                          v-model="totalQuantity"
+                          v-model="originalQuantity"
                           outlined
                           clearable
                           type="number"
                           dense
                           :error-messages="errors"
+                          suffix="Sản phẩm"
                         ></v-text-field>
                       </validation-provider>
                     </v-col>
@@ -132,68 +131,135 @@
       </v-stepper-content>
 
       <v-stepper-content step="2">
-        <v-card elevation="2" outlined class="mb-12 pa-5">
-          <v-card-title>
-            <v-row>
-              <v-col cols="8"> <span class="text-h5"> Thuộc tính sản phẩm</span> </v-col>
-              <v-col cols="2">
-                <v-select
-                  :items="listVariant"
-                  item-text="attributeName"
-                  return-object
-                  dense
-                  outlined
-                  v-model="selectedAttribute"
-                ></v-select>
-              </v-col>
-              <v-col cols="2">
-                <v-btn
-                  color="primary"
-                  @click="handleAddVariant"
-                  :disabled="selectedAttribute.id === 0"
-                >
-                  Thêm thuộc tính
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-card-title>
-          <v-row v-for="(item, n) in attributes" :key="n">
-            <v-col cols="2">
-              <m-text-field
-                :nameVar="item.attributeName"
-                label="Tên thuộc tính"
-                @input="handleInputName"
-                v-model="item.attributeName"
-                :disabled="!!!item.disable"
-              ></m-text-field>
-            </v-col>
-            <v-col cols="8">
-              <m-auto-complete
-                v-model="item.selectedVariants"
-                label="Danh sách biến thể"
-                :variantItems="item.variantNames"
-                :nameAttribute="item.attributeName"
-                @input="handleInputVariants"
-              ></m-auto-complete>
-            </v-col>
-            <v-col cols="2">
-              <v-btn color="primary" @click="handleDeleteVariant(item.attributeName)"> Xóa </v-btn>
-            </v-col>
-          </v-row>
-        </v-card>
+        <ValidationObserver v-slot="{ handleSubmit }">
+          <v-form @submit.prevent="handleSubmit(onSubmitStep2)">
+            <v-card elevation="2" outlined class="mb-12 pa-5">
+              <v-card-title>
+                <v-row>
+                  <v-col cols="8"> <span class="text-h5"> Thuộc tính sản phẩm</span> </v-col>
+                  <v-col cols="2">
+                    <v-select
+                      :items="attributeList"
+                      item-text="attributeName"
+                      return-object
+                      dense
+                      outlined
+                      v-model="selectedAttribute"
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="2">
+                    <v-btn
+                      color="primary"
+                      @click="handleAddVariant"
+                      :disabled="selectedAttribute.id === 0"
+                    >
+                      Thêm thuộc tính
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-card-title>
+              <v-row v-for="(item, n) in attributes" :key="n">
+                <v-col cols="2">
+                  <m-text-field
+                    :nameVar="item.attributeName"
+                    label="Tên thuộc tính"
+                    @input="handleInputName"
+                    v-model="item.attributeName"
+                    :readonly="!!!item.disable"
+                  ></m-text-field>
+                </v-col>
+                <v-col cols="8">
+                  <!--  -->
+                  <m-auto-complete
+                    v-model="item.selectedVariants"
+                    label="Danh sách biến thể"
+                    :variantItems="item.variantNames"
+                    :nameAttribute="item.attributeName"
+                    @input="handleInputVariants"
+                    required
+                  ></m-auto-complete>
+                  <!--  -->
+                </v-col>
+                <v-col cols="2">
+                  <v-btn color="primary" @click="handleDeleteVariant(item.attributeName)">
+                    Xóa
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-card>
 
-        <div class="d-flex justify-end">
-          <v-btn class="mr-2" text @click="step--"> Quay lại </v-btn>
-          <v-btn color="primary" @click="onSubmitStep2"> Tiếp tục </v-btn>
-        </div>
+            <div class="d-flex justify-end">
+              <v-btn class="mr-2" text @click="step--"> Quay lại </v-btn>
+              <v-btn color="primary" type="submit"> Tiếp tục </v-btn>
+            </div>
+          </v-form>
+        </ValidationObserver>
       </v-stepper-content>
 
       <v-stepper-content step="3">
-        <v-card color="grey lighten-1" class="mb-12" height="200px"> </v-card>
-        <div class="d-flex justify-end">
-          <v-btn class="mr-2" text @click="step--"> Quay lại </v-btn>
-          <v-btn color="primary" @click="step = 3"> Tiếp tục </v-btn>
-        </div>
+        <ValidationObserver v-slot="{ handleSubmit }">
+          <v-form @submit.prevent="handleSubmit(onSubmitStep3)">
+            <v-card elevation="2" outlined class="mb-12 pa-5">
+              <v-row v-for="(item, n) in combineVariants" :key="n">
+                <v-col cols="3">
+                  <m-text-field
+                    label="Biến thể kết hợp của sản phẩm"
+                    color
+                    v-model="item.combineName"
+                    readonly
+                  ></m-text-field>
+                </v-col>
+                <v-col cols="4" />
+                <v-col cols="2">
+                  <!--  -->
+                  <validation-provider
+                    name="Quantity"
+                    rules="required|min_value:1|numeric"
+                    v-slot="{ errors }"
+                  >
+                    <m-text-field
+                      v-model="item.quantity"
+                      label="Số lượng sản phẩm"
+                      :nameAttribute="item.combineName"
+                      @input="handleInputCombinationQuantity"
+                      required
+                      :error-messages="errors"
+                      type="number"
+                    >
+                    </m-text-field>
+                  </validation-provider>
+
+                  <!--  -->
+                </v-col>
+                <v-col cols="1" />
+                <v-col cols="2">
+                  <!--  -->
+                  <validation-provider
+                    name="Quantity"
+                    rules="required|numeric|min_value:1"
+                    v-slot="{ errors }"
+                  >
+                    <m-text-field
+                      v-model="item.price"
+                      label="Giá sản phẩm"
+                      :nameAttribute="item.combineName"
+                      @input="handleInputCombinationPrice"
+                      required
+                      :error-messages="errors"
+                    >
+                    </m-text-field>
+                  </validation-provider>
+
+                  <!--  -->
+                </v-col>
+              </v-row>
+            </v-card>
+            <div class="d-flex justify-end">
+              <v-btn class="mr-2" text @click="step--"> Quay lại </v-btn>
+              <v-btn color="primary" type="submit"> Tiếp tục </v-btn>
+            </div>
+          </v-form>
+        </ValidationObserver>
       </v-stepper-content>
     </v-stepper>
   </div>
@@ -203,28 +269,32 @@
 import MTextField from '@/components/TextFields/MTextField.vue';
 import MAutoComplete from '@/components/TextFields/MAutoComplete.vue';
 import { VARIANTS } from '@/utils/mocks/';
-import { getProductAttributes } from '@/services/admin';
+import { getProductAttributes } from '@/services/admin/add-product-form';
+import { combineVariants } from '@/utils';
 
 export default {
   data() {
     return {
       productName: '',
       description: '',
-      price: '',
-      totalQuantity: 0,
+      originalPrice: 1000,
+      originalQuantity: 1,
       discount: null,
+      brandName: '',
+      categoryName: '',
       selectedAttribute: VARIANTS[0],
       step: 2,
       completeStep: [],
       attributes: [],
       files: [],
       numberAttributes: 0,
-      listVariant: VARIANTS,
+      attributeList: VARIANTS,
+      combineVariants: [],
+      payload: {},
     };
   },
   created() {
     this.getAttributes();
-    return null;
   },
   components: {
     MTextField,
@@ -237,14 +307,14 @@ export default {
       );
       let existedVariant = data?.data;
       // console.log('attribute', existedVariant);
-      this.listVariant = this.listVariant.concat(existedVariant);
+      this.attributeList = this.attributeList.concat(existedVariant);
     },
     handleAddVariant() {
       let newAttribute =
         this.selectedAttribute.id !== -1
           ? {
               attributeName: this.selectedAttribute.attributeName,
-              variantNames: this.selectedAttribute.variantNames,
+              variantNames: [...this.selectedAttribute.variantNames, 'Thêm biến thể mới'],
             }
           : {
               attributeName: this.selectedAttribute.attributeName + ' ' + this.numberAttributes++,
@@ -268,8 +338,6 @@ export default {
       });
     },
     handleInputVariants(value, name) {
-      console.log('value', value);
-      console.log('name', name);
       this.attributes = this.attributes.map((item) => {
         if (item.attributeName === name) {
           return { ...item, selectedVariants: value };
@@ -277,14 +345,49 @@ export default {
         return item;
       });
     },
+    handleInputCombinationQuantity(value, name) {
+      this.combineVariants = this.combineVariants.map((item) => {
+        if (item.combineName === name) {
+          return { ...item, quantity: value };
+        } else return item;
+      });
+    },
+    handleInputCombinationPrice(value, name) {
+      this.combineVariants = this.combineVariants.map((item) => {
+        if (item.combineName === name) {
+          return { ...item, price: value };
+        } else return item;
+      });
+    },
     onSubmitStep1() {
       this.step = 2;
       this.completeStep = [1, ...this.completeStep];
     },
     onSubmitStep2() {
-      console.log('submit', JSON.stringify(this.attributes));
+      let variantList = this.attributes.map((item) => item?.selectedVariants);
+      this.combineVariants = combineVariants(variantList);
+      console.log(this.combineVariants);
       this.step = 3;
       this.completeStep = [2, ...this.completeStep];
+    },
+    // submit complete form add product
+    onSubmitStep3() {
+      this.payload = {
+        productName: this.productName,
+        description: this.description,
+        originalPrice: this.originalPrice,
+        originalQuantity: this.originalQuantity,
+        imageLinks: [],
+        discount: this.discount,
+        attributes: this.attributes.map((item) => ({
+          attributeName: item.attributeName,
+          variantNames: item.selectedVariants,
+        })),
+        combination: this.combineVariants,
+        brandName: this.brandName,
+        categoryName: this.categoryName,
+      };
+      console.log('payload', this.payload);
     },
   },
 };
