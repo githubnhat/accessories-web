@@ -34,6 +34,7 @@
                             type="password"
                             prepend-icon="mdi-lock"
                             clearable
+                            @keypress.enter="login"
                           ></v-text-field>
                         </v-form>
                         <p class="caption text-center">Forgot password?!</p>
