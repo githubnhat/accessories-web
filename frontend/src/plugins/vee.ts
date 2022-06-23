@@ -1,7 +1,10 @@
 import Vue from 'vue';
-import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
+import { ValidationProvider, ValidationObserver, extend, setInteractionMode } from 'vee-validate';
 import * as rules from 'vee-validate/dist/rules';
 import { required, email, min, max, between, numeric, confirmed } from 'vee-validate/dist/rules';
+
+// config trigger
+setInteractionMode('lazy');
 
 // add all available rules in vee validate
 for (const [rule, validation] of Object.entries(rules)) {
@@ -10,6 +13,7 @@ for (const [rule, validation] of Object.entries(rules)) {
   });
 }
 
+// custom rules
 extend('required', {
   ...required,
   message: (field) => field + ' không được để trống.',
@@ -45,5 +49,9 @@ extend('confirmed', {
   ...confirmed,
   message: (field) => field + ' không khớp.',
 });
+
+// end custom rules
+
+// add component
 Vue.component('ValidationProvider', ValidationProvider);
 Vue.component('ValidationObserver', ValidationObserver);
