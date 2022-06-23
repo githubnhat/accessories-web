@@ -2,6 +2,39 @@
   <div class="login">
     <v-main>
       <v-container class="fill-height" fluid>
+        <v-row justify="center">
+          <v-dialog
+            v-model="otpDialog"
+            persistent
+            max-width="600px"
+            @keydown.esc="otpDialog = false"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn v-show="false" color="primary" dark v-bind="attrs" v-on="on">
+                Open Dialog
+              </v-btn>
+            </template>
+            <v-card>
+              <v-card-title>
+                <span class="text-h5">Xác thực email</span>
+              </v-card-title>
+              <v-card-text>
+                <v-container>
+                  <v-row>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-text-field label="OTP" v-model="otp" required></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="otpDialog = false"> Đóng </v-btn>
+                <v-btn color="blue darken-1" text @click="verifyOTP"> Xác nhận </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-row>
         <v-row align="center" justify="center" class="pt-10">
           <v-col cols="12" sm="8" md="8">
             <v-card class="elevation-12" rounded="10">
@@ -13,12 +46,12 @@
                         <h1
                           class="text-center display-2 primary--text text--accent-3 text-capitalize"
                         >
-                          Login to shopping
+                          Đăng nhập
                         </h1>
                         <v-form class="mt-5" ref="formLogin">
                           <v-text-field
                             v-model="username"
-                            label="User Name"
+                            label="Tên người dùng"
                             name="username"
                             prepend-icon="mdi-account"
                             type="text"
@@ -29,7 +62,7 @@
                           <v-text-field
                             v-model="password"
                             id="password"
-                            label="Password"
+                            label="Mật khẩu"
                             name="password"
                             type="password"
                             prepend-icon="mdi-lock"
@@ -37,21 +70,19 @@
                             @keypress.enter="login"
                           ></v-text-field>
                         </v-form>
-                        <p class="caption text-center">Forgot password?!</p>
+                        <p class="caption text-center">Quên mật khẩu?!</p>
                       </v-card-text>
                       <div class="text-center mb-5">
-                        <v-btn rounded color="primary" dark @click="login"> LOG IN </v-btn>
+                        <v-btn rounded color="primary" dark @click="login"> Đăng nhập </v-btn>
                       </div>
                     </v-col>
                     <v-col cols="12" md="4" class="primary accent-3">
                       <v-card-text class="white--text mt-5">
-                        <h1 class="text-center display-1">Hi, Bitches!!</h1>
-                        <h5 class="text-center">
-                          Have no account?! I'll give you one right now...
-                        </h5>
+                        <h1 class="text-center display-1">Accessories Shop</h1>
+                        <h5 class="text-center">Chưa có tài khoản?! Đăng ký ngay...</h5>
                       </v-card-text>
                       <div class="text-center mb-5">
-                        <v-btn rounded outlined dark @click="step++">REGISTER</v-btn>
+                        <v-btn rounded outlined dark @click="step++">Đăng ký</v-btn>
                       </div>
                     </v-col>
                   </v-row>
@@ -60,13 +91,11 @@
                   <v-row
                     ><v-col cols="12" md="4" class="primary accent-3">
                       <v-card-text class="white--text mt-5">
-                        <h1 class="text-center display-1">Hi, Bitches!!</h1>
-                        <h5 class="text-center">
-                          Had an account?! Let's sign in to shopping right now...
-                        </h5>
+                        <h1 class="text-center display-1">Accessories Shop</h1>
+                        <h5 class="text-center">Đã có tài khoản?! Đăng nhập ngay</h5>
                       </v-card-text>
                       <div class="text-center mb-5">
-                        <v-btn rounded outlined dark @click="step--">LOG IN</v-btn>
+                        <v-btn rounded outlined dark @click="step--">Đăng nhập</v-btn>
                       </div>
                     </v-col>
                     <v-col cols="12" md="8">
@@ -74,12 +103,12 @@
                         <h1
                           class="text-center display-2 primary--text text--accent-3 text-capitalize"
                         >
-                          Create an Account
+                          Tạo tài khoản
                         </h1>
                         <v-form class="mt-5">
                           <v-text-field
                             v-model="username"
-                            label="User Name"
+                            label="Tên tài khoản"
                             name="username"
                             prepend-icon="mdi-account"
                             type="text"
@@ -99,7 +128,7 @@
                           </v-text-field>
                           <v-text-field
                             v-model="fullname"
-                            label="Full Name"
+                            label="Tên đầy đủ"
                             name="fullname"
                             prepend-icon="mdi-human-edit"
                             type="text"
@@ -110,7 +139,7 @@
                           <v-text-field
                             v-model="password"
                             id="password"
-                            label="Password"
+                            label="Mật khẩu"
                             name="password"
                             type="password"
                             prepend-icon="mdi-lock"
@@ -119,7 +148,7 @@
                           <v-text-field
                             v-model="repassword"
                             id="repassword"
-                            label="Retype Password"
+                            label="Nhập lại mật khẩu"
                             name="repassword"
                             type="password"
                             prepend-icon="mdi-lock"
@@ -128,7 +157,7 @@
                         </v-form>
                       </v-card-text>
                       <div class="text-center mb-5">
-                        <v-btn rounded color="primary" dark> REGISTER </v-btn>
+                        <v-btn rounded color="primary" dark> Đăng ký </v-btn>
                       </div>
                     </v-col>
                   </v-row>
@@ -154,6 +183,8 @@ export default {
       repassword: '',
       email: '',
       fullname: '',
+      otpDialog: false,
+      otp: '',
     };
   },
   props: {
@@ -171,6 +202,9 @@ export default {
         username: this.username,
         password: this.password,
       });
+    },
+    verifyOTP() {
+      // service verify otp here
     },
   },
 };
