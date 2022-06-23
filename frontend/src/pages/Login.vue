@@ -132,7 +132,7 @@
                               v-slot="{ errors }"
                             >
                               <v-text-field
-                                v-model="loginInput.username"
+                                v-model="registerInput.username"
                                 label="Tên tài khoản"
                                 name="username"
                                 prepend-icon="mdi-account"
@@ -150,7 +150,7 @@
                               v-slot="{ errors }"
                             >
                               <v-text-field
-                                v-model="loginInput.email"
+                                v-model="registerInput.email"
                                 label="Email"
                                 name="email"
                                 prepend-icon="mdi-email"
@@ -167,7 +167,7 @@
                               v-slot="{ errors }"
                             >
                               <v-text-field
-                                v-model="loginInput.fullname"
+                                v-model="registerInput.fullname"
                                 label="Tên đầy đủ"
                                 name="fullname"
                                 prepend-icon="mdi-human-edit"
@@ -186,7 +186,7 @@
                               vid="password"
                             >
                               <v-text-field
-                                v-model="loginInput.password"
+                                v-model="registerInput.password"
                                 id="password"
                                 label="Mật khẩu"
                                 type="password"
@@ -203,7 +203,7 @@
                               v-slot="{ errors }"
                             >
                               <v-text-field
-                                v-model="loginInput.repassword"
+                                v-model="registerInput.repassword"
                                 label="Xác nhận mật khẩu"
                                 type="password"
                                 prepend-icon="mdi-lock"
@@ -267,13 +267,15 @@ export default {
       doLogin(this.loginInput);
     },
     register() {
-      doRegister({
+      const payload = {
         username: this.registerInput.username,
         password: this.registerInput.password,
         fullName: this.registerInput.fullname,
         gmail: this.registerInput.email,
         roleCode: 'ROLE_USER',
-      });
+      };
+      console.log('payload', payload);
+      doRegister(payload);
     },
     verifyOTP() {
       // service verify otp here
