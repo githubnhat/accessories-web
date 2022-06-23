@@ -24,11 +24,6 @@ const routes: Array<RouteConfig> = [
     component: () => import(/* webpackChunkName: "login" */ '@/pages/Login.vue'),
   },
   {
-    path: '/register',
-    name: 'register',
-    component: () => import(/* webpackChunkName: "register" */ '@/pages/RegisterView.vue'),
-  },
-  {
     path: '/all',
     name: 'all',
     component: () => import(/* webpackChunkName: "all" */ '@/pages/AllProductView.vue'),
@@ -42,9 +37,9 @@ const routes: Array<RouteConfig> = [
     path: '/admin',
     name: 'admin',
     // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
+    // this generates a separate chunk (admin.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '@/pages/AdminPage.vue'),
+    component: () => import(/* webpackChunkName: "admin" */ '@/pages/AdminPage.vue'),
   },
 ];
 
