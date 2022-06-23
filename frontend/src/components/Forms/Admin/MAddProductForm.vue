@@ -28,7 +28,7 @@
               <v-card-text>
                 <v-container>
                   <v-row dense>
-                    <v-col cols="12" md="6">
+                    <v-col cols="12" md="9">
                       <validation-provider name="Product Name" rules="required" v-slot="{ errors }">
                         <v-text-field
                           label="Tên sản phẩm"
@@ -40,7 +40,7 @@
                         ></v-text-field>
                       </validation-provider>
                     </v-col>
-                    <v-col cols="12" md="6">
+                    <v-col cols="12" md="3">
                       <validation-provider
                         name="Price"
                         rules="required|numeric|min_value:0"
@@ -67,7 +67,7 @@
                         ></v-textarea>
                       </validation-provider>
                     </v-col>
-                    <v-col cols="12" md="6">
+                    <v-col cols="12" md="3">
                       <validation-provider
                         name="Discount"
                         rules="between:0,100|required"
@@ -84,7 +84,7 @@
                         ></v-text-field>
                       </validation-provider>
                     </v-col>
-                    <v-col cols="12" md="6">
+                    <v-col cols="12" md="3">
                       <validation-provider
                         name="Quantity"
                         rules="required|numeric|min_value:1"
@@ -101,6 +101,26 @@
                           suffix="Sản phẩm"
                         ></v-text-field>
                       </validation-provider>
+                    </v-col>
+                    <v-col cols="12" md="3">
+                      <v-select
+                        :items="brands"
+                        item-text="name"
+                        label="Chọn brand"
+                        dense
+                        outlined
+                        v-model="brandName"
+                      ></v-select>
+                    </v-col>
+                    <v-col cols="12" md="3">
+                      <v-select
+                        :items="categories"
+                        item-text="name"
+                        label="Chọn category"
+                        dense
+                        outlined
+                        v-model="categoryName"
+                      ></v-select>
                     </v-col>
                     <v-col cols="12">
                       <v-file-input
@@ -169,7 +189,6 @@
                   ></m-text-field>
                 </v-col>
                 <v-col cols="8">
-                  <!--  -->
                   <m-auto-complete
                     v-model="item.selectedVariants"
                     label="Danh sách biến thể"
@@ -178,7 +197,6 @@
                     @input="handleInputVariants"
                     required
                   ></m-auto-complete>
-                  <!--  -->
                 </v-col>
                 <v-col cols="2">
                   <v-btn color="primary" @click="handleDeleteVariant(item.attributeName)">
@@ -211,7 +229,6 @@
                 </v-col>
                 <v-col cols="4" />
                 <v-col cols="2">
-                  <!--  -->
                   <validation-provider
                     name="Quantity"
                     rules="required|min_value:1|numeric"
@@ -228,12 +245,9 @@
                     >
                     </m-text-field>
                   </validation-provider>
-
-                  <!--  -->
                 </v-col>
                 <v-col cols="1" />
                 <v-col cols="2">
-                  <!--  -->
                   <validation-provider
                     name="Quantity"
                     rules="required|numeric|min_value:1"
@@ -249,8 +263,6 @@
                     >
                     </m-text-field>
                   </validation-provider>
-
-                  <!--  -->
                 </v-col>
               </v-row>
             </v-card>
@@ -269,7 +281,12 @@
 import MTextField from '@/components/TextFields/MTextField.vue';
 import MAutoComplete from '@/components/TextFields/MAutoComplete.vue';
 import { VARIANTS } from '@/utils/mocks/';
-import { getProductAttributes } from '@/services/admin/add-product-form';
+import {
+  getProductAttributes,
+  getBrands,
+  getCategories,
+  insertProduct,
+} from '@/services/admin/add-product-form';
 import { combineVariants } from '@/utils';
 
 export default {
@@ -283,9 +300,11 @@ export default {
       brandName: '',
       categoryName: '',
       selectedAttribute: VARIANTS[0],
-      step: 2,
+      step: 1,
       completeStep: [],
       attributes: [],
+      brands: [],
+      categories: [],
       files: [],
       numberAttributes: 0,
       attributeList: VARIANTS,
@@ -294,20 +313,31 @@ export default {
     };
   },
   created() {
-    this.getAttributes();
+    this.init();
   },
   components: {
     MTextField,
     MAutoComplete,
   },
   methods: {
-    async getAttributes() {
-      let data = await getProductAttributes(
+    async init() {
+      // get attributes of product
+      let attributesData = await getProductAttributes(
         'http://localhost:8081/api/v1/admin/attribute/listVariants',
       );
-      let existedVariant = data?.data;
-      // console.log('attribute', existedVariant);
+      let existedVariant = attributesData?.data;
       this.attributeList = this.attributeList.concat(existedVariant);
+
+      const brandsData = await getBrands('http://localhost:8081/api/v1/admin/brand');
+      const existedBrands = brandsData?.data;
+      this.brands = existedBrands;
+      this.brandName = this.brands[0].name;
+
+      const categoriesData = await getCategories('http://localhost:8081/api/v1/admin/category');
+      const existedCategories = categoriesData?.data;
+      this.categories = existedCategories;
+      this.categoryName = this.categories[0].name;
+      console.log('categories', this.categories);
     },
     handleAddVariant() {
       let newAttribute =
@@ -371,14 +401,14 @@ export default {
       this.completeStep = [2, ...this.completeStep];
     },
     // submit complete form add product
-    onSubmitStep3() {
+    async onSubmitStep3() {
       this.payload = {
         productName: this.productName,
         description: this.description,
         originalPrice: this.originalPrice,
         originalQuantity: this.originalQuantity,
         imageLinks: [],
-        discount: this.discount,
+        // discount: this.discount,x
         attributes: this.attributes.map((item) => ({
           attributeName: item.attributeName,
           variantNames: item.selectedVariants,
@@ -387,6 +417,12 @@ export default {
         brandName: this.brandName,
         categoryName: this.categoryName,
       };
+      const product = await insertProduct(
+        'http://localhost:8081/api/v1/admin/product/insert',
+        this.payload,
+      );
+      console.log('product', JSON.stringify(product, null, 10));
+
       console.log('payload', this.payload);
     },
   },
