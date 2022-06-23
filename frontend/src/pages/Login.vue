@@ -42,39 +42,57 @@
                 <v-window-item :value="1">
                   <v-row>
                     <v-col cols="12" md="8">
-                      <v-card-text class="mt-5">
-                        <h1
-                          class="text-center display-2 primary--text text--accent-3 text-capitalize"
-                        >
-                          Đăng nhập
-                        </h1>
-                        <v-form class="mt-5" ref="formLogin">
-                          <v-text-field
-                            v-model="username"
-                            label="Tên người dùng"
-                            name="username"
-                            prepend-icon="mdi-account"
-                            type="text"
-                            color="primary accent-3"
-                            clearable
-                          >
-                          </v-text-field>
-                          <v-text-field
-                            v-model="password"
-                            id="password"
-                            label="Mật khẩu"
-                            name="password"
-                            type="password"
-                            prepend-icon="mdi-lock"
-                            clearable
-                            @keypress.enter="login"
-                          ></v-text-field>
+                      <ValidationObserver v-slot="{ handleSubmit }">
+                        <v-form class="mt-5" ref="formLogin" @submit.prevent="handleSubmit(login)">
+                          <v-card-text class="mt-5">
+                            <h1
+                              class="text-center display-2 primary--text text--accent-3 text-capitalize"
+                            >
+                              Đăng nhập
+                            </h1>
+                            <validation-provider
+                              name="Tên đăng nhập"
+                              rules="required"
+                              v-slot="{ errors }"
+                            >
+                              <v-text-field
+                                v-model="loginInput.username"
+                                label="Tên người dùng"
+                                name="username"
+                                prepend-icon="mdi-account"
+                                type="text"
+                                color="primary accent-3"
+                                clearable
+                                :error-messages="errors"
+                              >
+                              </v-text-field>
+                            </validation-provider>
+
+                            <validation-provider
+                              name="Mật khẩu"
+                              rules="required|min:4"
+                              v-slot="{ errors }"
+                            >
+                              <v-text-field
+                                v-model="loginInput.password"
+                                id="password"
+                                label="Mật khẩu"
+                                name="password"
+                                type="password"
+                                prepend-icon="mdi-lock"
+                                clearable
+                                @keypress.enter="login"
+                                :error-messages="errors"
+                              ></v-text-field>
+                            </validation-provider>
+
+                            <p class="caption text-center">Quên mật khẩu?!</p>
+                          </v-card-text>
+                          <div class="text-center mb-5">
+                            <v-btn rounded color="primary" dark type="submit"> Đăng nhập </v-btn>
+                          </div>
                         </v-form>
-                        <p class="caption text-center">Quên mật khẩu?!</p>
-                      </v-card-text>
-                      <div class="text-center mb-5">
-                        <v-btn rounded color="primary" dark @click="login"> Đăng nhập </v-btn>
-                      </div>
+                      </ValidationObserver>
                     </v-col>
                     <v-col cols="12" md="4" class="primary accent-3">
                       <v-card-text class="white--text mt-5">
@@ -99,66 +117,107 @@
                       </div>
                     </v-col>
                     <v-col cols="12" md="8">
-                      <v-card-text class="mt-5">
-                        <h1
-                          class="text-center display-2 primary--text text--accent-3 text-capitalize"
-                        >
-                          Tạo tài khoản
-                        </h1>
-                        <v-form class="mt-5">
-                          <v-text-field
-                            v-model="username"
-                            label="Tên tài khoản"
-                            name="username"
-                            prepend-icon="mdi-account"
-                            type="text"
-                            color="primary accent-3"
-                            clearable
-                          >
-                          </v-text-field>
-                          <v-text-field
-                            v-model="email"
-                            label="Email"
-                            name="email"
-                            prepend-icon="mdi-email"
-                            type="text"
-                            color="primary accent-3"
-                            clearable
-                          >
-                          </v-text-field>
-                          <v-text-field
-                            v-model="fullname"
-                            label="Tên đầy đủ"
-                            name="fullname"
-                            prepend-icon="mdi-human-edit"
-                            type="text"
-                            color="primary accent-3"
-                            clearable
-                          >
-                          </v-text-field>
-                          <v-text-field
-                            v-model="password"
-                            id="password"
-                            label="Mật khẩu"
-                            name="password"
-                            type="password"
-                            prepend-icon="mdi-lock"
-                            clearable
-                          ></v-text-field>
-                          <v-text-field
-                            v-model="repassword"
-                            id="repassword"
-                            label="Nhập lại mật khẩu"
-                            name="repassword"
-                            type="password"
-                            prepend-icon="mdi-lock"
-                            clearable
-                          ></v-text-field>
+                      <ValidationObserver v-slot="{ handleSubmit }">
+                        <v-form class="mt-5" @submit.prevent="handleSubmit(register)">
+                          <v-card-text class="mt-5">
+                            <h1
+                              class="text-center display-2 primary--text text--accent-3 text-capitalize"
+                            >
+                              Tạo tài khoản
+                            </h1>
+
+                            <validation-provider
+                              name="Tên tài khoản"
+                              rules="required"
+                              v-slot="{ errors }"
+                            >
+                              <v-text-field
+                                v-model="registerInput.username"
+                                label="Tên tài khoản"
+                                name="username"
+                                prepend-icon="mdi-account"
+                                type="text"
+                                color="primary accent-3"
+                                clearable
+                                :error-messages="errors"
+                              >
+                              </v-text-field>
+                            </validation-provider>
+
+                            <validation-provider
+                              name="Email"
+                              rules="required|email"
+                              v-slot="{ errors }"
+                            >
+                              <v-text-field
+                                v-model="registerInput.email"
+                                label="Email"
+                                name="email"
+                                prepend-icon="mdi-email"
+                                type="text"
+                                color="primary accent-3"
+                                clearable
+                                :error-messages="errors"
+                              >
+                              </v-text-field>
+                            </validation-provider>
+                            <validation-provider
+                              name="Tên đầy đủ"
+                              rules="required"
+                              v-slot="{ errors }"
+                            >
+                              <v-text-field
+                                v-model="registerInput.fullname"
+                                label="Tên đầy đủ"
+                                name="fullname"
+                                prepend-icon="mdi-human-edit"
+                                type="text"
+                                color="primary accent-3"
+                                clearable
+                                :error-messages="errors"
+                              >
+                              </v-text-field>
+                            </validation-provider>
+
+                            <validation-provider
+                              name="Mật khẩu"
+                              rules="required|min:4"
+                              v-slot="{ errors }"
+                              vid="password"
+                            >
+                              <v-text-field
+                                v-model="registerInput.password"
+                                id="password"
+                                label="Mật khẩu"
+                                type="password"
+                                prepend-icon="mdi-lock"
+                                clearable
+                                :error-messages="errors"
+                              >
+                              </v-text-field>
+                            </validation-provider>
+
+                            <validation-provider
+                              name="Xác nhận mật khẩu"
+                              rules="required|min:4|confirmed:password"
+                              v-slot="{ errors }"
+                            >
+                              <v-text-field
+                                v-model="registerInput.repassword"
+                                label="Xác nhận mật khẩu"
+                                type="password"
+                                prepend-icon="mdi-lock"
+                                clearable
+                                :error-messages="errors"
+                              >
+                              </v-text-field>
+                            </validation-provider>
+                          </v-card-text>
+                          <div class="text-center mb-5">
+                            <v-btn rounded color="primary" dark type="submit"> Đăng ký </v-btn>
+                          </div>
                         </v-form>
-                      </v-card-text>
-                      <div class="text-center mb-5">
-                        <v-btn rounded color="primary" dark> Đăng ký </v-btn>
-                      </div>
+                      </ValidationObserver>
                     </v-col>
                   </v-row>
                 </v-window-item>
@@ -172,17 +231,24 @@
 </template>
 
 <script>
-import { doLogin } from '@/services';
+import { doLogin, doRegister } from '@/services';
 export default {
   name: 'LogIn',
   data() {
     return {
       step: 1,
-      username: '',
-      password: '',
-      repassword: '',
-      email: '',
-      fullname: '',
+      loginInput: {
+        username: '',
+        password: '',
+      },
+      registerInput: {
+        username: '',
+        password: '',
+        repassword: '',
+        email: '',
+        fullname: '',
+      },
+
       otpDialog: false,
       otp: '',
     };
@@ -198,10 +264,18 @@ export default {
       this.$refs.form.reset();
     },
     login() {
-      doLogin('http://localhost:8081/api/v1/login', {
-        username: this.username,
-        password: this.password,
-      });
+      doLogin(this.loginInput);
+    },
+    register() {
+      const payload = {
+        username: this.registerInput.username,
+        password: this.registerInput.password,
+        fullName: this.registerInput.fullname,
+        gmail: this.registerInput.email,
+        roleCode: 'ROLE_USER',
+      };
+      console.log('payload', payload);
+      doRegister(payload);
     },
     verifyOTP() {
       // service verify otp here
