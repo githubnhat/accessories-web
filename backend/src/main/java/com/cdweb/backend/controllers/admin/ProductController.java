@@ -71,4 +71,10 @@ public class ProductController {
                 new ResponseObject("ok", "Delete Product successfully", "") :
                 new ResponseObject("failed", "Can not find product", ""));
     }
+
+    @GetMapping("/exists")
+    ResponseEntity<?> existsProductByName(@RequestBody ProductRequest request) {
+        Boolean exists = productService.existsByProductNameAndIsActive(request);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", "", exists));
+    }
 }

@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AttributeRequest {
-    private Long id;
-    private String attributeName;
+public class ConfirmRequest {
+    private Long userId;
+    private String otpCode;
 }

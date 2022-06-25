@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Products, Long> {
     Products findByProductNameAndIsActiveTrue(String productName);
+    Boolean existsByProductNameAndIsActiveTrue(String productName);
 }
