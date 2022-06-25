@@ -1,12 +1,10 @@
 package com.cdweb.backend.payloads.responses;
 
-import com.cdweb.backend.payloads.requests.AttributeAndVariantsRequest;
-import com.cdweb.backend.payloads.requests.ProductCombinationRequest;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 

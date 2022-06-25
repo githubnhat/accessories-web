@@ -24,5 +24,7 @@ public interface IProductService {
 
     boolean delete(Long[] ids);
 
+    boolean existsByProductNameAndIsActive(ProductRequest request);
+
     List<ProductResponse> getArrivalProducts();
 }

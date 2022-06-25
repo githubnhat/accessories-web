@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface UserRepository extends JpaRepository<Users, Long> {
 
-    Users findByUsername(String username);
-
     Users findByUsernameAndIsActiveTrue(String username);
+
+    Users findByIdAndIsActiveFalse(Long userId);
 
     List<Users> findByIsActiveTrue();
 

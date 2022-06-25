@@ -31,32 +31,37 @@ public class AttributeServiceImpl implements IAttributeService {
     @Override
     public AttributeAndVariantsResponse save(AttributeAndVariantsRequest request) {
         Attributes entity = attributeRepository.findByAttributeNameAndIsActiveTrue(request.getAttributeName());
-        if (entity == null && request.getAttributeName() != "") {
+        if (entity == null && request.getAttributeName() != null) {
             Attributes newAttrEntity = Attributes.builder().attributeName(request.getAttributeName()).isActive(true).build();
             Attributes savedAttrEntity = attributeRepository.save(newAttrEntity);
             AttributeAndVariantsResponse response = AttributeAndVariantsResponse.builder()
                     .attributeId(savedAttrEntity.getId())
                     .attributeName(savedAttrEntity.getAttributeName())
                     .build();
-            List<String> variantNames = new ArrayList<>();
-            for (String v : request.getVariantNames()) {
-                if (v != null) {
-                    Variants varEntity = variantRepository.findByVariantNameAndAttributeIdAndIsActiveTrue(v, savedAttrEntity.getId());
-                    if (varEntity == null) {
-                        Variants newEntity = Variants.builder()
-                                .variantName(v)
-                                .attribute(savedAttrEntity)
-                                .isActive(true)
-                                .build();
-                        Variants savedEntity = variantRepository.save(newEntity);
-                        variantNames.add(savedEntity.getVariantName());
+            List<String> variantNameResponse = new ArrayList<>();
+            List<String> variantNameRequest = request.getVariantNames();
+            if (variantNameRequest!=null) {
+                for (String v : variantNameRequest ) {
+                    if (v != null) {
+                        Variants varEntity = variantRepository.findByVariantNameAndAttributeIdAndIsActiveTrue(v, savedAttrEntity.getId());
+                        if (varEntity == null) {
+                            Variants newEntity = Variants.builder()
+                                    .variantName(v)
+                                    .attribute(savedAttrEntity)
+                                    .isActive(true)
+                                    .build();
+                            Variants savedEntity = variantRepository.save(newEntity);
+                            variantNameResponse.add(savedEntity.getVariantName());
+                        }
                     }
-                }
 //                else {
-//                    variantNames.add(varEntity.getVariantName());
+//                    variantNameResponse.add(varEntity.getVariantName());
 //                }
+                }
+                response.setVariantNames(variantNameResponse);
+            } else {
+                response.setVariantNames(null);
             }
-            response.setVariantNames(variantNames);
             return response;
         }
         return null;

@@ -4,9 +4,11 @@ import com.cdweb.backend.common.ErrorResponse;
 import com.cdweb.backend.common.JwtService;
 import com.cdweb.backend.entities.Users;
 import com.cdweb.backend.payloads.requests.AuthRequest;
+import com.cdweb.backend.payloads.requests.ConfirmRequest;
 import com.cdweb.backend.payloads.requests.RegistrationRequest;
 import com.cdweb.backend.payloads.responses.AuthResponse;
 import com.cdweb.backend.payloads.responses.ResponseObject;
+import com.cdweb.backend.payloads.responses.UserResponse;
 import com.cdweb.backend.services.IAuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +16,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
 
 
 @RestController
@@ -44,7 +48,25 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegistrationRequest request, HttpServletResponse response) {
         try {
-            AuthResponse authResponse = authService.register(request);
+            UserResponse userResponse = authService.register(request);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", null, userResponse));
+        } catch (IllegalArgumentException ex) {
+            log.error("API /register: {}", ex.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("Fail", ex.getMessage(),null));
+        } catch (MessagingException ex) {
+            ex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("Fail", ex.getMessage(),null));
+        } catch (UnsupportedEncodingException ex) {
+            ex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("Fail", ex.getMessage(),null));
+        }
+    }
+
+
+    @PostMapping("/confirm")
+    public ResponseEntity<?> confirmOTP(@RequestBody ConfirmRequest request, HttpServletResponse response) {
+        try {
+            AuthResponse authResponse = authService.confirmOTP(request);
             Users user= jwtService.getUserFromToken(authResponse.getAccessToken());
             addRefreshTokenToCookie(response, user);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", null, authResponse));
