@@ -3,9 +3,7 @@ package com.cdweb.backend.controllers;
 import com.cdweb.backend.common.ErrorResponse;
 import com.cdweb.backend.common.JwtService;
 import com.cdweb.backend.entities.Users;
-import com.cdweb.backend.payloads.requests.AuthRequest;
-import com.cdweb.backend.payloads.requests.ConfirmRequest;
-import com.cdweb.backend.payloads.requests.RegistrationRequest;
+import com.cdweb.backend.payloads.requests.*;
 import com.cdweb.backend.payloads.responses.AuthResponse;
 import com.cdweb.backend.payloads.responses.ResponseObject;
 import com.cdweb.backend.payloads.responses.UserResponse;
@@ -95,5 +93,17 @@ public class AuthController {
         cookie.setPath("/");
         cookie.setMaxAge(jwtService.getRefreshTokenLifeTimeHours()*60);
         response.addCookie(cookie);
+    }
+
+    @GetMapping("/check-username")
+    ResponseEntity<?> existsProductByName(@RequestBody UserRequest request) {
+        Boolean exists = authService.existsByUserName(request.getUsername());
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", "", exists));
+    }
+
+    @GetMapping("/check-gmail")
+    ResponseEntity<?> existsProductByGmail(@RequestBody UserRequest request) {
+        Boolean exists = authService.existsByGmail(request.getGmail());
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", "", exists));
     }
 }
