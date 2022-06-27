@@ -37,16 +37,33 @@ export async function doLogin(dataForm: object) {
 
 // register new account
 
+type Register = {
+  id: number;
+  username: string;
+  password: string;
+  fullName: string;
+  gmail: string;
+  roles: string;
+  createdBy: string;
+  createdDate: string;
+  modifiedBy: string;
+  modifiedDate: string;
+};
+
+type GetRegisterResponse = {
+  data: Register;
+};
+
 export async function doRegister(dataForm: object) {
   try {
     const path = '/register';
 
-    const { data, status } = await axios.post<GetUsersResponse>(path, dataForm);
+    const { data, status } = await axios.post<GetRegisterResponse>(path, dataForm);
     // console.log(JSON.stringify(data, null, 10));
-    localStorage.setItem('accessToken', data?.data?.accessToken || '');
-    if (status === 200) {
-      router.push('/');
-    }
+    // localStorage.setItem('accessToken', data?.data?.accessToken || '');
+    // if (status === 200) {
+    //   router.push('/');
+    // }
     // 👇️ "response status is: 200"
     console.log('response status is: ', status);
 
