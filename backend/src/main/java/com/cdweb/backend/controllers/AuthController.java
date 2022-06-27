@@ -1,6 +1,5 @@
 package com.cdweb.backend.controllers;
 
-import com.cdweb.backend.common.ErrorResponse;
 import com.cdweb.backend.common.JwtService;
 import com.cdweb.backend.entities.Users;
 import com.cdweb.backend.payloads.requests.*;
@@ -21,7 +20,7 @@ import java.io.UnsupportedEncodingException;
 
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
@@ -74,15 +73,16 @@ public class AuthController {
         }
     }
 
-    @GetMapping("token/refresh")
+    @GetMapping("/refresh-token")
     public ResponseEntity<?> refreshToken(@CookieValue(value = "refresh_token", required = false) Cookie tokenCookie) {
         if (tokenCookie == null || jwtService.isNoneValidRefreshToken(tokenCookie.getValue())) {
-            log.error("Fail to refresh token: {}", tokenCookie.getValue());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    new ResponseObject("Fail", "Refresh token đã hết hạn!", null));
         } else {
             Users user = jwtService.getUserFromToken(tokenCookie.getValue());
             String accessToken = jwtService.generateAccessToken(user);
-            return ResponseEntity.ok(AuthResponse.builder().accessToken(accessToken).build());
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject("Success", null, AuthResponse.builder().accessToken(accessToken).build()));
         }
     }
 
@@ -90,9 +90,10 @@ public class AuthController {
         String refresh_token = jwtService.generateRefreshToken(user);
         Cookie cookie = new Cookie("refresh_token", refresh_token);
         cookie.setHttpOnly(true);
-        cookie.setPath("/");
+        cookie.setPath("/1");
         cookie.setMaxAge(jwtService.getRefreshTokenLifeTimeHours()*60);
         response.addCookie(cookie);
+        log.info("Refresh token {}", cookie.getClass());
     }
 
     @GetMapping("/check-username")
