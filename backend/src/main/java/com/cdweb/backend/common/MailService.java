@@ -25,7 +25,7 @@ public class MailService{
         String OTP = RandomString.make(8);
         user.setOtpCode(passwordEncoder.encode(OTP));
         user.setOtpRequestedTime(new Date());
-        sendOTPEmail(user, OTP);
+        sendOTPEmail(user,OTP);
         return user;
     }
 

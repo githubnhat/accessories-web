@@ -45,7 +45,7 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public UserResponse register(RegistrationRequest request) throws MessagingException, UnsupportedEncodingException {
-        if (usersRepository.findByUsernameAndIsActiveTrue(request.getUsername()) != null) {
+        if (usersRepository.findByUsername(request.getUsername()) != null) {
             throw new IllegalArgumentException("Username already exists!");
         }
         Roles role;
@@ -66,13 +66,14 @@ public class AuthServiceImpl implements IAuthService {
         Users user = usersRepository.save(mailService.generateOneTimePassword(userRegister));
         return UserResponse.builder()
                 .id(user.getId())
+                .gmail(user.getGmail())
                 .build();
     }
 
     @Override
     public AuthResponse confirmOTP(ConfirmRequest request) {
         Users user = usersRepository.findByIdAndIsActiveFalse(request.getUserId());
-        if (user == null || !passwordEncoder.matches(request.getOtpCode(), user.getOtpCode()) || user.isOTPRequired()) {
+        if (user == null || !passwordEncoder.matches(request.getOtpCode(), user.getOtpCode()) || !user.isOTPRequired()) {
             throw new IllegalArgumentException("The OTP is incorrect!");
         }
         user.setActive(true);
@@ -80,6 +81,16 @@ public class AuthServiceImpl implements IAuthService {
         return AuthResponse.builder()
                 .accessToken(jwtService.generateAccessToken(userUpdate))
                 .build();
+    }
+
+    @Override
+    public Boolean existsByUserName(String username) {
+        return usersRepository.existsByUsername(username);
+    }
+
+    @Override
+    public Boolean existsByGmail(String gmail) {
+        return usersRepository.existsByGmail(gmail);
     }
 
 
