@@ -21,8 +21,8 @@
               <v-card-text>
                 <v-container>
                   <v-row>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field label="OTP" v-model="otp" required></v-text-field>
+                    <v-col cols="12">
+                      <v-text-field label="OTP" v-model="otpCode" required></v-text-field>
                     </v-col>
                   </v-row>
                 </v-container>
@@ -248,9 +248,9 @@ export default {
         email: '',
         fullname: '',
       },
-
-      otpDialog: false,
-      otp: '',
+      userId: null,
+      otpDialog: true,
+      otpCode: '',
     };
   },
   props: {
@@ -266,7 +266,7 @@ export default {
     login() {
       doLogin(this.loginInput);
     },
-    register() {
+    async register() {
       const payload = {
         username: this.registerInput.username,
         password: this.registerInput.password,
@@ -275,10 +275,11 @@ export default {
         roleCode: 'ROLE_USER',
       };
       console.log('payload', payload);
-      doRegister(payload);
+      const response = await doRegister(payload);
+      console.log('response', response);
     },
     verifyOTP() {
-      // service verify otp here
+      // service verify otpCode here
     },
   },
 };
