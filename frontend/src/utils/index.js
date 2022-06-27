@@ -41,9 +41,9 @@ export function combineVariants(value) {
   const cartes = cartesian(value);
 
   const result = cartes.map((item) => ({
-    combineName: item.reduce((accomulator, subItem) => accomulator + '-' + subItem),
+    productVariantName: item.reduce((accomulator, subItem) => accomulator + '-' + subItem),
     quantity: 1,
-    price: 0,
+    price: 1000,
   }));
   return result;
 }
