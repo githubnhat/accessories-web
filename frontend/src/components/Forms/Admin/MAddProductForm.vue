@@ -310,7 +310,7 @@ export default {
       categoryName: '',
       selectedAttribute: VARIANTS[0],
       search: [],
-      step: 2,
+      step: 1,
       completeStep: [],
       attributes: [],
       brands: [],
