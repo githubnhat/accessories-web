@@ -92,7 +92,7 @@ export const ADMIN_MENU = [
     title: 'Category',
   },
   {
-    action: 'mdi-ring',
+    action: 'mdi-wallet',
     items: [
       { title: 'All products' },
       { title: 'Add product' },

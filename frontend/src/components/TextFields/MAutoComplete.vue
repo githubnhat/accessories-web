@@ -1,8 +1,8 @@
 <template>
   <v-autocomplete
     v-bind="$attrs"
-    v-model="selectedVariants"
-    :items="variants"
+    :value="selectedVariants"
+    :items="variantItems"
     filled
     chips
     hide-details
@@ -12,9 +12,10 @@
     solo
     outlined
     hide-selected
-    append-icon=""
     :menu-props="menuSetting"
     @change="handleChange"
+    :search-input.sync="searchValue"
+    @update:search-input="handleUpdateSearchInput"
   >
     <template v-slot:selection="data">
       <v-chip
@@ -37,6 +38,9 @@
           <v-list-item-title class="text-start text-17">{{ item }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
+    </template>
+    <template v-slot:no-data>
+      <v-btn @click="handleAddNewVariant"> Thêm biến thể: {{ searchValue }} </v-btn>
     </template>
   </v-autocomplete>
 </template>
@@ -69,11 +73,23 @@ export default {
       type: String,
       default: '',
     },
+    indexSearch: {
+      type: Number,
+      default: 0,
+    },
+    search: {
+      type: String,
+      default: '',
+    },
+    selectedVariantsProp: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
-      selectedVariants: [],
-      variants: this.variantItems,
+      selectedVariants: this.selectedVariantsProp,
+      searchValue: this.search,
     };
   },
   methods: {
@@ -82,11 +98,19 @@ export default {
       this.$emit('input', value, this.nameAttribute);
     },
     remove(item) {
-      console.log('remove', item);
       const index = this.selectedVariants.indexOf(item);
-      console.log(this.selectedVariants);
-      console.log('index', index);
       if (index >= 0) this.selectedVariants.splice(index, 1);
+    },
+    handleUpdateSearchInput(value) {
+      this.$emit('update-search-input', value, this.indexSearch);
+    },
+    handleAddNewVariant() {
+      const isSelected =
+        this.selectedVariants.filter((item) => item === this.searchValue).length > 0;
+      if (this.searchValue !== '' && this.searchValue && !isSelected) {
+        this.$emit('addVariant', this.nameAttribute, this.indexSearch);
+        this.searchValue = '';
+      }
     },
   },
 };

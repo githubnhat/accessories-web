@@ -29,7 +29,7 @@
                 <v-container>
                   <v-row dense>
                     <v-col cols="12" md="9">
-                      <validation-provider name="Product Name" rules="required" v-slot="{ errors }">
+                      <validation-provider name="Tên sản phẩm" rules="required" v-slot="{ errors }">
                         <v-text-field
                           label="Tên sản phẩm"
                           v-model="productName"
@@ -42,7 +42,7 @@
                     </v-col>
                     <v-col cols="12" md="3">
                       <validation-provider
-                        name="Price"
+                        name="Giá"
                         rules="required|numeric|min_value:0"
                         v-slot="{ errors }"
                       >
@@ -57,7 +57,11 @@
                       </validation-provider>
                     </v-col>
                     <v-col cols="12">
-                      <validation-provider name="Description" rules="required" v-slot="{ errors }">
+                      <validation-provider
+                        name="Mô tả sản phẩm"
+                        rules="required"
+                        v-slot="{ errors }"
+                      >
                         <v-textarea
                           label="Mô tả sản phẩm"
                           v-model="description"
@@ -69,7 +73,7 @@
                     </v-col>
                     <v-col cols="12" md="3">
                       <validation-provider
-                        name="Discount"
+                        name="Chiết khấu"
                         rules="between:0,100|required"
                         v-slot="{ errors }"
                       >
@@ -86,7 +90,7 @@
                     </v-col>
                     <v-col cols="12" md="3">
                       <validation-provider
-                        name="Quantity"
+                        name="Số lượng"
                         rules="required|numeric|min_value:1"
                         v-slot="{ errors }"
                       >
@@ -170,7 +174,7 @@
                   <v-col cols="2">
                     <v-btn
                       color="primary"
-                      @click="handleAddVariant"
+                      @click="handleAddAttribute"
                       :disabled="selectedAttribute.id === 0"
                     >
                       Thêm thuộc tính
@@ -190,13 +194,18 @@
                 </v-col>
                 <v-col cols="8">
                   <m-auto-complete
-                    v-model="item.selectedVariants"
+                    :value="item.selectedVariants"
                     label="Danh sách biến thể"
                     :variantItems="item.variantNames"
                     :nameAttribute="item.attributeName"
+                    :indexSearch="n"
                     @input="handleInputVariants"
                     required
-                  ></m-auto-complete>
+                    :search="search[n]"
+                    @update-search-input="handleUpdateSearchInput"
+                    @addVariant="handleAddNewVariant"
+                  >
+                  </m-auto-complete>
                 </v-col>
                 <v-col cols="2">
                   <v-btn color="primary" @click="handleDeleteVariant(item.attributeName)">
@@ -223,7 +232,7 @@
                   <m-text-field
                     label="Biến thể kết hợp của sản phẩm"
                     color
-                    v-model="item.combineName"
+                    v-model="item.productVariantName"
                     readonly
                   ></m-text-field>
                 </v-col>
@@ -237,7 +246,7 @@
                     <m-text-field
                       v-model="item.quantity"
                       label="Số lượng sản phẩm"
-                      :nameAttribute="item.combineName"
+                      :nameAttribute="item.productVariantName"
                       @input="handleInputCombinationQuantity"
                       required
                       :error-messages="errors"
@@ -256,7 +265,7 @@
                     <m-text-field
                       v-model="item.price"
                       label="Giá sản phẩm"
-                      :nameAttribute="item.combineName"
+                      :nameAttribute="item.productVariantName"
                       @input="handleInputCombinationPrice"
                       required
                       :error-messages="errors"
@@ -300,6 +309,7 @@ export default {
       brandName: '',
       categoryName: '',
       selectedAttribute: VARIANTS[0],
+      search: [],
       step: 1,
       completeStep: [],
       attributes: [],
@@ -321,40 +331,63 @@ export default {
   },
   methods: {
     async init() {
-      // get attributes of product
+      // get existed attributes of product
       let attributesData = await getProductAttributes(
         'http://localhost:8081/api/v1/admin/attribute/listVariants',
       );
       let existedVariant = attributesData?.data;
       this.attributeList = this.attributeList.concat(existedVariant);
 
+      // get existed brands
       const brandsData = await getBrands('http://localhost:8081/api/v1/admin/brand');
       const existedBrands = brandsData?.data;
       this.brands = existedBrands;
       this.brandName = this.brands[0].name;
 
+      // get existed categories
       const categoriesData = await getCategories('http://localhost:8081/api/v1/admin/category');
       const existedCategories = categoriesData?.data;
       this.categories = existedCategories;
       this.categoryName = this.categories[0].name;
-      console.log('categories', this.categories);
     },
-    handleAddVariant() {
+    handleAddAttribute() {
       let newAttribute =
         this.selectedAttribute.id !== -1
           ? {
               attributeName: this.selectedAttribute.attributeName,
-              variantNames: [...this.selectedAttribute.variantNames, 'Thêm biến thể mới'],
+              variantNames: this.selectedAttribute.variantNames,
+              selectedVariants: [],
             }
           : {
               attributeName: this.selectedAttribute.attributeName + ' ' + this.numberAttributes++,
               variantNames: [],
+              selectedVariants: [],
               disable: true,
             };
       let isExisted =
         this.attributes.filter((e) => e.attributeName === this.selectedAttribute.attributeName)
           .length > 0;
       this.attributes = isExisted ? [...this.attributes] : [...this.attributes, newAttribute];
+      console.log('attribute', this.attributes);
+    },
+    handleAddNewVariant(name, index) {
+      this.attributes = this.attributes.map((item) =>
+        item.attributeName !== name
+          ? item
+          : {
+              attributeName: item.attributeName,
+              variantNames: [...item.variantNames, this.search[index]],
+              selectedVariants: [...item?.selectedVariants, this.search[index]],
+            },
+      );
+      console.log(
+        'attributes',
+        this.attributes.filter((item) => item.attributeName === name),
+      );
+      this.search[index] = '';
+    },
+    handleUpdateSearchInput(value, index) {
+      this.search[index] = value;
     },
     handleDeleteVariant(name) {
       this.attributes = this.attributes.filter((item) => item.attributeName !== name);
@@ -377,15 +410,15 @@ export default {
     },
     handleInputCombinationQuantity(value, name) {
       this.combineVariants = this.combineVariants.map((item) => {
-        if (item.combineName === name) {
-          return { ...item, quantity: value };
+        if (item.productVariantName === name) {
+          return { ...item, quantity: parseInt(value) };
         } else return item;
       });
     },
     handleInputCombinationPrice(value, name) {
       this.combineVariants = this.combineVariants.map((item) => {
-        if (item.combineName === name) {
-          return { ...item, price: value };
+        if (item.productVariantName === name) {
+          return { ...item, price: parseInt(value) };
         } else return item;
       });
     },
@@ -408,12 +441,12 @@ export default {
         originalPrice: this.originalPrice,
         originalQuantity: this.originalQuantity,
         imageLinks: [],
-        // discount: this.discount,x
+        // discount: parseInt(this.discount),
         attributes: this.attributes.map((item) => ({
           attributeName: item.attributeName,
           variantNames: item.selectedVariants,
         })),
-        combination: this.combineVariants,
+        combinations: this.combineVariants,
         brandName: this.brandName,
         categoryName: this.categoryName,
       };
@@ -423,7 +456,7 @@ export default {
       );
       console.log('product', JSON.stringify(product, null, 10));
 
-      console.log('payload', this.payload);
+      console.log('payload', JSON.stringify(this.payload, null, 10));
     },
   },
 };
