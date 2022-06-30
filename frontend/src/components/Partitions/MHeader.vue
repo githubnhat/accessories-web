@@ -9,6 +9,7 @@
       </v-toolbar-title>
 
       <v-spacer></v-spacer>
+      <v-btn @click="handleRefresh">Refresh</v-btn>
 
       <v-form v-if="hidden">
         <v-row>
@@ -55,6 +56,7 @@
 import MUserMenu from '../Menus/MUserMenu.vue';
 import jwt_decode from 'jwt-decode';
 import router from '@/router';
+import { refreshToken } from '@/services';
 
 export default {
   name: 'MHeader',
@@ -80,6 +82,10 @@ export default {
     },
     handleToLogin() {
       router.push('/login');
+    },
+    async handleRefresh() {
+      await refreshToken();
+      console.log('done');
     },
   },
 

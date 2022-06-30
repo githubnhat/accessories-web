@@ -37,8 +37,17 @@ public class AuthController {
         try {
             AuthResponse authResponse = authService.login(request);
             Users user= jwtService.getUserFromToken(authResponse.getAccessToken());
+//            String refresh_token = jwtService.generateRefreshToken(user);
+//            ResponseCookie cookie = ResponseCookie.from("refresh_token", refresh_token)
+//                    .httpOnly(true)
+//                    .maxAge(jwtService.getRefreshTokenLifeTimeHours()*60)
+//                    .path("/")
+//                    .secure(false)
+//                    .build();
             addRefreshTokenToCookie(response, user);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("success", null, authResponse));
+            return ResponseEntity.status(HttpStatus.OK)
+//                    .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                    .body(new ResponseObject("success", null, authResponse));
         } catch (IllegalArgumentException ex) {
             log.error("API /login: {}", ex);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("fail", ex.getMessage(),null));
@@ -82,7 +91,6 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                     new ResponseObject("Fail", "Refresh token đã hết hạn!", null));
         } else {
-            log.error("{}", tokenCookie);
             Users user = jwtService.getUserFromToken(tokenCookie);
             String accessToken = jwtService.generateAccessToken(user);
             return ResponseEntity.status(HttpStatus.OK).body(
@@ -94,7 +102,6 @@ public class AuthController {
         String refresh_token = jwtService.generateRefreshToken(user);
         Cookie cookie = new Cookie("refresh_token", refresh_token);
         cookie.setHttpOnly(true);
-        cookie.setDomain("");
         cookie.setSecure(false);
         cookie.setPath("/");
         cookie.setMaxAge(jwtService.getRefreshTokenLifeTimeHours()*60);

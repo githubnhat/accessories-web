@@ -16,7 +16,7 @@ type GetUsersResponse = {
 export async function doLogin(dataForm: object) {
   try {
     const path = '/login';
-    const { data, status } = await axios.post<GetUsersResponse>(path, dataForm);
+    const { data, status } = await axios.post<GetUsersResponse>(path, dataForm,{withCredentials: true});
     // console.log(JSON.stringify(data, null, 10));
 
     localStorage.setItem('accessToken', data?.data?.accessToken || '');
@@ -128,13 +128,13 @@ type GetAccesstokenRefreshResponse = {
 
 export async function refreshToken() {
   try {
-    const path = '/token/refresh';
+    const path = '/refresh-token';
 
-    const { data, status } = await axios.get<GetAccesstokenRefreshResponse>(path);
+    const { data, status } = await axios.get<GetAccesstokenRefreshResponse>(path, {withCredentials: true});
     console.log(JSON.stringify(data, null, 10));
     if (status === 200) {
       localStorage.setItem('accessToken', data?.data?.accessToken || '');
-      router.push('/');
+      // router.push('/');
     } else {
       alert('error');
     }
@@ -152,4 +152,7 @@ export async function refreshToken() {
     }
   }
 }
+
+
 export default {};
+
