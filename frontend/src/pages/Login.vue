@@ -320,6 +320,8 @@ export default {
       if (response?.status === 'Success') {
         this.userId = response?.data?.id;
         this.otpDialog = true;
+      } else {
+        alert(response?.message);
       }
       this.loading.register = false;
     },

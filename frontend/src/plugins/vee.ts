@@ -2,6 +2,7 @@ import Vue from 'vue';
 import { ValidationProvider, ValidationObserver, extend, setInteractionMode } from 'vee-validate';
 import * as rules from 'vee-validate/dist/rules';
 import { required, email, min, max, between, numeric, confirmed } from 'vee-validate/dist/rules';
+import { checkUniqueProductName } from '@/services/admin/add-product-form';
 
 // config trigger
 setInteractionMode('lazy');
@@ -48,6 +49,17 @@ extend('numeric', {
 extend('confirmed', {
   ...confirmed,
   message: (field) => field + ' không khớp.',
+});
+
+extend('uniqueProductName', {
+  ...required,
+  validate: async (value) => {
+    console.log('value', value);
+    const result = await checkUniqueProductName({ productName: value });
+    console.log('result', result);
+    return false;
+  },
+  message: (field) => field + ' đã tồn tại.',
 });
 
 // end custom rules
