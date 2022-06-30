@@ -29,7 +29,11 @@
                 <v-container>
                   <v-row dense>
                     <v-col cols="12" md="9">
-                      <validation-provider name="Tên sản phẩm" rules="required" v-slot="{ errors }">
+                      <validation-provider
+                        name="Tên sản phẩm"
+                        rules="required|uniqueProductName"
+                        v-slot="{ errors }"
+                      >
                         <v-text-field
                           label="Tên sản phẩm"
                           v-model="productName"
@@ -332,20 +336,18 @@ export default {
   methods: {
     async init() {
       // get existed attributes of product
-      let attributesData = await getProductAttributes(
-        'http://localhost:8081/api/v1/admin/attribute/listVariants',
-      );
+      let attributesData = await getProductAttributes();
       let existedVariant = attributesData?.data;
       this.attributeList = this.attributeList.concat(existedVariant);
 
       // get existed brands
-      const brandsData = await getBrands('http://localhost:8081/api/v1/admin/brand');
+      const brandsData = await getBrands();
       const existedBrands = brandsData?.data;
       this.brands = existedBrands;
       this.brandName = this.brands[0].name;
 
       // get existed categories
-      const categoriesData = await getCategories('http://localhost:8081/api/v1/admin/category');
+      const categoriesData = await getCategories();
       const existedCategories = categoriesData?.data;
       this.categories = existedCategories;
       this.categoryName = this.categories[0].name;
@@ -450,10 +452,7 @@ export default {
         brandName: this.brandName,
         categoryName: this.categoryName,
       };
-      const product = await insertProduct(
-        'http://localhost:8081/api/v1/admin/product/insert',
-        this.payload,
-      );
+      const product = await insertProduct(this.payload);
       console.log('product', JSON.stringify(product, null, 10));
 
       console.log('payload', JSON.stringify(this.payload, null, 10));
