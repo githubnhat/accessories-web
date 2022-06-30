@@ -3,22 +3,24 @@ package com.cdweb.backend.common;
 import com.cdweb.backend.entities.Users;
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.utility.RandomString;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class MailService{
 
-   private final JavaMailSender mailSender;
+
+    private final JavaMailSender mailSender;
+
     private final PasswordEncoder passwordEncoder;
 
     public Users generateOneTimePassword(Users user) throws MessagingException, UnsupportedEncodingException {

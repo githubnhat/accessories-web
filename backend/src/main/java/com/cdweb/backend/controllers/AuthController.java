@@ -9,7 +9,9 @@ import com.cdweb.backend.payloads.responses.UserResponse;
 import com.cdweb.backend.services.IAuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +19,7 @@ import javax.mail.MessagingException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
+import java.time.Duration;
 
 
 @RestController
@@ -43,7 +46,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegistrationRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> register(@RequestBody RegistrationRequest request) {
         try {
             UserResponse userResponse = authService.register(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", null, userResponse));
@@ -74,26 +77,29 @@ public class AuthController {
     }
 
     @GetMapping("/refresh-token")
-    public ResponseEntity<?> refreshToken(@CookieValue(value = "refresh_token", required = false) Cookie tokenCookie) {
-        if (tokenCookie == null || jwtService.isNoneValidRefreshToken(tokenCookie.getValue())) {
+    public ResponseEntity<?> refreshToken(@CookieValue( value = "refresh_token", required = false) String tokenCookie) {
+        if (tokenCookie == null || jwtService.isNoneValidRefreshToken(tokenCookie)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                     new ResponseObject("Fail", "Refresh token đã hết hạn!", null));
         } else {
-            Users user = jwtService.getUserFromToken(tokenCookie.getValue());
+            log.error("{}", tokenCookie);
+            Users user = jwtService.getUserFromToken(tokenCookie);
             String accessToken = jwtService.generateAccessToken(user);
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject("Success", null, AuthResponse.builder().accessToken(accessToken).build()));
         }
     }
 
-    private void addRefreshTokenToCookie(HttpServletResponse response, Users user) {
+    public void addRefreshTokenToCookie(HttpServletResponse response, Users user) {
         String refresh_token = jwtService.generateRefreshToken(user);
         Cookie cookie = new Cookie("refresh_token", refresh_token);
         cookie.setHttpOnly(true);
-        cookie.setPath("/1");
+        cookie.setDomain("");
+        cookie.setSecure(false);
+        cookie.setPath("/");
         cookie.setMaxAge(jwtService.getRefreshTokenLifeTimeHours()*60);
         response.addCookie(cookie);
-        log.info("Refresh token {}", cookie.getClass());
+
     }
 
     @GetMapping("/check-username")
