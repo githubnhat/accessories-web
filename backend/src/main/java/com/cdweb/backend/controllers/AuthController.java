@@ -9,9 +9,7 @@ import com.cdweb.backend.payloads.responses.UserResponse;
 import com.cdweb.backend.services.IAuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +17,6 @@ import javax.mail.MessagingException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
-import java.time.Duration;
 
 
 @RestController
@@ -46,8 +43,7 @@ public class AuthController {
 //                    .build();
             addRefreshTokenToCookie(response, user);
             return ResponseEntity.status(HttpStatus.OK)
-//                    .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                    .body(new ResponseObject("success", null, authResponse));
+                    .body(new ResponseObject("success", null, authResponse));//.header(HttpHeaders.SET_COOKIE, cookie.toString())
         } catch (IllegalArgumentException ex) {
             log.error("API /login: {}", ex);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("fail", ex.getMessage(),null));

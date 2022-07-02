@@ -1,7 +1,5 @@
 import axios from 'axios';
 
-const token = localStorage.getItem('accessToken');
-axios.defaults.headers.common = { Authorization: `Bearer ${token}` };
 
 type AttributeAndVariants = {
   id: number;
@@ -19,7 +17,7 @@ type GetAttributeAndVariantsResponse = {
 
 export async function getAllAttributes(path: string) {
   try {
-    const { data, status } = await axios.get<GetAttributeAndVariantsResponse>(path);
+    const { data, status } = await axios.get<GetAttributeAndVariantsResponse>(path,{withCredentials: true});
     const mapData = data?.data.map(({ id, attributeName, variantNames}) => {
       let variantResult = null;
       if (variantNames.length > 0) {
@@ -52,7 +50,7 @@ export async function getAllAttributes(path: string) {
 
 export async function addNewAttributes(path: string, dataForm: object) {
   try {
-    const { data, status } = await axios.post<AttributeAndVariantsResponse>(path, dataForm);
+    const { data, status } = await axios.post<AttributeAndVariantsResponse>(path, dataForm,{withCredentials: true});
       let variantResult = null;
       console.log(data?.data)
       if (data?.data != null && data?.data.variantNames.length > 0) {

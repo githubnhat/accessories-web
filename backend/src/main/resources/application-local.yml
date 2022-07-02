@@ -25,10 +25,10 @@ spring:
           starttls:
             enable: true
             required: true
-          connectiontimeout: 5000
+          connection-timeout: 5000
           timeout: 5000
-          writetimeout: 5000
+          write timeout: 5000
 token:
-  access-life-time: 500
+  access-life-time: 1
   refresh-life-time: 1440
 

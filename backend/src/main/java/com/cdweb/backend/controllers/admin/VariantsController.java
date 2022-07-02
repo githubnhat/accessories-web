@@ -32,9 +32,11 @@ public class VariantsController {
     @PostMapping("")
     public ResponseEntity<?> insertVariants(@RequestBody VariantRequest request){
         VariantResponse response = variantService.save(request);
-        return ResponseEntity.status(HttpStatus.OK).body(
+        return
                 (response==null) ?
-                        new ResponseObject("Failed", "Variant name already taken", "") :
+                        ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                        new ResponseObject("Failed", "Variant name already taken", "")) :
+                        ResponseEntity.status(HttpStatus.OK).body(
                         new ResponseObject("Success", "Insert Variant Successfully", response));
     }
 
