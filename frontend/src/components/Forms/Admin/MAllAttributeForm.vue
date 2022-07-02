@@ -121,9 +121,7 @@ export default {
 
   methods: {
     async initialize() {
-      this.data = await getAllAttributes(
-        'http://localhost:8081/api/v1/admin/attribute/listVariants',
-      );
+      this.data = await getAllAttributes('/admin/attribute/listVariants');
       console.log('return data', this.data);
     },
 
@@ -181,10 +179,7 @@ export default {
         attributeName: this.editedItem.attributeName,
         variantNames: listVariantNames,
       };
-      const newData = await addNewAttributes(
-        'http://localhost:8081/api/v1/admin/attribute',
-        request,
-      );
+      const newData = await addNewAttributes('/admin/attribute', request);
       if (newData !== null) this.data = [...this.data, newData];
       this.close();
     },

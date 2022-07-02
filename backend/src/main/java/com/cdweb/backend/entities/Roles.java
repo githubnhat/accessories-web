@@ -9,6 +9,7 @@ import java.util.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Getter
 @Setter
 public class Roles extends BaseEntity {

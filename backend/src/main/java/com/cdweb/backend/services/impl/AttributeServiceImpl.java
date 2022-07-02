@@ -30,10 +30,12 @@ public class AttributeServiceImpl implements IAttributeService {
 
     @Override
     public AttributeAndVariantsResponse save(AttributeAndVariantsRequest request) {
+        log.info("Saving attribute{}", request.toString());
         Attributes entity = attributeRepository.findByAttributeNameAndIsActiveTrue(request.getAttributeName());
         if (entity == null && request.getAttributeName() != null) {
             Attributes newAttrEntity = Attributes.builder().attributeName(request.getAttributeName()).isActive(true).build();
             Attributes savedAttrEntity = attributeRepository.save(newAttrEntity);
+            log.info("input{}",savedAttrEntity);
             AttributeAndVariantsResponse response = AttributeAndVariantsResponse.builder()
                     .attributeId(savedAttrEntity.getId())
                     .attributeName(savedAttrEntity.getAttributeName())

@@ -61,13 +61,15 @@ public class JwtService {
     }
 
     public Users getUserFromToken(String token) {
-        if (isNoneValidToken(token)) return null;
+        if (isNoneValidToken(token))
+            return null;
         String roleCode = JWT.decode(token).getClaim("role").as(String.class);
-
-        return Users.builder()
-                .username(JWT.decode(token).getSubject())
+        Users user = Users.builder()
+                .username(JWT.decode(token).getClaim("username").as(String.class))
                 .roles(Roles.builder().roleCode(roleCode).build())
                 .build();
+                user.setId(Long.valueOf(JWT.decode(token).getSubject()));
+        return user;
     }
 
 
@@ -87,9 +89,11 @@ public class JwtService {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, expiredMinutes);
         JWTCreator.Builder creator = JWT.create()
-                .withSubject(user.getUsername())
+                .withSubject(user.getId().toString())
                 .withExpiresAt(calendar.getTime())
                 .withIssuedAt(new Date())
+                .withClaim("username", user.getUsername())
+                .withClaim("fullName", user.getFullName())
                 .withClaim("role", user.getRoles().getRoleCode())
                 .withClaim("access_token", true);;
         return creator.sign(algorithm);
@@ -98,9 +102,10 @@ public class JwtService {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, expiredMinutes);
         JWTCreator.Builder creator = JWT.create()
-                .withSubject(user.getUsername())
+                .withSubject(user.getId().toString())
                 .withExpiresAt(calendar.getTime())
                 .withIssuedAt(new Date())
+                .withClaim("username", user.getUsername())
                 .withClaim("role", user.getRoles().getRoleCode())
                 .withClaim("refresh_token", true);
         return creator.sign(algorithm);

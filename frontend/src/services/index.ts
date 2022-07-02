@@ -1,7 +1,7 @@
 import router from '@/router';
 import axios from 'axios';
 
-axios.defaults.baseURL = 'http://localhost:8081/api/v1/auth';
+axios.defaults.baseURL = 'http://localhost:8081/api/v1';
 
 type User = {
   accessToken: string;
@@ -15,11 +15,13 @@ type GetUsersResponse = {
 
 export async function doLogin(dataForm: object) {
   try {
-    const path = '/login';
-    const { data, status } = await axios.post<GetUsersResponse>(path, dataForm,{withCredentials: true});
+    const path = '/auth/login';
+    const { data, status } = await axios.post<GetUsersResponse>(path, dataForm, {withCredentials: true});
     // console.log(JSON.stringify(data, null, 10));
+    if(status===200){
+      localStorage.setItem('accessToken', data?.data?.accessToken || '');
+    }
 
-    localStorage.setItem('accessToken', data?.data?.accessToken || '');
     router.push('/');
     // 👇️ "response status is: 200"
     console.log('response status is: ', status);
@@ -57,7 +59,7 @@ type GetRegisterResponse = {
 
 export async function doRegister(dataForm: object) {
   try {
-    const path = '/register';
+    const path = '/auth/register';
 
     const { data, status } = await axios.post<GetRegisterResponse>(path, dataForm);
     // console.log(JSON.stringify(data, null, 10));
@@ -92,7 +94,7 @@ type GetVerifyOTPResponse = {
 
 export async function verifyOTP(dataForm: object) {
   try {
-    const path = '/confirm';
+    const path = '/auth/confirm';
 
     const { data, status } = await axios.post<GetVerifyOTPResponse>(path, dataForm);
     // console.log(JSON.stringify(data, null, 10));
@@ -127,30 +129,10 @@ type GetAccesstokenRefreshResponse = {
 };
 
 export async function refreshToken() {
-  try {
-    const path = '/refresh-token';
 
-    const { data, status } = await axios.get<GetAccesstokenRefreshResponse>(path, {withCredentials: true});
-    console.log(JSON.stringify(data, null, 10));
-    if (status === 200) {
-      localStorage.setItem('accessToken', data?.data?.accessToken || '');
-      // router.push('/');
-    } else {
-      alert('error');
-    }
-    // 👇️ "response status is: 200"
-    console.log('response status is: ', status);
-
-    return data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log('error message: ', error.message);
-      return error.message;
-    } else {
-      console.log('unexpected error: ', error);
-      return 'An unexpected error occurred';
-    }
-  }
+    axios.defaults.headers.common = { Authorization: `` };
+    
+  
 }
 
 

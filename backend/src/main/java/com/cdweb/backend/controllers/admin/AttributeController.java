@@ -10,6 +10,7 @@ import com.cdweb.backend.payloads.responses.VariantResponse;
 import com.cdweb.backend.services.IAttributeService;
 import com.cdweb.backend.services.IVariantService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ import java.util.List;
 @RestController(value ="attributeControllerOfAdmin")
 @RequestMapping("/api/v1/admin/attribute")
 @RequiredArgsConstructor
+@Slf4j
 public class AttributeController {
     private final IAttributeService attributeService;
 
@@ -44,9 +46,10 @@ public class AttributeController {
     @PostMapping("")
     public ResponseEntity<?> insertAttributeAndVariants(@RequestBody AttributeAndVariantsRequest request){
         AttributeAndVariantsResponse response = attributeService.save(request);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                (response==null) ?
-                        new ResponseObject("Failed", "Attribute name already taken", null) :
+        return response==null ?
+                        ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                        new ResponseObject("Failed", "Attribute name already taken", null)) :
+                        ResponseEntity.status(HttpStatus.OK).body(
                         new ResponseObject("Success", "Insert Attribute Successfully", response));
     }
 
