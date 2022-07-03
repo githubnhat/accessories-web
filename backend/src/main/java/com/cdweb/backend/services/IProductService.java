@@ -24,7 +24,7 @@ public interface IProductService {
 
     boolean delete(Long[] ids);
 
-    boolean existsByProductNameAndIsActive(ProductRequest request);
+    boolean existsByProductNameAndIsActive(String productName);
 
     List<ProductResponse> getArrivalProducts();
 }

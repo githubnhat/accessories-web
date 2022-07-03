@@ -171,9 +171,8 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public boolean existsByProductNameAndIsActive(ProductRequest request) {
-        log.info("sdads");
-        return productRepository.existsByProductNameAndIsActiveTrue(request.getProductName());
+    public boolean existsByProductNameAndIsActive(String productName) {
+        return productRepository.existsByProductNameAndIsActiveTrue(productName);
     }
 
     @Override

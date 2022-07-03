@@ -72,9 +72,11 @@ public class ProductController {
                 new ResponseObject("failed", "Can not find product", ""));
     }
 
-    @PostMapping("/exists")
-    ResponseEntity<?> existsProductByName(@RequestBody ProductRequest request) {
-        Boolean exists = productService.existsByProductNameAndIsActive(request);
+    @GetMapping("/exists/{productName}")
+    ResponseEntity<?> existsProductByName(@PathVariable("productName") String productName) {
+        log.info("pn {}", productName);
+        Boolean exists = productService.existsByProductNameAndIsActive(productName);
+        log.info("kq {}", exists);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", "", exists));
     }
 }
