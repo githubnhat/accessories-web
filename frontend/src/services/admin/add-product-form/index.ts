@@ -1,8 +1,8 @@
 import axios from 'axios';
 axios.defaults.baseURL = 'http://localhost:8081/api/v1';
 
-const token = localStorage.getItem('accessToken');
-axios.defaults.headers.common = { Authorization: `Bearer ${token}` };
+// const token = localStorage.getItem('accessToken');
+// axios.defaults.headers.common = { Authorization: `Bearer ${token}` };
 
 // get product attributes
 
@@ -19,7 +19,7 @@ export async function getProductAttributes() {
   try {
     const path = '/admin/attribute/listVariants';
 
-    const { data, status } = await axios.get<GetProductAttributeResponse>(path);
+    const { data, status } = await axios.get<GetProductAttributeResponse>(path, {withCredentials: true});
     console.log(JSON.stringify(data, null, 10));
     // console.log('axios', data);
     // 👇️ "response status is: 200"
@@ -53,7 +53,7 @@ export async function getBrands() {
   try {
     const path = '/admin/brand';
 
-    const { data, status } = await axios.get<GetBrandsResponse>(path);
+    const { data, status } = await axios.get<GetBrandsResponse>(path, {withCredentials: true});
     console.log(JSON.stringify(data, null, 10));
     // console.log('axios', data);
     // 👇️ "response status is: 200"
@@ -87,7 +87,7 @@ export async function getCategories() {
   try {
     const path = '/admin/category';
 
-    const { data, status } = await axios.get<GetCategoriesResponse>(path);
+    const { data, status } = await axios.get<GetCategoriesResponse>(path, {withCredentials: true});
     console.log(JSON.stringify(data, null, 10));
     // console.log('axios', data);
     // 👇️ "response status is: 200"
@@ -134,7 +134,7 @@ export async function insertProduct(dataForm: object) {
   try {
     const path = '/admin/product/insert';
 
-    const { data, status } = await axios.post<GetProductResponse>(path, dataForm);
+    const { data, status } = await axios.post<GetProductResponse>(path, dataForm, {withCredentials: true});
     // console.log(JSON.stringify(data, null, 10));
     // localStorage.setItem('accessToken', data?.data?.accessToken || '');
     // 👇️ "response status is: 200"
