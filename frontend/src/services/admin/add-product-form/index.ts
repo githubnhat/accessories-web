@@ -158,12 +158,11 @@ type CheckUniqueProductNameResponse = {
   data: boolean;
 };
 
-export async function checkUniqueProductName(dataForm: object) {
+export async function checkUniqueProductName(productName: string) {
   try {
-    const path = '/admin/product/exists';
+    const path = `/admin/product/exists/${productName}`;
     const { data, status, request } = await axios.get<CheckUniqueProductNameResponse>(
-      path,
-      dataForm,
+      path, {withCredentials: true}
     );
     console.log(JSON.stringify(data, null, 10));
     console.log('request', request);
@@ -171,7 +170,7 @@ export async function checkUniqueProductName(dataForm: object) {
     // 👇️ "response status is: 200"
     console.log('response status is: ', status);
 
-    return data;
+    return data?.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.log('error message: ', error.message);

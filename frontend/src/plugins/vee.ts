@@ -55,9 +55,9 @@ extend('uniqueProductName', {
   ...required,
   validate: async (value) => {
     console.log('value', value);
-    const result = await checkUniqueProductName({ productName: value });
-    console.log('result', result);
-    return false;
+     const result = await checkUniqueProductName(value.trim());
+    console.log('result', !result);
+    return !result;
   },
   message: (field) => field + ' đã tồn tại.',
 });

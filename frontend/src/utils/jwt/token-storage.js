@@ -12,15 +12,15 @@ const decodeBase64 = (input) => {
   );
 };
 
-const getInfoFromToken = (token) => {
-    if (token) {
-      const data = token.split(".")
-      if (data.length !== 3) return null
-      const result = JSON.parse(decodeBase64(data[1]))
-      return result;
-    }
-    return null;
-  };
+// const getInfoFromToken = (token) => {
+//     if (token) {
+//       const data = token.split(".")
+//       if (data.length !== 3) return null
+//       const result = JSON.parse(decodeBase64(data[1]))
+//       return result;
+//     }
+//     return null;
+//   };
 
 const getUserInfo = (token) => {
   if (token) {

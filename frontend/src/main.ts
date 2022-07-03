@@ -6,9 +6,9 @@ import vuetify from './plugins/vuetify';
 import 'roboto-fontface/css/roboto/roboto-fontface.css';
 import '@mdi/font/css/materialdesignicons.css';
 import '@/plugins/vee';
-import './interceptors/axios-setup'
+import {setup} from '@/interceptors/axios-setup'
 Vue.config.productionTip = false;
-
+setup();
 new Vue({
   router,
   store,

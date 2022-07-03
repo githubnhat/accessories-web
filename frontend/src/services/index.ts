@@ -120,13 +120,13 @@ export async function verifyOTP(dataForm: object) {
 }
 
 // refresh token
-type AccesstokenRefresh = {
-  accessToken: string;
-};
+// type AccesstokenRefresh = {
+//   accessToken: string;
+// };
 
-type GetAccesstokenRefreshResponse = {
-  data: AccesstokenRefresh;
-};
+// type GetAccesstokenRefreshResponse = {
+//   data: AccesstokenRefresh;
+// };
 
 export async function refreshToken() {
 
