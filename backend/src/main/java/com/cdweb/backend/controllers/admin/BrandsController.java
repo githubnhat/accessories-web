@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@RestController(value="brandsControllerOfAdmin")
 @RequestMapping("/api/v1/admin/brand")
 @RequiredArgsConstructor
 @Slf4j

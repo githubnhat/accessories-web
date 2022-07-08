@@ -35,7 +35,7 @@ public class ProductConverter {
                 .id(entity.getId())
                 .productName(entity.getProductName())
                 .description(entity.getDescription())
-                .originalPrice(entity.getOriginalPrice())
+                .originalPrice(String.valueOf(entity.getOriginalPrice()))
                 .originalQuantity(entity.getOriginalQuantity())
                 .discount(entity.getDiscount())
                 .combinations(proComRs)

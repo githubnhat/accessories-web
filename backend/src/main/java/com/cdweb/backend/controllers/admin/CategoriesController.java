@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@RestController(value="categoriesControllerOfAdmin")
 @RequestMapping("/api/v1/admin/category")
 @RequiredArgsConstructor
 @Slf4j

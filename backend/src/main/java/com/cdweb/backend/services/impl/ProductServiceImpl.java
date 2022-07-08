@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -46,7 +47,7 @@ public class ProductServiceImpl implements IProductService {
     private final ProductAttributeConverter productAttributeConverter;
 
     @Override
-    public List<ProductResponse> findAll(Pageable pageable) {
+    public List<ProductResponse> findAllForAdmin(Pageable pageable) {
         List<ProductResponse> response = new ArrayList<>();
         List<Products> entities = productRepository.findAll(pageable).getContent();
        if (entities.size() > 0) {
@@ -73,6 +74,51 @@ public class ProductServiceImpl implements IProductService {
        }
         return response;
     }
+
+    @Override
+    public List<ProductResponse> findAllForUser(Pageable pageable) {
+        List<ProductResponse> response = new ArrayList<>();
+        List<Products> entities = productRepository.findAll(pageable).getContent();
+        if (entities.size() > 0) {
+            entities.forEach(entity -> {
+                if (entity.isActive()) {
+                    List<ThumbnailResponse> productGalleries = productGalleryService.findByProductAndIsActiveTrue(entity);
+                    List<String> imageLinks = new ArrayList<>();
+                    productGalleries.forEach(p -> imageLinks.add(p.getImageLink()));
+                    ProductResponse product = ProductResponse.builder()
+                            .id(entity.getId())
+                            .productName(entity.getProductName())
+                            .description(entity.getDescription())
+                            .originalPrice(String.valueOf(entity.getOriginalPrice()))
+                            .originalQuantity(entity.getOriginalQuantity())
+                            .discount(entity.getDiscount())
+                            .imageLinks(imageLinks)
+                            .build();
+                    List<ProductCombinationResponse> proComRs = productCombinationService.findByProductAndIsActiveTrue(entity);
+                    if (proComRs != null) {
+                        int quantity = 0;
+                       for(ProductCombinationResponse p : proComRs) {
+                           quantity += p.getQuantity();
+                       }
+                       product.setOriginalQuantity(quantity);
+                    }
+                    Double maxPrice = productCombinationService.maxPrice(entity.getId());
+                    Double minPrice = productCombinationService.minPrice(entity.getId());
+                    if (maxPrice!= null && minPrice != null){
+                        if(maxPrice.equals(minPrice)){
+                            product.setOriginalPrice(String.valueOf(maxPrice));
+                        } else {
+                            product.setOriginalPrice(minPrice + " - " + maxPrice);
+                        }
+                    }
+                    response.add(product);
+                }
+            });
+        }
+        return response;
+    }
+
+
 
     @Override
     public int totalItem() {
@@ -179,4 +225,6 @@ public class ProductServiceImpl implements IProductService {
     public List<ProductResponse> getArrivalProducts() {
         return null;
     }
+
+
 }

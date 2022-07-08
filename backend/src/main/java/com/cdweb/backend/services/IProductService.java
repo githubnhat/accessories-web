@@ -12,7 +12,9 @@ import java.util.List;
 
 public interface IProductService {
 
-    List<ProductResponse> findAll(Pageable pageable);
+    List<ProductResponse> findAllForAdmin(Pageable pageable);
+
+    List<ProductResponse> findAllForUser(Pageable pageable);
 
     int totalItem();
 
@@ -27,4 +29,6 @@ public interface IProductService {
     boolean existsByProductNameAndIsActive(String productName);
 
     List<ProductResponse> getArrivalProducts();
+
+
 }
