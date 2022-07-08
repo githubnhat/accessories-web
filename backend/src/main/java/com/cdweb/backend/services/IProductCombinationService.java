@@ -11,4 +11,8 @@ public interface IProductCombinationService {
     List<ProductCombinationResponse> saveListCombinations(Products product, List<ProductCombinationRequest> request);
 
     List<ProductCombinationResponse> findByProductAndIsActiveTrue(Products product);
+
+    Double minPrice(Long productId);
+
+    Double maxPrice(Long productId);
 }

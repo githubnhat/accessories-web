@@ -42,4 +42,14 @@ public class ProductCombinationServiceImpl implements IProductCombinationService
                 .stream().map(productCombinationConverter :: toResponse)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Double minPrice(Long productId) {
+        return productCombinationRepository.min(productId);
+    }
+
+    @Override
+    public Double maxPrice(Long productId) {
+        return productCombinationRepository.max(productId);
+    }
 }

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@RestController(value="productControllerOfAdmin")
 @RequestMapping("/api/v1/admin/product")
 @RequiredArgsConstructor
 @Slf4j
@@ -44,7 +44,7 @@ public class ProductController {
         response.setPage(page);
         Pageable pageable = PageRequest.of(page - 1, limit);
         response.setTotalPage((int) Math.ceil((double) (productService.totalItem()) / limit));
-        response.setData(productService.findAll(pageable));
+        response.setData(productService.findAllForAdmin(pageable));
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", null, response));
     }
 

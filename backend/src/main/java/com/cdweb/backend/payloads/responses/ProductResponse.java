@@ -15,7 +15,7 @@ public class ProductResponse {
     private Long id;
     private String productName;
     private String description;
-    private Double originalPrice;
+    private String originalPrice;
     private int originalQuantity;
     private int discount;
     private List<String> imageLinks;
