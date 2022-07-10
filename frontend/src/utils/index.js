@@ -44,6 +44,7 @@ export function combineVariants(value) {
     productVariantName: item.reduce((accomulator, subItem) => accomulator + '-' + subItem),
     quantity: 1,
     price: 1000,
+    isUse: true,
   }));
   return result;
 }

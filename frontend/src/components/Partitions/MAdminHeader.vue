@@ -28,7 +28,7 @@ export default {
   }),
   created() {
     const accessToken = localStorage.getItem('accessToken');
-    this.username = !accessToken ? null : jwt_decode(accessToken).sub;
+    this.username = !accessToken ? null : jwt_decode(accessToken).fullName;
   },
   props: {
     drawer: {
