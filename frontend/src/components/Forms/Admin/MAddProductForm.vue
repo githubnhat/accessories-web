@@ -238,9 +238,10 @@
                     color
                     v-model="item.productVariantName"
                     readonly
+                    :disable="item.isUse"
                   ></m-text-field>
                 </v-col>
-                <v-col cols="4" />
+                <v-col cols="2" />
                 <v-col cols="2">
                   <validation-provider
                     name="Quantity"
@@ -255,6 +256,7 @@
                       required
                       :error-messages="errors"
                       type="number"
+                      :disable="item.isUse"
                     >
                     </m-text-field>
                   </validation-provider>
@@ -273,9 +275,21 @@
                       @input="handleInputCombinationPrice"
                       required
                       :error-messages="errors"
+                      :disable="item.isUse"
                     >
                     </m-text-field>
                   </validation-provider>
+                </v-col>
+                <v-col cols="2">
+                  <v-select
+                    :items="selectItems"
+                    item-text="title"
+                    item-value="value"
+                    :value="item.isUse"
+                    dense
+                    outlined
+                    @change="handleSelectAdditionalCombination(item.productVariantName)"
+                  ></v-select>
                 </v-col>
               </v-row>
             </v-card>
@@ -293,7 +307,7 @@
 <script>
 import MTextField from '@/components/TextFields/MTextField.vue';
 import MAutoComplete from '@/components/TextFields/MAutoComplete.vue';
-import { VARIANTS } from '@/utils/mocks/';
+import { VARIANTS, SELECT_ITEMS } from '@/utils/mocks/';
 import {
   getProductAttributes,
   getBrands,
@@ -314,7 +328,7 @@ export default {
       categoryName: '',
       selectedAttribute: VARIANTS[0],
       search: [],
-      step: 1,
+      step: 2,
       completeStep: [],
       attributes: [],
       brands: [],
@@ -322,6 +336,7 @@ export default {
       files: [],
       numberAttributes: 0,
       attributeList: VARIANTS,
+      selectItems: SELECT_ITEMS,
       combineVariants: [],
       payload: {},
     };
@@ -422,6 +437,12 @@ export default {
         if (item.productVariantName === name) {
           return { ...item, price: parseInt(value) };
         } else return item;
+      });
+    },
+    handleSelectAdditionalCombination(combineName) {
+      this.combineVariants = this.combineVariants.map((item) => {
+        if (item.productVariantName === combineName) return { ...item, isUse: !item.isUse };
+        else return item;
       });
     },
     onSubmitStep1() {
