@@ -107,3 +107,14 @@ export const ADMIN_MENU = [
     title: 'Account',
   },
 ];
+
+export const SELECT_ITEMS = [
+  {
+    title: 'Thêm',
+    value: true,
+  },
+  {
+    title: 'Không thêm',
+    value: false,
+  },
+];
