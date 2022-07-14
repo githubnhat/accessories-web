@@ -67,41 +67,61 @@
                             >
                               Đăng nhập
                             </h1>
-                            <validation-provider
-                              name="Tên đăng nhập"
-                              rules="required"
-                              v-slot="{ errors }"
-                            >
-                              <v-text-field
-                                v-model="loginInput.username"
-                                label="Tên người dùng"
-                                name="username"
-                                prepend-icon="mdi-account"
-                                type="text"
-                                color="primary accent-3"
-                                clearable
-                                :error-messages="errors"
-                              >
-                              </v-text-field>
-                            </validation-provider>
+                            <v-row no-gutters>
+                              <v-col cols="12">
+                                <validation-provider
+                                  name="Tên đăng nhập"
+                                  rules="required"
+                                  v-slot="{ errors }"
+                                >
+                                  <v-text-field
+                                    v-model="loginInput.username"
+                                    label="Tên người dùng"
+                                    name="username"
+                                    prepend-icon="mdi-account"
+                                    type="text"
+                                    color="primary accent-3"
+                                    clearable
+                                    :error-messages="errors"
+                                  >
+                                  </v-text-field>
+                                </validation-provider>
+                              </v-col>
+                            </v-row>
 
-                            <validation-provider
-                              name="Mật khẩu"
-                              rules="required|min:4"
-                              v-slot="{ errors }"
-                            >
-                              <v-text-field
-                                v-model="loginInput.password"
-                                id="password"
-                                label="Mật khẩu"
-                                name="password"
-                                type="password"
-                                prepend-icon="mdi-lock"
-                                clearable
-                                @keypress.enter="login"
-                                :error-messages="errors"
-                              ></v-text-field>
-                            </validation-provider>
+                            <v-row no-gutters>
+                              <v-col cols="12">
+                                <validation-provider
+                                  name="Mật khẩu"
+                                  rules="required|min:4"
+                                  v-slot="{ errors }"
+                                >
+                                  <v-text-field
+                                    v-model="loginInput.password"
+                                    id="password"
+                                    label="Mật khẩu"
+                                    name="password"
+                                    type="password"
+                                    prepend-icon="mdi-lock"
+                                    clearable
+                                    @keypress.enter="login"
+                                    :error-messages="errors"
+                                  ></v-text-field>
+                                </validation-provider>
+                              </v-col>
+                            </v-row>
+
+                            <v-row no-gutters>
+                              <v-col cols="4"></v-col>
+                              <v-col cols="4">
+                                <v-checkbox
+                                  v-model="rememberLogin"
+                                  label="Ghi nhớ đăng nhập"
+                                  class="text-center"
+                                ></v-checkbox>
+                              </v-col>
+                              <v-col cols="4"></v-col>
+                            </v-row>
 
                             <p class="caption text-center">Quên mật khẩu?!</p>
                           </v-card-text>
@@ -265,11 +285,14 @@
 
 <script>
 import { doLogin, doRegister, verifyOTP } from '@/services';
+import { mapState } from 'vuex';
+import router from '@/router';
 export default {
   name: 'LogIn',
   data() {
     return {
       step: 1,
+      rememberLogin: false,
       loginInput: {
         username: '',
         password: '',
@@ -297,13 +320,23 @@ export default {
       default: '',
     },
   },
+  computed: {
+    ...mapState({
+      accessToken: (state) => state._accessToken.state.accessToken,
+    }),
+  },
   methods: {
     reset() {
       this.$refs.form.reset();
     },
     async login() {
       this.loading.login = true;
-      await doLogin(this.loginInput);
+      const { data, status } = await doLogin(this.loginInput);
+      if (status === 200) {
+        const token = data?.data?.accessToken;
+        this.$store.commit('_accessToken/setAccessToken', token);
+        router.push('/');
+      } else alert('Đăng nhập không thành công /n Vui lòng thử lại!');
       this.loading.login = false;
     },
     async register() {
