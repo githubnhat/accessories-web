@@ -11,7 +11,9 @@
   "dependencies": {
     "@mdi/font": "5.9.55",
     "axios": "^0.27.2",
+    "cookie": "^0.5.0",
     "core-js": "^3.8.3",
+    "js-cookie": "^3.0.1",
     "jwt-decode": "^3.1.2",
     "roboto-fontface": "*",
     "vee-validate": "^3.4.14",
@@ -20,10 +22,13 @@
     "vue-property-decorator": "^9.1.2",
     "vue-router": "^3.5.1",
     "vuetify": "^2.6.0",
-    "vuex": "^3.6.2"
+    "vuex": "^3.6.2",
+    "vuex-persistedstate": "^4.1.0"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@types/chai": "^4.2.15",
+    "@types/js-cookie": "^3.0.2",
     "@types/mocha": "^8.2.1",
     "@typescript-eslint/eslint-plugin": "^5.22.0",
     "@typescript-eslint/parser": "^5.22.0",
