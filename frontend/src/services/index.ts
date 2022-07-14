@@ -1,4 +1,4 @@
-import router from '@/router';
+// import router from '@/router';
 import axios from 'axios';
 
 axios.defaults.baseURL = 'http://localhost:8081/api/v1';
@@ -16,17 +16,19 @@ type GetUsersResponse = {
 export async function doLogin(dataForm: object) {
   try {
     const path = '/auth/login';
-    const { data, status } = await axios.post<GetUsersResponse>(path, dataForm, {withCredentials: true});
+    const { data, status } = await axios.post<GetUsersResponse>(path, dataForm, {
+      withCredentials: true,
+    });
     // console.log(JSON.stringify(data, null, 10));
-    if(status===200){
-      localStorage.setItem('accessToken', data?.data?.accessToken || '');
-    }
+    // if (status === 200) {
+    //   localStorage.setItem('accessToken', data?.data?.accessToken || '');
+    // }
 
-    router.push('/');
+    // router.push('/');
     // 👇️ "response status is: 200"
     console.log('response status is: ', status);
 
-    return data;
+    return { data, status };
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.log('error message: ', error.message);
@@ -100,14 +102,14 @@ export async function verifyOTP(dataForm: object) {
     // console.log(JSON.stringify(data, null, 10));
     if (status === 200) {
       localStorage.setItem('accessToken', data?.data?.accessToken || '');
-      router.push('/');
+      // router.push('/');
     } else {
       alert('OTP không đúng, vui lòng kiểm tra lại!');
     }
     // 👇️ "response status is: 200"
     console.log('response status is: ', status);
 
-    return data;
+    return { data, status };
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.log('error message: ', error.message);
@@ -129,12 +131,7 @@ export async function verifyOTP(dataForm: object) {
 // };
 
 export async function refreshToken() {
-
-    axios.defaults.headers.common = { Authorization: `` };
-    
-  
+  axios.defaults.headers.common = { Authorization: `` };
 }
 
-
 export default {};
-
