@@ -1,6 +1,7 @@
 <template>
   <div>
-    <div class="display-1 text-center mb-3">Danh sách thuộc tính</div>
+    <div class="display-1 text-center mb-3">Danh sách sản phẩm</div>
+
     <v-data-table
       :page="page"
       :pageCount="totalPages"
@@ -15,46 +16,11 @@
         <v-toolbar flat>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="500px">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
-                Thêm thuộc tính
-              </v-btn>
-            </template>
-            <v-card>
-              <v-card-title>
-                <span class="text-h5">{{ formTitle }}</span>
-              </v-card-title>
-
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.attributeName"
-                        label="Tên thuộc tính"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="12">
-                      <v-text-field
-                        v-model="editedItem.variantNames"
-                        label="Các giá trị được cách nhau bằng dấu phẩy (,)"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="close"> Trở lại </v-btn>
-                <v-btn color="blue darken-1" text v-if="formAction === 'save'" @click="save">
-                  Lưu
-                </v-btn>
-                <v-btn color="blue darken-1" text v-else @click="update"> Cập nhật </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
+              Thêm thuộc tính
+            </v-btn>
+          </template>
           <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card>
               <v-card-title class="text-h5">Bạn có chắc chắn xoá thuộc tính?</v-card-title>
@@ -79,7 +45,7 @@
   </div>
 </template>
 <script>
-import { getAllAttributes, addNewAttributes } from '@/services/admin/attribute/index';
+import { getAllProducts } from '@/services/admin/all-product-form/index';
 export default {
   data: () => ({
     page: 0,
@@ -96,11 +62,14 @@ export default {
     search: '',
     headers: [
       {
-        text: 'Tên thuộc tính',
+        text: 'Tên sản phẩm',
         align: 'start',
-        value: 'attributeName',
+        value: 'productName',
       },
-      { text: 'Giá trị', value: 'variantNames' },
+      { text: 'Giá', value: 'originalPrice' },
+      { text: 'Số lượng', value: 'originalQuantity' },
+      { text: 'Thương hiệu', value: 'brandName' },
+      { text: 'Danh mục', value: 'categoryName' },
       { text: 'Hành động', value: 'actions', sortable: false },
     ],
     data: [],
@@ -115,14 +84,7 @@ export default {
     },
   }),
 
-  computed: {
-    formTitle() {
-      return this.editedIndex === -1 ? 'Thêm thuộc tính' : 'Chỉnh sửa thuộc tính';
-    },
-    formAction() {
-      return this.editedIndex === -1 ? 'save' : 'update';
-    },
-  },
+  computed: {},
 
   watch: {
     dialog(val) {
@@ -145,15 +107,14 @@ export default {
 
   methods: {
     async initialize() {
-      this.data = await this.readDataFromAPI();
       this.readDataFromAPI();
     },
 
     async readDataFromAPI() {
       this.loading = true;
       const { page, itemsPerPage } = this.options;
-      this.data = await getAllAttributes(page, itemsPerPage);
-      //Then injecting the result to datatable parameters.
+      this.data = await getAllProducts(page, itemsPerPage);
+
       this.itemsPerPage = itemsPerPage;
       this.totalItems = this.data.totalItems;
       this.totalPages = this.data.totalPages;
@@ -192,41 +153,6 @@ export default {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
       });
-    },
-
-    async save() {
-      var listVariantNames = this.editedItem.variantNames.split(',').map((a) => a.trim());
-      var res = [];
-      listVariantNames.forEach(function (i) {
-        let isInclude = false;
-        res.forEach((_x) => {
-          if (_x.toLowerCase() == i.toLowerCase()) {
-            isInclude = true;
-          }
-        });
-        if (!isInclude) {
-          res.push(i);
-        }
-      });
-      listVariantNames = res.filter(function (element) {
-        return element !== '';
-      });
-      let request = {
-        attributeName: this.editedItem.attributeName,
-        variantNames: listVariantNames,
-      };
-      const newData = await addNewAttributes(request);
-      if (newData !== null) this.readDataFromAPI();
-      this.close();
-    },
-
-    async update() {
-      // const newData = await addNewAttributes(
-      //   'http://localhost:8081/api/v1/admin/attribute',
-      //   this.editedItem,
-      // );
-      // this.data = [...this.data, newData];
-      this.close();
     },
   },
   mounted() {

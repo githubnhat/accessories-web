@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class PageResponse<T> {
     private int page;
-    private int totalPage;
+    private int totalPages;
+    private int totalItems;
     private List<T> data = new ArrayList<>();
 }

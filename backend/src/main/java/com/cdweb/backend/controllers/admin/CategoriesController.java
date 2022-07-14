@@ -29,7 +29,7 @@ public class CategoriesController {
         Pageable pageable = PageRequest.of(page - 1, limit);
         PageResponse<CategoryResponse> response = PageResponse.<CategoryResponse>builder()
                 .page(page)
-                .totalPage((int) Math.ceil((double) (categoryService.totalItem()) / limit))
+                .totalPages((int) Math.ceil((double) (categoryService.totalItem()) / limit))
                 .data(categoryService.findAll(pageable))
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(

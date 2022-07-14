@@ -49,7 +49,7 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public List<ProductResponse> findAllForAdmin(Pageable pageable) {
         List<ProductResponse> response = new ArrayList<>();
-        List<Products> entities = productRepository.findAll(pageable).getContent();
+        List<Products> entities = productRepository.findAllByOrderByModifiedDateDesc(pageable).getContent();
        if (entities.size() > 0) {
            entities.forEach(entity -> {
                if (entity.isActive()) {

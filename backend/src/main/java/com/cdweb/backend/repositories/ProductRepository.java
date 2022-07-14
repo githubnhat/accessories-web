@@ -1,12 +1,15 @@
 package com.cdweb.backend.repositories;
 
 import com.cdweb.backend.entities.Products;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.awt.print.Pageable;
-import java.util.List;
+
+
 
 public interface ProductRepository extends JpaRepository<Products, Long> {
     Products findByProductNameAndIsActiveTrue(String productName);
     Boolean existsByProductNameAndIsActiveTrue(String productName);
+    Page findAllByOrderByModifiedDateDesc(Pageable pageable);
 }

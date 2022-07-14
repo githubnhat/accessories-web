@@ -28,7 +28,7 @@ public class BrandsController {
         Pageable pageable = PageRequest.of(page - 1, limit);
         PageResponse<BrandResponse> response = PageResponse.<BrandResponse>builder()
                 .page(page)
-                .totalPage((int) Math.ceil((double) (brandService.totalItem()) / limit))
+                .totalPages((int) Math.ceil((double) (brandService.totalItem()) / limit))
                 .data(brandService.findAll(pageable))
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(

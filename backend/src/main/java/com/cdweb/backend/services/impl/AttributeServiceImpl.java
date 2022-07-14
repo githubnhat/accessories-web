@@ -3,16 +3,19 @@ package com.cdweb.backend.services.impl;
 import com.cdweb.backend.converters.AttributeConverter;
 import com.cdweb.backend.converters.VariantConverter;
 import com.cdweb.backend.entities.Attributes;
+import com.cdweb.backend.entities.Products;
 import com.cdweb.backend.entities.Variants;
 import com.cdweb.backend.payloads.requests.AttributeAndVariantsRequest;
 import com.cdweb.backend.payloads.requests.AttributeRequest;
 import com.cdweb.backend.payloads.responses.AttributeAndVariantsResponse;
 import com.cdweb.backend.payloads.responses.AttributeResponse;
+import com.cdweb.backend.payloads.responses.ProductResponse;
 import com.cdweb.backend.repositories.AttributeRepository;
 import com.cdweb.backend.repositories.VariantRepository;
 import com.cdweb.backend.services.IAttributeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -109,32 +112,58 @@ public class AttributeServiceImpl implements IAttributeService {
     }
 
     @Override
+    public List<AttributeAndVariantsResponse> findAllAttributeAndVariants(Pageable pageable) {
+        List<AttributeAndVariantsResponse> response = new ArrayList<>();
+        List<Attributes> attrs = attributeRepository.findAllByOrderByModifiedDateDesc(pageable).getContent();
+       if (attrs.size() > 0) {
+           attrs.forEach(a -> {
+              if (a.isActive()){
+                  List<Variants> variants = variantRepository.findByAttributeIdAndIsActiveTrue(a.getId());
+                  List<String> variantNames = variants.stream().map((Variants::getVariantName)).collect(Collectors.toList());
+                  AttributeAndVariantsResponse attrAndVar = AttributeAndVariantsResponse.builder()
+                          .attributeId(a.getId())
+                          .attributeName(a.getAttributeName())
+                          .variantNames(variantNames)
+                          .build();
+                  response.add(attrAndVar);
+              }
+           });
+       }
+        return response;
+    }
+
+    @Override
     public Attributes findByAttributeNameAndIsActiveTrue(String attributeName) {
         return attributeRepository.findByAttributeNameAndIsActiveTrue(attributeName);
     }
 
-    @Override
-    public List<AttributeAndVariantsResponse> findAllAttributeAndVariants() {
-        List<Attributes> attrs = attributeRepository.findByIsActiveTrue();
-        List<AttributeAndVariantsResponse> response = new ArrayList<>();
-        attrs.forEach(a -> {
-            List<Variants> variants = variantRepository.findByAttributeIdAndIsActiveTrue(a.getId());
-            List<String> variantNames = variants.stream().map((Variants::getVariantName)).collect(Collectors.toList());
-            AttributeAndVariantsResponse attrAndVar = AttributeAndVariantsResponse.builder()
-                    .attributeId(a.getId())
-                    .attributeName(a.getAttributeName())
-                    .variantNames(variantNames)
-                    .build();
-            response.add(attrAndVar);
-
-        });
-        return response;
-    }
+//    @Override
+//    public List<AttributeAndVariantsResponse> findAllAttributeAndVariants() {
+//        List<Attributes> attrs = attributeRepository.findByIsActiveTrue();
+//        List<AttributeAndVariantsResponse> response = new ArrayList<>();
+//        attrs.forEach(a -> {
+//            List<Variants> variants = variantRepository.findByAttributeIdAndIsActiveTrue(a.getId());
+//            List<String> variantNames = variants.stream().map((Variants::getVariantName)).collect(Collectors.toList());
+//            AttributeAndVariantsResponse attrAndVar = AttributeAndVariantsResponse.builder()
+//                    .attributeId(a.getId())
+//                    .attributeName(a.getAttributeName())
+//                    .variantNames(variantNames)
+//                    .build();
+//            response.add(attrAndVar);
+//
+//        });
+//        return response;
+//    }
 
     @Override
     public List<AttributeResponse> findByProductIdAndIsActive(Long productId) {
         return attributeRepository.findByProductIdAndIsActive(productId)
                 .stream().map(attributeConverter :: toResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public int totalItem() {
+        return (int) attributeRepository.count();
     }
 }
