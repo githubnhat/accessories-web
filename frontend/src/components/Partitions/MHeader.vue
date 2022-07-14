@@ -31,7 +31,7 @@
       <v-btn class="ml-2" color="white" @click="hidden = !hidden" icon>
         <v-icon>{{ hidden ? 'mdi-close' : 'mdi-magnify' }}</v-icon>
       </v-btn>
-      <v-btn v-if="!username" @click="handleToLogin" color="primary" elevation="5">
+      <v-btn v-if="!accessToken" @click="handleToLogin" color="primary" elevation="5">
         <v-icon>mdi-login</v-icon>
         <span class="px-2">Login</span>
       </v-btn>
@@ -57,6 +57,7 @@ import MUserMenu from '../Menus/MUserMenu.vue';
 import jwt_decode from 'jwt-decode';
 import router from '@/router';
 import { refreshToken } from '@/services';
+import { mapState } from 'vuex';
 
 export default {
   name: 'MHeader',
@@ -72,8 +73,7 @@ export default {
     ],
   }),
   created() {
-    const accessToken = localStorage.getItem('accessToken');
-    this.username = !accessToken ? '' : jwt_decode(accessToken).fullName;
+    this.username = !this.accessToken ? undefined : jwt_decode(this.accessToken).fullName;
   },
   props: {},
   methods: {
@@ -88,7 +88,11 @@ export default {
       console.log('done');
     },
   },
-
+  computed: {
+    ...mapState({
+      accessToken: (state) => state._accessToken.state.accessToken,
+    }),
+  },
   components: {
     MUserMenu,
   },

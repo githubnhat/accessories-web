@@ -19,7 +19,9 @@ export async function getProductAttributes() {
   try {
     const path = '/admin/attribute/listVariants';
 
-    const { data, status } = await axios.get<GetProductAttributeResponse>(path, {withCredentials: true});
+    const { data, status } = await axios.get<GetProductAttributeResponse>(path, {
+      withCredentials: true,
+    });
     console.log(JSON.stringify(data, null, 10));
     // console.log('axios', data);
     // 👇️ "response status is: 200"
@@ -53,7 +55,7 @@ export async function getBrands() {
   try {
     const path = '/admin/brand';
 
-    const { data, status } = await axios.get<GetBrandsResponse>(path, {withCredentials: true});
+    const { data, status } = await axios.get<GetBrandsResponse>(path, { withCredentials: true });
     console.log(JSON.stringify(data, null, 10));
     // console.log('axios', data);
     // 👇️ "response status is: 200"
@@ -87,7 +89,9 @@ export async function getCategories() {
   try {
     const path = '/admin/category';
 
-    const { data, status } = await axios.get<GetCategoriesResponse>(path, {withCredentials: true});
+    const { data, status } = await axios.get<GetCategoriesResponse>(path, {
+      withCredentials: true,
+    });
     console.log(JSON.stringify(data, null, 10));
     // console.log('axios', data);
     // 👇️ "response status is: 200"
@@ -134,11 +138,15 @@ export async function insertProduct(dataForm: object) {
   try {
     const path = '/admin/product/insert';
 
-    const { data, status } = await axios.post<GetProductResponse>(path, dataForm, {withCredentials: true});
+    const { data, status } = await axios.post<GetProductResponse>(path, dataForm, {
+      withCredentials: true,
+    });
     // console.log(JSON.stringify(data, null, 10));
     // localStorage.setItem('accessToken', data?.data?.accessToken || '');
     // 👇️ "response status is: 200"
     console.log('response status is: ', status);
+    if (status === 200) alert('Thêm sản phẩm thành công');
+    else alert('Thêm sản phẩm không thành công');
 
     return data;
   } catch (error) {
@@ -161,9 +169,9 @@ type CheckUniqueProductNameResponse = {
 export async function checkUniqueProductName(productName: string) {
   try {
     const path = `/admin/product/exists/${productName}`;
-    const { data, status, request } = await axios.get<CheckUniqueProductNameResponse>(
-      path, {withCredentials: true}
-    );
+    const { data, status, request } = await axios.get<CheckUniqueProductNameResponse>(path, {
+      withCredentials: true,
+    });
     console.log(JSON.stringify(data, null, 10));
     console.log('request', request);
 
