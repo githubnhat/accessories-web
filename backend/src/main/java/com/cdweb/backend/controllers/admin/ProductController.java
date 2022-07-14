@@ -43,9 +43,15 @@ public class ProductController {
         PageResponse<ProductResponse> response = new PageResponse<>();
         response.setPage(page);
         Pageable pageable = PageRequest.of(page - 1, limit);
-        response.setTotalPage((int) Math.ceil((double) (productService.totalItem()) / limit));
+        int totalItem = productService.totalItem();
+        response.setTotalItems(totalItem);
+        response.setTotalPages((int) Math.ceil((double) (totalItem) / limit));
         response.setData(productService.findAllForAdmin(pageable));
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", null, response));
+        return response.getData().size()>0 ?
+                ResponseEntity.status(HttpStatus.OK).body(
+                        new ResponseObject("Success", null, response)) :
+                ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                        new ResponseObject("Failed", "Have no product", null)) ;
     }
 
     @PostMapping("/insert")

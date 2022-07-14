@@ -1,65 +1,3 @@
-export const PRODUCTS = [
-  {
-    id: '1',
-    productName: 'San pham',
-    brand: 'Sly',
-    price: '10000',
-  },
-  {
-    id: '1',
-    productName: 'San pham',
-    brand: 'Sly',
-    price: '10000',
-  },
-  {
-    id: '1',
-    productName: 'San pham',
-    brand: 'Sly',
-    price: '10000',
-  },
-  {
-    id: '1',
-    productName: 'San pham',
-    brand: 'Sly',
-    price: '10000',
-  },
-  {
-    id: '1',
-    productName: 'San pham',
-    brand: 'Sly',
-    price: '10000',
-  },
-  {
-    id: '1',
-    productName: 'San pham',
-    brand: 'Sly',
-    price: '10000',
-  },
-  {
-    id: '1',
-    productName: 'San pham',
-    brand: 'Sly',
-    price: '10000',
-  },
-  {
-    id: '1',
-    productName: 'San pham',
-    brand: 'Sly',
-    price: '10000',
-  },
-  {
-    id: '1',
-    productName: 'San pham',
-    brand: 'Sly',
-    price: '10000',
-  },
-  {
-    id: '1',
-    productName: 'San pham',
-    brand: 'Sly',
-    price: '10000',
-  },
-];
 export const VARIANTS = [
   {
     id: -1,
@@ -97,7 +35,6 @@ export const ADMIN_MENU = [
       { title: 'All products' },
       { title: 'Add product' },
       { title: 'All attribute product' },
-      { title: 'Add atribute product' },
     ],
     title: 'Product',
   },

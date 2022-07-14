@@ -2,6 +2,8 @@ package com.cdweb.backend.repositories;
 
 import com.cdweb.backend.entities.Attributes;
 import com.cdweb.backend.entities.Products;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +16,8 @@ import java.util.Optional;
 public interface AttributeRepository extends JpaRepository<Attributes, Long> {
 
     Optional<Attributes> findById(Long id);
+
+    Page findAllByOrderByModifiedDateDesc(Pageable pageable);
 
     Attributes findByIdAndIsActiveTrue(Long id);
 

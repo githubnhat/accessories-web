@@ -30,7 +30,7 @@ public class ProductController {
         PageResponse<ProductResponse> response = new PageResponse<>();
         response.setPage(page);
         Pageable pageable = PageRequest.of(page - 1, limit);
-        response.setTotalPage((int) Math.ceil((double) (productService.totalItem()) / limit));
+        response.setTotalPages((int) Math.ceil((double) (productService.totalItem()) / limit));
         response.setData(productService.findAllForUser(pageable));
         log.info("{}", response);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", null, response));
