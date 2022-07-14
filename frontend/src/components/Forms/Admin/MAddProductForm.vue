@@ -61,11 +61,7 @@
                       </validation-provider>
                     </v-col>
                     <v-col cols="12">
-                      <validation-provider
-                        name="Mô tả sản phẩm"
-                        rules="required"
-                        v-slot="{ errors }"
-                      >
+                      <validation-provider name="Mô tả sản phẩm" rules="" v-slot="{ errors }">
                         <v-textarea
                           label="Mô tả sản phẩm"
                           v-model="description"
@@ -328,7 +324,7 @@ export default {
       categoryName: '',
       selectedAttribute: VARIANTS[0],
       search: [],
-      step: 2,
+      step: 1,
       completeStep: [],
       attributes: [],
       brands: [],
