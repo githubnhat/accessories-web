@@ -16,13 +16,16 @@ type CategoryResponse = {
 type GetCategoryResponse = {
   data: CategoryResponse;
 };
-export async function getAllCategory() {
+export async function getAllCategory(pageNumber: number, itemsPerPage: number) {
   try {
-    const { data, status } = await axios.get<GetCategoryResponse>('admin/category', {
-      withCredentials: true,
-    });
+    const { data, status } = await axios.get<GetCategoryResponse>(
+      `admin/category/page/${pageNumber}/limit/${itemsPerPage}`,
+      {
+        withCredentials: true,
+      },
+    );
     console.log('response status is: ', status);
-    return data;
+    return data?.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.log('error message: ', error.message);

@@ -11,6 +11,10 @@
       :items="data"
       :loading="loading.table"
       class="elevation-1"
+      :footer-props="{
+        showFirstLastPage: true,
+        showCurrentPage: true,
+      }"
     >
       <template v-slot:top>
         <v-toolbar flat>
@@ -113,8 +117,8 @@ export default {
     totalItems: 0,
     totalPages: 0,
     options: {
-      page: 0,
-      itemsPerPage: 10,
+      page: 1,
+      itemsPerPage: 5,
     },
     loading: {
       table: true,
@@ -180,11 +184,13 @@ export default {
 
     async readDataFromAPI() {
       this.loading.table = true;
-      const { page, totalPages, totalItems, data } = await getAllCategory();
-      this.page = page;
-      this.totalPages = totalPages;
-      this.totalItems = totalItems;
-      this.data = data;
+      const { page, itemsPerPage } = this.options;
+      const data = await getAllCategory(page, itemsPerPage);
+      console.log('data', data);
+      this.page = data?.page;
+      this.totalPages = data?.totalPages;
+      this.totalItems = data?.totalItems;
+      this.data = data?.data;
       this.loading.table = false;
     },
 
