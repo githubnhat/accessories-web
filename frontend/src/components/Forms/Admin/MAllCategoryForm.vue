@@ -20,7 +20,7 @@
         <v-toolbar flat>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="500px">
+          <v-dialog v-model="dialog.add" max-width="500px">
             <template v-slot:activator="{ on, attrs }">
               <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
                 Thêm danh mục
@@ -87,20 +87,68 @@
           </v-dialog>
         </v-toolbar>
       </template>
-      <v-dialog v-model="dialogDelete" max-width="500px">
-        <v-card>
-          <v-card-title class="text-h5">Bạn có chắc chắn xoá danh mục này?</v-card-title>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="closeDelete">Trở lại</v-btn>
-            <v-btn color="blue darken-1" text @click="deleteItemConfirm">Đồng ý</v-btn>
-            <v-spacer></v-spacer>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+
       <template v-slot:[`item.actions`]="{ item }">
-        <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
-        <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+        <v-dialog v-model="dialog.edit" max-width="500px">
+          <v-card>
+            <ValidationObserver v-slot="{ handleSubmit }">
+              <v-form class="mt-5" @submit.prevent="handleSubmit(editItemConfirm(item))">
+                <v-card-title class="text-h5">Chỉnh sửa thông tin danh mục</v-card-title>
+                <v-card-text>
+                  <v-row no-gutters dense>
+                    <v-col cols="12">
+                      <validation-provider name="Tên danh mục" rules="required" v-slot="{ errors }">
+                        <v-text-field
+                          v-model="item.name"
+                          label="Tên danh mục"
+                          prepend-icon="mdi-order-alphabetical-ascending"
+                          color="primary accent-3"
+                          clearable
+                          :error-messages="errors"
+                        >
+                        </v-text-field>
+                      </validation-provider>
+                      <validation-provider
+                        name="Mã danh mục"
+                        rules="required|uniqueCategoryCode"
+                        v-slot="{ errors }"
+                      >
+                        <v-text-field
+                          v-model="item.code"
+                          label="Mã danh mục"
+                          prepend-icon="mdi-alphabetical"
+                          color="primary accent-3"
+                          clearable
+                          :error-messages="errors"
+                        >
+                        </v-text-field>
+                      </validation-provider>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="blue darken-1" text @click="closeEdit">Trở lại</v-btn>
+                  <v-btn color="blue darken-1" text type="submit">Đồng ý</v-btn>
+                  <v-spacer></v-spacer>
+                </v-card-actions>
+              </v-form>
+            </ValidationObserver>
+          </v-card>
+        </v-dialog>
+        <v-dialog v-model="dialog.delete" max-width="500px">
+          <v-card>
+            <v-card-title class="text-h5">Bạn có chắc chắn xoá danh mục này?</v-card-title>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="closeDelete">Trở lại</v-btn>
+              <v-btn color="blue darken-1" text @click="deleteItemConfirm(item)">Đồng ý</v-btn>
+              <v-spacer></v-spacer>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <v-icon small class="mr-2" @click="openEditDialog"> mdi-pencil </v-icon>
+        <v-icon small @click="openDeleteDialog"> mdi-delete </v-icon>
       </template>
       <template v-slot:no-data>
         <v-btn color="primary" @click="initialize"> Reset </v-btn>
@@ -124,8 +172,11 @@ export default {
       table: true,
       addNewCategoryButton: false,
     },
-    dialog: false,
-    dialogDelete: false,
+    dialog: {
+      add: false,
+      delete: false,
+      edit: false,
+    },
     search: '',
     headers: [
       {
@@ -159,12 +210,6 @@ export default {
   computed: {},
 
   watch: {
-    dialog(val) {
-      val || this.close();
-    },
-    dialogDelete(val) {
-      val || this.closeDelete();
-    },
     options: {
       handler() {
         this.readDataFromAPI();
@@ -203,12 +248,20 @@ export default {
       this.loading.addNewCategoryButton = true;
       const { data, status } = await insertCategory(this.newCategoryInfor);
       if (status === 'Success') {
-        this.dialog = false;
+        this.dialog.add = false;
         alert('Thêm danh mục "' + data?.name + '" với code là "' + data?.code + '" thành công!');
       } else {
         alert(status);
       }
       this.loading.addNewCategoryButton = false;
+    },
+
+    openEditDialog() {
+      this.dialog.edit = true;
+    },
+
+    openDeleteDialog() {
+      this.dialog.delete = true;
     },
 
     editItem(item) {
@@ -220,7 +273,7 @@ export default {
     deleteItem(item) {
       this.editedIndex = this.data.indexOf(item);
       this.editedItem = Object.assign({}, item);
-      this.dialogDelete = true;
+      this.dialog.delete = true;
     },
 
     deleteItemConfirm() {
@@ -229,19 +282,18 @@ export default {
     },
 
     close() {
-      this.dialog = false;
+      this.dialog.add = false;
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
       });
     },
 
+    closeEdit() {
+      this.dialog.edit = false;
+    },
     closeDelete() {
-      this.dialogDelete = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
+      this.dialog.delete = false;
     },
   },
   mounted() {
