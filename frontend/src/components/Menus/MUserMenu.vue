@@ -21,6 +21,7 @@
 
 <script>
 import router from '@/router';
+import { doLogout } from '@/services';
 export default {
   name: 'MUserMenu',
   props: {
@@ -53,11 +54,13 @@ export default {
     },
   },
   methods: {
-    handleClick(item) {
+    async handleClick(item) {
       if (item.action === 'log-out') {
         localStorage.removeItem('accessToken');
-        console.log('log out');
-        router.push('/login');
+        const status = await doLogout();
+        if (status === 200) {
+          router.push('/login');
+        }
       }
       if (item.action === 'profile') {
         router.push('/profile');

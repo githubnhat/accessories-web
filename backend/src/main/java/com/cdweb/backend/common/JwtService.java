@@ -29,6 +29,9 @@ public class JwtService {
     @Value("${token.refresh-life-time}")
     private int refreshTokenLifeTimeHours;
 
+    @Value("${remember_me.expired_days}")
+    private int isRememberMeLifeTimeHours;
+
 //    public boolean isValidToken(String token) {
 //        return !isNoneValidToken(token);
 //    }
@@ -77,12 +80,12 @@ public class JwtService {
         return this.getAccessToken(user, this.accessTokenLifeTimeHours);
     }
 
-    public String generateRefreshToken(Users user) {
-        return this.getRefreshToken(user, this.refreshTokenLifeTimeHours);
+    public String generateRefreshToken(Users user, boolean isRememberMe) {
+        return this.getRefreshToken(user, this.getRefreshTokenLifeTimeHours(isRememberMe));
     }
 
-    public int getRefreshTokenLifeTimeHours(){
-        return this.refreshTokenLifeTimeHours;
+    public int getRefreshTokenLifeTimeHours(boolean isRememberMe){
+        return isRememberMe ? this.isRememberMeLifeTimeHours * 24 * 60 : this.refreshTokenLifeTimeHours;
     }
 
     private String getAccessToken(Users user, int expiredMinutes) {

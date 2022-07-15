@@ -31,4 +31,6 @@ spring:
 token:
   access-life-time: 1
   refresh-life-time: 1440
+remember_me:
+  expired_days: 30
 

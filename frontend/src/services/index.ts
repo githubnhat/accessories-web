@@ -64,12 +64,7 @@ export async function doRegister(dataForm: object) {
     const path = '/auth/register';
 
     const { data, status } = await axios.post<GetRegisterResponse>(path, dataForm);
-    // console.log(JSON.stringify(data, null, 10));
-    // localStorage.setItem('accessToken', data?.data?.accessToken || '');
-    // if (status === 200) {
-    //   router.push('/');
-    // }
-    // 👇️ "response status is: 200"
+
     console.log('response status is: ', status);
 
     return data;
@@ -121,14 +116,25 @@ export async function verifyOTP(dataForm: object) {
   }
 }
 
-// refresh token
-// type AccesstokenRefresh = {
-//   accessToken: string;
-// };
+export async function doLogout() {
+  try {
+    const path = '/auth/logout';
 
-// type GetAccesstokenRefreshResponse = {
-//   data: AccesstokenRefresh;
-// };
+    const { status } = await axios.get<GetRegisterResponse>(path,{withCredentials: true});
+
+    console.log('response status is: ', status);
+
+    return status;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log('error message: ', error.message);
+      return error.message;
+    } else {
+      console.log('unexpected error: ', error);
+      return 'An unexpected error occurred';
+    }
+  }
+}
 
 export async function refreshToken() {
   axios.defaults.headers.common = { Authorization: `` };
