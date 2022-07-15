@@ -46,9 +46,6 @@ export default {
         case 'All attribute product':
           this.controler = 'm-all-attribute-form';
           break;
-        case 'Add attribute product':
-          this.controler = 'm-add-attribute-form';
-          break;
         case 'All accounts':
           this.controler = 'm-add-account-form';
           break;

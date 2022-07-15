@@ -10,6 +10,10 @@
       :options.sync="options"
       :server-items-length="totalItems"
       :loading="loading"
+      :footer-props="{
+        showFirstLastPage: true,
+        showCurrentPage: true,
+      }"
       class="elevation-1"
     >
       <template v-slot:top>
@@ -101,15 +105,7 @@ export default {
     deep: true,
   },
 
-  async created() {
-    this.initialize();
-  },
-
   methods: {
-    async initialize() {
-      this.readDataFromAPI();
-    },
-
     async readDataFromAPI() {
       this.loading = true;
       const { page, itemsPerPage } = this.options;
