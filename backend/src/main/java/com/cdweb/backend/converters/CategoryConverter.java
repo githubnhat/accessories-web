@@ -16,7 +16,7 @@ public class CategoryConverter {
     public Categories toEntity(CategoryRequest request){
         return Categories.builder()
                 .name(request.getName())
-                .code(request.getCode())
+//                .code(request.getCode())
                 .build();
     }
 

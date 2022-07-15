@@ -19,6 +19,7 @@ import MUserMenu from '../Menus/MUserMenu.vue';
 import jwt_decode from 'jwt-decode';
 import router from '@/router';
 import { ADMIN_MENU } from '@/utils/mocks';
+import { mapState } from 'vuex';
 
 export default {
   name: 'MHeader',
@@ -27,14 +28,19 @@ export default {
     menuList: ADMIN_MENU,
   }),
   created() {
-    const accessToken = localStorage.getItem('accessToken');
-    this.username = !accessToken ? null : jwt_decode(accessToken).fullName;
+    // const accessToken = localStorage.getItem('accessToken');
+    this.username = !this.accessToken ? null : jwt_decode(this.accessToken).fullName;
   },
   props: {
     drawer: {
       type: Boolean,
       default: true,
     },
+  },
+  computed: {
+    ...mapState({
+      accessToken: (state) => state._accessToken.state.accessToken,
+    }),
   },
   methods: {
     handleToLogin() {

@@ -14,4 +14,5 @@ public interface ICategoryService {
     CategoryResponse save(CategoryRequest request);
 
     int totalItem();
+    boolean existsByCodeAndIsActiveTrue(String code);
 }

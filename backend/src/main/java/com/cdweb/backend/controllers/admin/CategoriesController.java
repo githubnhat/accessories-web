@@ -27,13 +27,15 @@ public class CategoriesController {
     @GetMapping("/page/{page}/limit/{limit}")
     ResponseEntity<?> getAll(@PathVariable("page") int page, @PathVariable("limit") int limit){
         Pageable pageable = PageRequest.of(page - 1, limit);
+        int totalItem = categoryService.totalItem();
         PageResponse<CategoryResponse> response = PageResponse.<CategoryResponse>builder()
                 .page(page)
-                .totalPages((int) Math.ceil((double) (categoryService.totalItem()) / limit))
+                .totalPages((int) Math.ceil((double) (totalItem) / limit))
+                .totalItems(totalItem)
                 .data(categoryService.findAll(pageable))
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(
-                (response.getData() != null)
+                (response.getData().size() > 0)
                         ? new ResponseObject("Success", null, response)
                         : new ResponseObject("Success", "Have no category", null));
     }
@@ -64,5 +66,13 @@ public class CategoriesController {
                 ResponseEntity.status(HttpStatus.OK).body((response != null)
                         ? new ResponseObject("Success", null, response)
                         : new ResponseObject("Failed", "Have no category", null));
+    }
+
+    @GetMapping("/exists/{code}")
+    ResponseEntity<?> existsCategoryByCode(@PathVariable("code") String code) {
+        log.info("pn {}", code);
+        Boolean exists = categoryService.existsByCodeAndIsActiveTrue(code);
+        log.info("kq {}", exists);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", "", exists));
     }
 }
