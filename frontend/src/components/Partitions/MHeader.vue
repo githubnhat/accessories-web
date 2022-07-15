@@ -9,7 +9,6 @@
       </v-toolbar-title>
 
       <v-spacer></v-spacer>
-      <v-btn @click="handleRefresh">Refresh</v-btn>
 
       <v-form v-if="hidden">
         <v-row>
@@ -56,7 +55,6 @@
 import MUserMenu from '../Menus/MUserMenu.vue';
 import jwt_decode from 'jwt-decode';
 import router from '@/router';
-import { refreshToken } from '@/services';
 import { mapState } from 'vuex';
 
 export default {
@@ -83,14 +81,10 @@ export default {
     handleToLogin() {
       router.push('/login');
     },
-    async handleRefresh() {
-      await refreshToken();
-      console.log('done');
-    },
   },
   computed: {
     ...mapState({
-      accessToken: (state) => state._accessToken.state.accessToken,
+      accessToken: (module) => module._accessToken.state.accessToken,
     }),
   },
   components: {

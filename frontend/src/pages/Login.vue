@@ -336,7 +336,7 @@ export default {
         const token = data?.data?.accessToken;
         this.$store.commit('_accessToken/setAccessToken', token);
         router.push('/');
-      } else alert('Đăng nhập không thành công /n Vui lòng thử lại!');
+      } else alert('Đăng nhập không thành công. Vui lòng thử lại!');
       this.loading.login = false;
     },
     async register() {
