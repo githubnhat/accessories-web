@@ -67,4 +67,12 @@ public class CategoriesController {
                         ? new ResponseObject("Success", null, response)
                         : new ResponseObject("Failed", "Have no category", null));
     }
+
+    @GetMapping("/exists/{code}")
+    ResponseEntity<?> existsCategoryByCode(@PathVariable("code") String code) {
+        log.info("pn {}", code);
+        Boolean exists = categoryService.existsByCodeAndIsActiveTrue(code);
+        log.info("kq {}", exists);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", "", exists));
+    }
 }

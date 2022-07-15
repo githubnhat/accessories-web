@@ -1,9 +1,9 @@
 package com.cdweb.backend.services.impl;
 
+import com.cdweb.backend.common.Utils;
 import com.cdweb.backend.converters.CategoryConverter;
 import com.cdweb.backend.entities.Categories;
 import com.cdweb.backend.payloads.requests.CategoryRequest;
-import com.cdweb.backend.payloads.responses.BrandResponse;
 import com.cdweb.backend.payloads.responses.CategoryResponse;
 import com.cdweb.backend.repositories.CategoryRepository;
 import com.cdweb.backend.services.ICategoryService;
@@ -40,12 +40,14 @@ public class CategoryServiceImpl implements ICategoryService {
         CategoryResponse response = null;
         // id null mean insert, otherwise mean update
         if(request.getId() == null) {
-            Categories category = categoryRepository.findByCodeAndIsActiveTrue(request.getCode());
+            String code = request.getCode();
+            Categories category = categoryRepository.findByCodeAndIsActiveTrue(code);
             if (category == null) {
                 Categories newCategory = categoryConverter.toEntity(request);
                 newCategory.setActive(true);
+                newCategory.setCode(code);
                 Categories entity = categoryRepository.save(newCategory);
-                response =  categoryConverter.toResponse(entity);
+                response = categoryConverter.toResponse(entity);
             } return response;
         } else {
             Categories newEntity = categoryConverter.toEntity(request);
@@ -53,6 +55,11 @@ public class CategoryServiceImpl implements ICategoryService {
             Categories entity = categoryRepository.save(newEntity);
             return categoryConverter.toResponse(entity);
         }
+    }
+
+    @Override
+    public boolean existsByCodeAndIsActiveTrue(String code) {
+        return categoryRepository.existsByCodeAndIsActiveTrue(code);
     }
 
     @Override
