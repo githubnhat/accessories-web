@@ -63,7 +63,12 @@
                         <v-form class="mt-5" ref="formLogin" @submit.prevent="handleSubmit(login)">
                           <v-card-text class="mt-5">
                             <h1
-                              class="text-center display-2 primary--text text--accent-3 text-capitalize"
+                              class="
+                                text-center
+                                display-2
+                                primary--text
+                                text--accent-3 text-capitalize
+                              "
                             >
                               Đăng nhập
                             </h1>
@@ -115,7 +120,7 @@
                               <v-col cols="4"></v-col>
                               <v-col cols="4">
                                 <v-checkbox
-                                  v-model="rememberLogin"
+                                  v-model="loginInput.isRememberMe"
                                   label="Ghi nhớ đăng nhập"
                                   class="text-center"
                                 ></v-checkbox>
@@ -166,7 +171,12 @@
                         <v-form class="mt-5" @submit.prevent="handleSubmit(register)">
                           <v-card-text class="mt-5">
                             <h1
-                              class="text-center display-2 primary--text text--accent-3 text-capitalize"
+                              class="
+                                text-center
+                                display-2
+                                primary--text
+                                text--accent-3 text-capitalize
+                              "
                             >
                               Tạo tài khoản
                             </h1>
@@ -292,10 +302,10 @@ export default {
   data() {
     return {
       step: 1,
-      rememberLogin: false,
       loginInput: {
         username: '',
         password: '',
+        isRememberMe: false,
       },
       registerInput: {
         username: '',

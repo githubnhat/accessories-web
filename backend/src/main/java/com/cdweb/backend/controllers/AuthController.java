@@ -32,9 +32,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest request, HttpServletResponse response) {
         try {
+            log.error("mm {}", request.getIsRememberMe());
             AuthResponse authResponse = authService.login(request);
             Users user = jwtService.getUserFromToken(authResponse.getAccessToken());
-            addRefreshTokenToCookie(response, user);
+            String refresh_token = jwtService.generateRefreshToken(user, request.getIsRememberMe());
+            addRefreshTokenToCookie(response, refresh_token, jwtService.getRefreshTokenLifeTimeHours(request.getIsRememberMe()) * 60);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseObject("success", null, authResponse));
         } catch (IllegalArgumentException ex) {
@@ -62,10 +64,7 @@ public class AuthController {
 
     @GetMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("refresh_token", null);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/api/token/refresh");
-        response.addCookie(cookie);
+       addRefreshTokenToCookie(response, "", 0);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -75,7 +74,9 @@ public class AuthController {
         try {
             AuthResponse authResponse = authService.confirmOTP(request);
             Users user = jwtService.getUserFromToken(authResponse.getAccessToken());
-            addRefreshTokenToCookie(response, user);
+            String refresh_token = jwtService.generateRefreshToken(user, false);
+
+            addRefreshTokenToCookie(response, refresh_token, jwtService.getRefreshTokenLifeTimeHours(false) * 60);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", null, authResponse));
         } catch (IllegalArgumentException ex) {
             log.error("API /register: {}", ex.getMessage());
@@ -96,13 +97,11 @@ public class AuthController {
         }
     }
 
-    public void addRefreshTokenToCookie(HttpServletResponse response, Users user) {
-        String refresh_token = jwtService.generateRefreshToken(user);
-        Cookie cookie = new Cookie("refresh_token", refresh_token);
+    public void addRefreshTokenToCookie(HttpServletResponse response, String refreshToken, int maxAge) {
+        Cookie cookie = new Cookie("refresh_token", refreshToken);
         cookie.setHttpOnly(true);
-        cookie.setSecure(false);
         cookie.setPath("/");
-        cookie.setMaxAge(jwtService.getRefreshTokenLifeTimeHours() * 60);
+        cookie.setMaxAge(maxAge);
         response.addCookie(cookie);
 
     }
