@@ -7,11 +7,17 @@ import java.util.regex.Pattern;
 
 public class Utils {
     public static String removeAccent(String s) {
-        String temp = s.toLowerCase();
+        String temp = s.trim().toLowerCase();
         temp = Normalizer.normalize(temp, Normalizer.Form.NFD);
         Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
         temp = pattern.matcher(temp).replaceAll("");
         return temp.replaceAll("đ", "d");
+    }
+
+    public static String transNameToCode(String s) {
+        String removeAccent = removeAccent(s);
+
+        return removeAccent.replaceAll(" ", "-");
     }
 
     public static String getUniqueStringId(String productVariantName) {
