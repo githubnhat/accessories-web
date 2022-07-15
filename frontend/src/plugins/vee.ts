@@ -3,6 +3,7 @@ import { ValidationProvider, ValidationObserver, extend, setInteractionMode } fr
 import * as rules from 'vee-validate/dist/rules';
 import { required, email, min, max, between, numeric, confirmed } from 'vee-validate/dist/rules';
 import { checkUniqueProductName } from '@/services/admin/add-product-form';
+import { checkUniqueCategoryCode } from '@/services/admin/all-category-form';
 
 // config trigger
 setInteractionMode('lazy');
@@ -54,9 +55,16 @@ extend('confirmed', {
 extend('uniqueProductName', {
   ...required,
   validate: async (value) => {
-    console.log('value', value);
-     const result = await checkUniqueProductName(value.trim());
-    console.log('result', !result);
+    const result = await checkUniqueProductName(value.trim());
+    return !result;
+  },
+  message: (field) => field + ' đã tồn tại.',
+});
+
+extend('uniqueCategoryCode', {
+  ...required,
+  validate: async (value) => {
+    const result = await checkUniqueCategoryCode(value.trim());
     return !result;
   },
   message: (field) => field + ' đã tồn tại.',
