@@ -37,7 +37,7 @@ export function cartesian([...args]) {
 }
 
 export function combineVariants(value) {
-  if (value.length === 0) return false;
+  if (value.length === 0) return [];
   const cartes = cartesian(value);
 
   const result = cartes.map((item) => ({
