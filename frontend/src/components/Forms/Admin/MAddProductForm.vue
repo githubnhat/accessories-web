@@ -231,7 +231,7 @@
 
       <v-stepper-content step="3">
         <ValidationObserver v-slot="{ handleSubmit }">
-          <v-form @submit.prevent="handleSubmit(onSubmitStep3)">
+          <v-form @submit.prevent="handleSubmit(async () => await onSubmitStep3())">
             <v-card elevation="2" outlined class="mb-12 pa-5">
               <v-row v-for="(item, n) in combineVariants" :key="n">
                 <v-col cols="3">

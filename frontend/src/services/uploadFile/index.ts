@@ -4,12 +4,12 @@ export async function upLoadImg(files: Array<any>) {
   try {
     const images: string[] = [];
     const storage = getStorage();
-    files.forEach(async (file) => {
+    for (const file of files) {
       const storageRef = ref(storage, 'images/' + file.name);
       const img = await uploadBytes(storageRef, file);
       const src = await getDownloadURL(img.ref);
       images.push(src);
-    });
+    }
     return images;
   } catch (error) {
     console.log('error rồi nè ', error);
