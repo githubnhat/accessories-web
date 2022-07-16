@@ -12,8 +12,8 @@
           prepend-icon="mdi-image"
           dense
         >
-          <template v-slot:selection="{ text }">
-            <v-chip small label color="primary">
+          <template v-slot:selection="{ index, text }">
+            <v-chip small label color="primary" close @click:close="deleteImage(index, text)">
               {{ text }}
             </v-chip>
           </template></v-file-input
@@ -46,6 +46,10 @@ export default {
     async uploadFile() {
       this.images = await upLoadImg(this.files);
       this.files = null;
+    },
+    deleteImage(index, image) {
+      this.files = this.files.filter((item, i) => i !== index);
+      console.log('remove: ', image);
     },
   },
 };
