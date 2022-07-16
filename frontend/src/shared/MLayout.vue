@@ -27,4 +27,7 @@ export default {
 .scrollable {
   overflow-y: scroll;
 }
+.m-layout-container {
+  background: #eceff1;
+}
 </style>
