@@ -48,14 +48,14 @@ public class AttributeController {
                         new ResponseObject("Failed", "Have no attribute", null)) ;
     }
 
-//    @GetMapping("/listVariants")
-//    public ResponseEntity<?> getAllAttrAndVariants(){
-//        List<AttributeAndVariantsResponse> response = attributeService.findAllAttributeAndVariants();
-//        return ResponseEntity.status(HttpStatus.OK).body(
-//                (response.size()>0) ?
-//                        new ResponseObject("Success", null, response) :
-//                        new ResponseObject("Failed", "Have no attribute", null));
-//    }
+    @GetMapping("/listVariants")
+    public ResponseEntity<?> getAllAttrAndVariants(){
+        List<AttributeAndVariantsResponse> response = attributeService.findAllAttributeAndVariants();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                (response.size()>0) ?
+                        new ResponseObject("Success", null, response) :
+                        new ResponseObject("Failed", "Have no attribute", null));
+    }
 
     @PostMapping("")
     public ResponseEntity<?> insertAttributeAndVariants(@RequestBody AttributeAndVariantsRequest request){
