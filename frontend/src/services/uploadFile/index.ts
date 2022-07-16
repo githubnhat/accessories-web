@@ -1,4 +1,5 @@
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function upLoadImg(files: Array<any>) {
   try {
     const images: string[] = [];
