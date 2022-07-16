@@ -19,6 +19,7 @@ public interface IAttributeService {
 
     List<AttributeResponse> findByIsActiveTrue();
     List<AttributeAndVariantsResponse> findAllAttributeAndVariants(Pageable pageable);
+    List<AttributeAndVariantsResponse> findAllAttributeAndVariants();
     Attributes findByAttributeNameAndIsActiveTrue(String attributeName);
 
 //    List<AttributeAndVariantsResponse> findAllAttributeAndVariants();

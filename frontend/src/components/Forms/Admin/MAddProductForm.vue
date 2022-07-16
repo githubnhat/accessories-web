@@ -136,19 +136,25 @@
                         prepend-icon="mdi-image"
                         dense
                       >
-                        <template v-slot:selection="{ text }">
-                          <v-chip small label color="primary">
+                        <template v-slot:selection="{ index, text }">
+                          <v-chip
+                            small
+                            label
+                            color="primary"
+                            close
+                            @click:close="deleteImage(index, text)"
+                          >
                             {{ text }}
                           </v-chip>
-                        </template></v-file-input
-                      >
+                        </template>
+                      </v-file-input>
                     </v-col>
                   </v-row>
                 </v-container>
               </v-card-text>
             </v-card>
             <div class="d-flex justify-end">
-              <v-btn color="primary" type="submit"> Tiếp tục </v-btn>
+              <v-btn color="primary" type="submit" :loading="loading.step1"> Tiếp tục </v-btn>
             </div>
           </v-form>
         </ValidationObserver>
@@ -217,7 +223,7 @@
 
             <div class="d-flex justify-end">
               <v-btn class="mr-2" text @click="step--"> Quay lại </v-btn>
-              <v-btn color="primary" type="submit"> Tiếp tục </v-btn>
+              <v-btn color="primary" type="submit" :loading="loading.step2"> Tiếp tục </v-btn>
             </div>
           </v-form>
         </ValidationObserver>
@@ -291,7 +297,7 @@
             </v-card>
             <div class="d-flex justify-end">
               <v-btn class="mr-2" text @click="step--"> Quay lại </v-btn>
-              <v-btn color="primary" type="submit"> Tiếp tục </v-btn>
+              <v-btn color="primary" type="submit" :loading="loading.step3"> Tiếp tục </v-btn>
             </div>
           </v-form>
         </ValidationObserver>
@@ -311,6 +317,7 @@ import {
   insertProduct,
 } from '@/services/admin/add-product-form';
 import { combineVariants } from '@/utils';
+import { upLoadImg } from '@/services/uploadFile';
 
 export default {
   data() {
@@ -330,11 +337,17 @@ export default {
       brands: [],
       categories: [],
       files: [],
+      images: null,
       numberAttributes: 0,
       attributeList: VARIANTS,
       selectItems: SELECT_ITEMS,
       combineVariants: [],
       payload: {},
+      loading: {
+        step1: false,
+        step2: false,
+        step3: false,
+      },
     };
   },
   created() {
@@ -363,6 +376,32 @@ export default {
       this.categories = existedCategories;
       this.categoryName = this.categories[0].name;
     },
+
+    async uploadFile() {
+      this.images = await upLoadImg(this.files);
+
+      return {
+        productName: this.productName,
+        description: this.description,
+        originalPrice: this.originalPrice,
+        originalQuantity: this.originalQuantity,
+        imageLinks: this.images,
+        // discount: parseInt(this.discount),
+        attributes: this.attributes.map((item) => ({
+          attributeName: item.attributeName,
+          variantNames: item.selectedVariants,
+        })),
+        combinations: this.combineVariants,
+        brandName: this.brandName,
+        categoryName: this.categoryName,
+      };
+    },
+
+    deleteImage(index, image) {
+      this.files = this.files.filter((item, i) => i !== index);
+      console.log('remove: ', image);
+    },
+
     handleAddAttribute() {
       let newAttribute =
         this.selectedAttribute.id !== -1
@@ -392,10 +431,6 @@ export default {
               variantNames: [...item.variantNames, this.search[index]],
               selectedVariants: [...item?.selectedVariants, this.search[index]],
             },
-      );
-      console.log(
-        'attributes',
-        this.attributes.filter((item) => item.attributeName === name),
       );
       this.search[index] = '';
     },
@@ -442,37 +477,32 @@ export default {
       });
     },
     onSubmitStep1() {
+      this.loading.step1 = true;
       this.step = 2;
       this.completeStep = [1, ...this.completeStep];
+      this.loading.step1 = false;
     },
     onSubmitStep2() {
+      this.loading.step2 = true;
       let variantList = this.attributes.map((item) => item?.selectedVariants);
       this.combineVariants = combineVariants(variantList);
-      console.log(this.combineVariants);
       this.step = 3;
       this.completeStep = [2, ...this.completeStep];
+      this.loading.step2 = false;
     },
     // submit complete form add product
     async onSubmitStep3() {
-      this.payload = {
-        productName: this.productName,
-        description: this.description,
-        originalPrice: this.originalPrice,
-        originalQuantity: this.originalQuantity,
-        imageLinks: [],
-        // discount: parseInt(this.discount),
-        attributes: this.attributes.map((item) => ({
-          attributeName: item.attributeName,
-          variantNames: item.selectedVariants,
-        })),
-        combinations: this.combineVariants,
-        brandName: this.brandName,
-        categoryName: this.categoryName,
-      };
+      this.loading.step3 = true;
+      // await this.upLoadFile();
+
+      this.payload = await this.uploadFile();
+      console.log('this.images', this.images);
+
       const product = await insertProduct(this.payload);
       console.log('product', JSON.stringify(product, null, 10));
 
       console.log('payload', JSON.stringify(this.payload, null, 10));
+      this.loading.step3 = false;
     },
   },
 };
