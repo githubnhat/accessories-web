@@ -41,6 +41,14 @@ const routes: Array<RouteConfig> = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "admin" */ '@/pages/AdminPage.vue'),
   },
+  {
+    path: '/admin-login',
+    name: 'admin-login',
+    // route level code-splitting
+    // this generates a separate chunk (admin.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "admin-login" */ '@/pages/AdminLogin.vue'),
+  },
 ];
 
 const router = new VueRouter({
