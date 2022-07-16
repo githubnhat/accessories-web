@@ -32,7 +32,6 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest request, HttpServletResponse response) {
         try {
-            log.error("mm {}", request.getIsRememberMe());
             AuthResponse authResponse = authService.login(request);
             Users user = jwtService.getUserFromToken(authResponse.getAccessToken());
             String refresh_token = jwtService.generateRefreshToken(user, request.getIsRememberMe());
