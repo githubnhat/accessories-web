@@ -1,5 +1,6 @@
 package com.cdweb.backend.controllers;
 
+import com.cdweb.backend.common.Constant;
 import com.cdweb.backend.common.JwtService;
 import com.cdweb.backend.entities.Users;
 import com.cdweb.backend.payloads.requests.*;
@@ -32,7 +33,21 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest request, HttpServletResponse response) {
         try {
-            AuthResponse authResponse = authService.login(request);
+            AuthResponse authResponse = authService.loginForUser(request);
+            Users user = jwtService.getUserFromToken(authResponse.getAccessToken());
+            String refresh_token = jwtService.generateRefreshToken(user, request.getIsRememberMe());
+            addRefreshTokenToCookie(response, refresh_token, jwtService.getRefreshTokenLifeTimeHours(request.getIsRememberMe()) * 60);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseObject("success", null, authResponse));
+        } catch (IllegalArgumentException ex) {
+            log.error("API /login: {}", ex);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("fail", ex.getMessage(), null));
+        }
+    }
+    @PostMapping("admin/login")
+    public ResponseEntity<?> loginAdmin(@RequestBody AuthRequest request, HttpServletResponse response) {
+        try {
+            AuthResponse authResponse = authService.loginForAdmin(request);
             Users user = jwtService.getUserFromToken(authResponse.getAccessToken());
             String refresh_token = jwtService.generateRefreshToken(user, request.getIsRememberMe());
             addRefreshTokenToCookie(response, refresh_token, jwtService.getRefreshTokenLifeTimeHours(request.getIsRememberMe()) * 60);
