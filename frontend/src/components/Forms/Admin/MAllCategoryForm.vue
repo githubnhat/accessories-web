@@ -3,6 +3,7 @@
     <div class="display-1 text-center mb-3">Danh mục sản phẩm - Category</div>
 
     <v-data-table
+      v-model="selectedItems"
       :page="page"
       :pageCount="totalPages"
       :server-items-length="totalItems"
@@ -15,11 +16,71 @@
         showFirstLastPage: true,
         showCurrentPage: true,
       }"
+      show-select
     >
       <template v-slot:top>
         <v-toolbar flat>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
+          <v-dialog v-model="dialog.deleteAll" max-width="500px">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                :disabled="selectedItems.length === 0"
+                color="primary"
+                dark
+                class="mb-2 mr-2"
+                v-bind="attrs"
+                v-on="on"
+              >
+                Xóa
+              </v-btn>
+            </template>
+            <v-card>
+              <ValidationObserver v-slot="{ handleSubmit }">
+                <v-form @submit.prevent="handleSubmit(deleteCategory)">
+                  <v-card-title>
+                    <span class="text-h5">Xác nhận xóa (các) danh mục sau:</span>
+                  </v-card-title>
+
+                  <v-card-text>
+                    <v-row dense v-for="item in selectedItems" :key="item.id">
+                      <v-col cols="6">
+                        <v-text-field
+                          v-model="item.name"
+                          label="Tên danh mục"
+                          outlined
+                          dense
+                          readonly
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="6">
+                        <v-text-field
+                          v-model="item.code"
+                          label="Mã danh mục"
+                          outlined
+                          dense
+                          readonly
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+                  </v-card-text>
+
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" text @click="closeDelete"> Trở lại </v-btn>
+                    <v-btn
+                      color="error darken-1"
+                      text
+                      type="submit"
+                      :loading="loading.deleteCategory"
+                    >
+                      Xóa
+                    </v-btn>
+                  </v-card-actions>
+                </v-form>
+              </ValidationObserver>
+            </v-card>
+          </v-dialog>
           <v-dialog v-model="dialog.add" max-width="500px">
             <template v-slot:activator="{ on, attrs }">
               <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
@@ -171,10 +232,12 @@ export default {
     loading: {
       table: true,
       addNewCategoryButton: false,
+      deleteCategory: false,
     },
     dialog: {
       add: false,
       delete: false,
+      deleteAll: false,
       edit: false,
     },
     search: '',
@@ -205,6 +268,7 @@ export default {
       attributeName: '',
       variantNames: '',
     },
+    selectedItems: [],
   }),
 
   computed: {},
@@ -256,6 +320,14 @@ export default {
       this.loading.addNewCategoryButton = false;
     },
 
+    async deleteCategory() {
+      this.loading.deleteCategory = true;
+      const chosenItems = this.selectedItems.map((item) => item.id);
+      console.log('chosenItems', chosenItems);
+      // const {data, status} = await deleteCategorys()
+      this.loading.deleteCategory = false;
+    },
+
     openEditDialog() {
       this.dialog.edit = true;
     },
@@ -293,6 +365,7 @@ export default {
       this.dialog.edit = false;
     },
     closeDelete() {
+      this.dialog.deleteAll = false;
       this.dialog.delete = false;
     },
   },
