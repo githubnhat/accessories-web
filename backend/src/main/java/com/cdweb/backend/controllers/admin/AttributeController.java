@@ -75,4 +75,11 @@ public class AttributeController {
                         new ResponseObject("Failed", "Attribute name already taken", "") :
                         new ResponseObject("Success", "Insert Attribute Successfully", response));
     }
+
+    @DeleteMapping("")
+    ResponseEntity<?> deleteAttribute(@RequestBody Long[] ids) {
+        return ResponseEntity.status(HttpStatus.OK).body(attributeService.delete(ids) ?
+                new ResponseObject("Success", "Delete brand successfully", true) :
+                new ResponseObject("Failed", "Can not find brand", false));
+    }
 }

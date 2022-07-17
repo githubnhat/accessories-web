@@ -5,6 +5,7 @@ import com.cdweb.backend.payloads.responses.CategoryResponse;
 import com.cdweb.backend.payloads.responses.CategoryResponse;
 import com.cdweb.backend.payloads.responses.PageResponse;
 import com.cdweb.backend.payloads.responses.ResponseObject;
+import com.cdweb.backend.services.ICategoryService;
 import com.cdweb.backend.services.impl.CategoryServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ import java.util.List;
 @Slf4j
 public class CategoriesController {
 
-    private final CategoryServiceImpl categoryService;
+    private final ICategoryService categoryService;
 
     @GetMapping("/page/{page}/limit/{limit}")
     ResponseEntity<?> getAll(@PathVariable("page") int page, @PathVariable("limit") int limit){
@@ -75,4 +76,12 @@ public class CategoriesController {
         log.info("kq {}", exists);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", "", exists));
     }
+
+    @DeleteMapping("")
+    ResponseEntity<?> deleteCategory(@RequestBody Long[] ids) {
+        return ResponseEntity.status(HttpStatus.OK).body(categoryService.delete(ids) ?
+                new ResponseObject("Success", "Delete category successfully", true) :
+                new ResponseObject("Failed", "Can not find category", false));
+    }
 }
+

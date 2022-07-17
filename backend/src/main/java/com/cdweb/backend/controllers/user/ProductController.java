@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController(value="productControllerOfUser")
+@RestController(value = "productControllerOfUser")
 @RequestMapping("/api/v1/user/product")
 @RequiredArgsConstructor
 @Slf4j
@@ -25,8 +25,7 @@ public class ProductController {
     private final IProductService productService;
 
     @GetMapping("/no-token/{page}/{limit}")
-    ResponseEntity<?> showAllProduct(@PathVariable("page") int page, @PathVariable("limit") int limit) {
-        log.info("111{}");
+    ResponseEntity<?> getAllProduct(@PathVariable("page") int page, @PathVariable("limit") int limit) {
         PageResponse<ProductResponse> response = new PageResponse<>();
         response.setPage(page);
         Pageable pageable = PageRequest.of(page - 1, limit);
@@ -34,5 +33,12 @@ public class ProductController {
         response.setData(productService.findAllForUser(pageable));
         log.info("{}", response);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", null, response));
+    }
+
+    @GetMapping("/no-token/{id}")
+    ResponseEntity<?> getProductDetails(@PathVariable("id") Long productId) {
+        ProductResponse response = productService.findByProductId(productId);
+            return response != null ?  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", null, response)) :
+                                    ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Fail", "Can not find product!", response));
     }
 }

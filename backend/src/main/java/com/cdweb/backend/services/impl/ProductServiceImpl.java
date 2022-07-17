@@ -1,5 +1,6 @@
 package com.cdweb.backend.services.impl;
 
+import com.cdweb.backend.common.Utils;
 import com.cdweb.backend.converters.ProductAttributeConverter;
 import com.cdweb.backend.converters.ProductConverter;
 import com.cdweb.backend.entities.*;
@@ -44,7 +45,6 @@ public class ProductServiceImpl implements IProductService {
 
     private final IProductCombinationService productCombinationService;
 
-    private final ProductAttributeConverter productAttributeConverter;
 
     @Override
     public List<ProductResponse> findAllForAdmin(Pageable pageable) {
@@ -53,7 +53,7 @@ public class ProductServiceImpl implements IProductService {
        if (entities.size() > 0) {
            entities.forEach(entity -> {
                if (entity.isActive()) {
-                   List<ThumbnailResponse> productGalleries = productGalleryService.findByProductAndIsActiveTrue(entity);
+                   List<ThumbnailResponse> productThumbnails = productGalleryService.findByProductAndIsActiveTrue(entity);
                    List<AttributeResponse> attributes = attributeService.findByProductIdAndIsActive(entity.getId());
                    List<AttributeAndVariantsResponse> attrAndVarRs= new ArrayList<>();
                    attributes.forEach(a -> {
@@ -67,7 +67,7 @@ public class ProductServiceImpl implements IProductService {
                        attrAndVarRs.add(attrAndVar);
                    });
                    List<ProductCombinationResponse> proComRs = productCombinationService.findByProductAndIsActiveTrue(entity);
-                   ProductResponse product = productConverter.toResponse(entity, productGalleries, attrAndVarRs, proComRs);
+                   ProductResponse product = productConverter.toResponse(entity, productThumbnails, attrAndVarRs, proComRs);
                    response.add(product);
                }
            });
@@ -82,9 +82,9 @@ public class ProductServiceImpl implements IProductService {
         if (entities.size() > 0) {
             entities.forEach(entity -> {
                 if (entity.isActive()) {
-                    List<ThumbnailResponse> productGalleries = productGalleryService.findByProductAndIsActiveTrue(entity);
+                    List<ThumbnailResponse> productThumbnails = productGalleryService.findByProductAndIsActiveTrue(entity);
                     List<String> imageLinks = new ArrayList<>();
-                    productGalleries.forEach(p -> imageLinks.add(p.getImageLink()));
+                    productThumbnails.forEach(p -> imageLinks.add(p.getImageLink()));
                     ProductResponse product = ProductResponse.builder()
                             .id(entity.getId())
                             .productName(entity.getProductName())
@@ -106,9 +106,9 @@ public class ProductServiceImpl implements IProductService {
                     Double minPrice = productCombinationService.minPrice(entity.getId());
                     if (maxPrice!= null && minPrice != null){
                         if(maxPrice.equals(minPrice)){
-                            product.setOriginalPrice(String.valueOf(maxPrice));
+                            product.setOriginalPrice(Utils.formatNumber(maxPrice));
                         } else {
-                            product.setOriginalPrice(minPrice + " - " + maxPrice);
+                            product.setOriginalPrice(Utils.formatNumber(minPrice) + " - " + Utils.formatNumber(maxPrice));
                         }
                     }
                     response.add(product);
@@ -118,26 +118,65 @@ public class ProductServiceImpl implements IProductService {
         return response;
     }
 
-
-
     @Override
     public int totalItem() {
         return (int) productRepository.count();
     }
 
-    @Override
-    public ProductResponse findById(Long id) {
-//        Products foundEntity = productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Not found product!"));
-//        return (foundEntity != null) ? productConverter.toResponse(foundEntity, productGalleryRepository.findByProduct(foundEntity)) : null;
-        return null;
-
-    }
 
     @Override
-    public ProductResponse findByProductName(String productName) {
-        Products entity = productRepository.findByProductNameAndIsActiveTrue(productName);
-//        return productConverter.toResponse(entity, productGalleryRepository.findByProduct(entity));
-        return null;
+    public ProductResponse findByProductId(Long productId) {
+        Products entity = productRepository.findByIdAndIsActiveTrue(productId);
+       if (entity != null) {
+           List<ThumbnailResponse> productThumbnails = productGalleryService.findByProductAndIsActiveTrue(entity);
+           List<String> imageLinks = new ArrayList<>();
+           productThumbnails.forEach(p -> imageLinks.add(p.getImageLink()));
+           List<AttributeResponse> attributes = attributeService.findByProductIdAndIsActive(entity.getId());
+           List<AttributeAndVariantsResponse> attrAndVarRs= new ArrayList<>();
+           attributes.forEach(a -> {
+               List<String> variants = variantService.findByProductIdAndIsActive(entity.getId(), a.getId())
+                       .stream().map(VariantResponse :: getVariantName).collect(Collectors.toList());
+               AttributeAndVariantsResponse attrAndVar = AttributeAndVariantsResponse.builder()
+                       .attributeId(a.getId())
+                       .attributeName(a.getAttributeName())
+                       .variantNames(variants)
+                       .build();
+               attrAndVarRs.add(attrAndVar);
+           });
+           Categories category = categoryRepository.findByIdAndIsActiveTrue(entity.getCategories().getId());
+           Brands brand = brandRepository.findByIdAndIsActiveTrue(entity.getBrands().getId());
+           ProductResponse product = ProductResponse.builder()
+                   .id(entity.getId())
+                   .productName(entity.getProductName())
+                   .description(entity.getDescription())
+                   .originalPrice(String.valueOf(entity.getOriginalPrice()))
+                   .originalQuantity(entity.getOriginalQuantity())
+                   .discount(entity.getDiscount())
+                   .attributeAndVariants(attrAndVarRs)
+                   .imageLinks(imageLinks)
+                   .categoryName(category.getName())
+                   .brandName(brand.getName())
+                   .build();
+           List<ProductCombinationResponse> proComRs = productCombinationService.findByProductAndIsActiveTrue(entity);
+           if (proComRs != null) {
+               int quantity = 0;
+               for(ProductCombinationResponse p : proComRs) {
+                   quantity += p.getQuantity();
+               }
+               product.setOriginalQuantity(quantity);
+           }
+           Double maxPrice = productCombinationService.maxPrice(entity.getId());
+           Double minPrice = productCombinationService.minPrice(entity.getId());
+           if (maxPrice!= null && minPrice != null){
+               if(maxPrice.equals(minPrice)){
+                   product.setOriginalPrice(Utils.formatNumber(maxPrice));
+               } else {
+                   product.setOriginalPrice(Utils.formatNumber(minPrice) + " - " + Utils.formatNumber(maxPrice));
+               }
+           }
+           return product;
+       }
+       return null;
     }
 
     @Override
@@ -203,12 +242,12 @@ public class ProductServiceImpl implements IProductService {
     public boolean delete(Long[] ids) {
         boolean exists = true;
         for (Long id : ids) {
-            if (!productRepository.existsById(id)) exists = false;
+            if (!productRepository.existsByIdAndIsActiveTrue(id)) exists = false;
         }
         if (exists) {
             for (Long id :
                     ids) {
-                Products entity = productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Not found product"));
+                Products entity = productRepository.findByIdAndIsActiveTrue(id);
                 entity.setActive(false);
                 productRepository.save(entity);
             }

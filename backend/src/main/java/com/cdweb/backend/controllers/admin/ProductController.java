@@ -26,16 +26,6 @@ public class ProductController {
 
     private final ProductConverter productConverter;
 
-    // this request is: http://localhost:8081/api/v1/products?page=1&limit=3
-//    @GetMapping("")
-//    ResponseEntity<?> showProduct(@RequestParam("page") int page, @RequestParam("limit") int limit) {
-//        PageResponse<ProductResponse> response = new PageResponse<>();
-//        response.setPage(page);
-//        Pageable pageable = PageRequest.of(page - 1, limit);
-//        response.setTotalPage((int) Math.ceil((double) (productService.totalItem()) / limit));
-//        response.setData(productService.findAll(pageable));
-//        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", null, response));
-//    }
 
     // this request is: http://localhost:8081/api/v1/products?page=1&limit=3
     @GetMapping("/{page}/{limit}")
@@ -74,8 +64,8 @@ public class ProductController {
     @DeleteMapping("")
     ResponseEntity<?> deleteProduct(@RequestBody Long[] ids) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.delete(ids) ?
-                new ResponseObject("ok", "Delete Product successfully", "") :
-                new ResponseObject("failed", "Can not find product", ""));
+                new ResponseObject("Success", "Delete Product successfully", true) :
+                new ResponseObject("Failed", "Can not find product", false));
     }
 
     @GetMapping("/exists/{productName}")

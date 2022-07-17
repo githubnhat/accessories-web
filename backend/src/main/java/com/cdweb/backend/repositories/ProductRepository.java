@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProductRepository extends JpaRepository<Products, Long> {
     Products findByProductNameAndIsActiveTrue(String productName);
+    Products findByIdAndIsActiveTrue(Long productId);
+    boolean existsByIdAndIsActiveTrue(Long id);
     Boolean existsByProductNameAndIsActiveTrue(String productName);
     Page findAllByOrderByModifiedDateDesc(Pageable pageable);
 }

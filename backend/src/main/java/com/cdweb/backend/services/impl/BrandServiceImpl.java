@@ -70,4 +70,21 @@ public class BrandServiceImpl implements IBrandService {
         return brandRepository.existsByCodeAndIsActiveTrue(code);
 
     }
+
+    @Override
+    public boolean delete(Long[] ids) {
+        boolean exists = true;
+        for (Long id : ids) {
+            if (!brandRepository.existsByIdAndIsActiveTrue(id)) exists = false;
+        }
+        if (exists) {
+            for (Long id :
+                    ids) {
+                Brands entity = brandRepository.findByIdAndIsActiveTrue(id);
+                entity.setActive(false);
+                brandRepository.save(entity);
+            }
+        }
+        return exists;
+    }
 }
