@@ -10,6 +10,8 @@ import MAddProductForm from '@/components/Forms/Admin/MAddProductForm.vue';
 import MAllAttributeForm from '@/components/Forms/Admin/MAllAttributeForm.vue';
 import MAllProductForm from '@/components/Forms/Admin/MAllProductForm.vue';
 import MAllCategoryForm from '@/components/Forms/Admin/MAllCategoryForm.vue';
+import MAllBrandForm from '@/components/Forms/Admin/MAllBrandForm.vue';
+
 export default {
   data() {
     return {
@@ -62,6 +64,7 @@ export default {
     MAllAttributeForm,
     MAllProductForm,
     MAllCategoryForm,
+    MAllBrandForm,
   },
   created() {
     // authentication

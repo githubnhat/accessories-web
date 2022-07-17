@@ -4,7 +4,7 @@ import * as rules from 'vee-validate/dist/rules';
 import { required, email, min, max, between, numeric, confirmed } from 'vee-validate/dist/rules';
 import { checkUniqueProductName } from '@/services/admin/add-product-form';
 import { checkUniqueCategoryCode } from '@/services/admin/all-category-form';
-
+import { checkUniqueBrandName, checkUniqueBrandCode } from '@/services/admin/all-brand-form';
 // config trigger
 setInteractionMode('lazy');
 
@@ -65,6 +65,24 @@ extend('uniqueCategoryCode', {
   ...required,
   validate: async (value) => {
     const result = await checkUniqueCategoryCode(value.trim());
+    return !result;
+  },
+  message: (field) => field + ' đã tồn tại.',
+});
+
+extend('uniqueBrandName', {
+  ...required,
+  validate: async (value) => {
+    const result = await checkUniqueBrandName(value.trim());
+    return !result;
+  },
+  message: (field) => field + ' đã tồn tại.',
+});
+
+extend('uniqueBrandCode', {
+  ...required,
+  validate: async (value) => {
+    const result = await checkUniqueBrandCode(value.trim());
     return !result;
   },
   message: (field) => field + ' đã tồn tại.',
