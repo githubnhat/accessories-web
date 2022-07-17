@@ -40,6 +40,35 @@ export async function doLogin(dataForm: object) {
   }
 }
 
+//login admin
+export async function doAdminLogin(dataForm: object) {
+  try {
+    const path = '/auth/admin/login';
+    const { data, status } = await axios.post<GetUsersResponse>(path, dataForm, {
+      withCredentials: true,
+    });
+    // console.log(JSON.stringify(data, null, 10));
+    // if (status === 200) {
+    //   localStorage.setItem('accessToken', data?.data?.accessToken || '');
+    // }
+
+    // router.push('/');
+    // 👇️ "response status is: 200"
+    console.log('response status is: ', status);
+
+    return { data, status };
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log('error message: ', error.message);
+      return error.message;
+    } else {
+      console.log('unexpected error: ', error);
+      return 'An unexpected error occurred';
+    }
+  }
+}
+
+
 // register new account
 
 type Register = {

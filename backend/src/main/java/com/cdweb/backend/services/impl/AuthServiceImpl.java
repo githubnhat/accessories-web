@@ -35,8 +35,8 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public AuthResponse loginForUser(AuthRequest request) {
-        Users entityByGmail = usersRepository.findByGmailAndRoleCodeAndIsActive(request.getUsername(), Constant.USER_ROLE);
-        Users entityByUsername = usersRepository.findByUsernameAndRoleCodeAndIsActive(request.getUsername(), Constant.USER_ROLE);
+        Users entityByGmail = usersRepository.findByGmailAndRoleCodeAndIsActive(request.getUsername(), Constant.ROLE_USER);
+        Users entityByUsername = usersRepository.findByUsernameAndRoleCodeAndIsActive(request.getUsername(), Constant.ROLE_USER);
         if (entityByGmail == null && entityByUsername == null) {
             throw new IllegalArgumentException("The Username or Password is incorrect!");
         }
@@ -57,13 +57,24 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public AuthResponse loginForAdmin(AuthRequest request) {
-        Users entity = usersRepository.findByUsernameAndRoleCodeAndIsActive(request.getUsername(), Constant.ADMIN_ROLE);
-        if (entity == null || !passwordEncoder.matches(request.getPassword(), entity.getPassword())) {
+        Users entityByGmail = usersRepository.findByGmailAndRoleCodeAndIsActive(request.getUsername(), Constant.ROLE_ADMIN);
+        Users entityByUsername = usersRepository.findByUsernameAndRoleCodeAndIsActive(request.getUsername(), Constant.ROLE_ADMIN);
+        if (entityByGmail == null && entityByUsername == null) {
             throw new IllegalArgumentException("The Username or Password is incorrect!");
         }
-        return AuthResponse.builder()
-                .accessToken(jwtService.generateAccessToken(entity))
-                .build();
+        if (entityByGmail != null && passwordEncoder.matches(request.getPassword(), entityByGmail.getPassword())) {
+            return AuthResponse.builder()
+                    .accessToken(jwtService.generateAccessToken(entityByGmail))
+                    .accessToken(jwtService.generateAccessToken(entityByGmail))
+                    .build();
+        } else if(entityByUsername != null && passwordEncoder.matches(request.getPassword(), entityByUsername.getPassword())) {
+            return AuthResponse.builder()
+                    .accessToken(jwtService.generateAccessToken(entityByUsername))
+                    .accessToken(jwtService.generateAccessToken(entityByUsername))
+                    .build();
+        } else {
+            throw new IllegalArgumentException("The Username or Password is incorrect!");
+        }
     }
 
     @Override
