@@ -141,7 +141,7 @@
 </template>
 
 <script>
-import { doLogin } from '@/services';
+import { doAdminLogin } from '@/services';
 import { mapState } from 'vuex';
 import router from '@/router';
 export default {
@@ -175,7 +175,7 @@ export default {
     },
     async login() {
       this.loading.login = true;
-      const { data, status } = await doLogin(this.loginInput);
+      const { data, status } = await doAdminLogin(this.loginInput);
       if (status === 200) {
         const token = data?.data?.accessToken;
         this.$store.commit('_accessToken/setAccessToken', token);
