@@ -49,12 +49,12 @@ public class BrandServiceImpl implements IBrandService {
 
     @Override
     public int totalItem() {
-        return (int) brandRepository.count();
+        return (int) brandRepository.countByIsActiveTrue();
     }
 
     @Override
     public List<BrandResponse> findAll(Pageable pageable) {
-        List<BrandResponse> responses = brandRepository.findAll(pageable)
+        List<BrandResponse> responses = brandRepository.findByIsActiveTrueOrderByModifiedDateDesc(pageable).getContent()
                 .stream().map(brandConverter :: toResponse)
                 .collect(Collectors.toList());
         return responses;

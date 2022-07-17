@@ -1,8 +1,11 @@
 package com.cdweb.backend.repositories;
 
 import com.cdweb.backend.entities.Brands;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface BrandRepository extends JpaRepository<Brands, Long> {
@@ -20,4 +23,8 @@ public interface BrandRepository extends JpaRepository<Brands, Long> {
     boolean existsByIdAndIsActiveTrue(Long id);
 
     Brands findByIdAndIsActiveTrue(Long id);
+
+    Page<Brands> findByIsActiveTrueOrderByModifiedDateDesc(Pageable pageable);
+
+    long countByIsActiveTrue();
 }

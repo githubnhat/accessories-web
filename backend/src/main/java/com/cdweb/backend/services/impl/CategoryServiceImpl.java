@@ -25,7 +25,7 @@ public class CategoryServiceImpl implements ICategoryService {
 
     @Override
     public List<CategoryResponse> findAll(Pageable pageable) {
-        List<CategoryResponse> responses = categoryRepository.findAll(pageable)
+        List<CategoryResponse> responses = categoryRepository.findByIsActiveTrueOrderByModifiedDateDesc(pageable).getContent()
                 .stream().map(categoryConverter :: toResponse)
                 .collect(Collectors.toList());
         return responses;
@@ -82,6 +82,6 @@ public class CategoryServiceImpl implements ICategoryService {
 
     @Override
     public int totalItem() {
-        return (int) categoryRepository.count();
+        return (int) categoryRepository.countByIsActiveTrue();
     }
 }

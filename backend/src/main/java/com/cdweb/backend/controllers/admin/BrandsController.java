@@ -26,9 +26,11 @@ public class BrandsController {
     @GetMapping("/page/{page}/limit/{limit}")
     ResponseEntity<?> getAll(@PathVariable("page") int page, @PathVariable("limit") int limit) {
         Pageable pageable = PageRequest.of(page - 1, limit);
+        int totalItem = brandService.totalItem();
         PageResponse<BrandResponse> response = PageResponse.<BrandResponse>builder()
                 .page(page)
-                .totalPages((int) Math.ceil((double) (brandService.totalItem()) / limit))
+                .totalPages((int) Math.ceil((double) (totalItem) / limit))
+                .totalItems(totalItem)
                 .data(brandService.findAll(pageable))
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(
