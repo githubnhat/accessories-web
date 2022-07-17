@@ -12,7 +12,9 @@ import java.io.UnsupportedEncodingException;
 
 
 public interface IAuthService {
-    AuthResponse login(AuthRequest request);
+    AuthResponse loginForUser(AuthRequest request);
+
+    AuthResponse loginForAdmin(AuthRequest request);
     UserResponse register(RegistrationRequest request) throws MessagingException, UnsupportedEncodingException;
 
     AuthResponse confirmOTP(ConfirmRequest request);

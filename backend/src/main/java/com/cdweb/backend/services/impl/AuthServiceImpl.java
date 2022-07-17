@@ -1,5 +1,6 @@
 package com.cdweb.backend.services.impl;
 
+import com.cdweb.backend.common.Constant;
 import com.cdweb.backend.common.JwtService;
 import com.cdweb.backend.common.MailService;
 import com.cdweb.backend.entities.Roles;
@@ -33,8 +34,30 @@ public class AuthServiceImpl implements IAuthService {
     private final MailService mailService;
 
     @Override
-    public AuthResponse login(AuthRequest request) {
-        Users entity = usersRepository.findByUsernameAndIsActiveTrue(request.getUsername());
+    public AuthResponse loginForUser(AuthRequest request) {
+        Users entityByGmail = usersRepository.findByGmailAndRoleCodeAndIsActive(request.getUsername(), Constant.USER_ROLE);
+        Users entityByUsername = usersRepository.findByUsernameAndRoleCodeAndIsActive(request.getUsername(), Constant.USER_ROLE);
+        if (entityByGmail == null && entityByUsername == null) {
+            throw new IllegalArgumentException("The Username or Password is incorrect!");
+        }
+        if (entityByGmail != null && passwordEncoder.matches(request.getPassword(), entityByGmail.getPassword())) {
+            return AuthResponse.builder()
+                    .accessToken(jwtService.generateAccessToken(entityByGmail))
+                    .accessToken(jwtService.generateAccessToken(entityByGmail))
+                    .build();
+        } else if(entityByUsername != null && passwordEncoder.matches(request.getPassword(), entityByUsername.getPassword())) {
+            return AuthResponse.builder()
+                    .accessToken(jwtService.generateAccessToken(entityByUsername))
+                    .accessToken(jwtService.generateAccessToken(entityByUsername))
+                    .build();
+        } else {
+            throw new IllegalArgumentException("The Username or Password is incorrect!");
+        }
+    }
+
+    @Override
+    public AuthResponse loginForAdmin(AuthRequest request) {
+        Users entity = usersRepository.findByUsernameAndRoleCodeAndIsActive(request.getUsername(), Constant.ADMIN_ROLE);
         if (entity == null || !passwordEncoder.matches(request.getPassword(), entity.getPassword())) {
             throw new IllegalArgumentException("The Username or Password is incorrect!");
         }
