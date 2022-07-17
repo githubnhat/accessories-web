@@ -15,4 +15,6 @@ public interface IBrandService {
     int totalItem();
 
     List<BrandResponse> findAll(Pageable pageable);
+
+    boolean delete(Long [] ids);
 }

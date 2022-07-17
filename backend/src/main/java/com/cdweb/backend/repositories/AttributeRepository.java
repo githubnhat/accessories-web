@@ -29,4 +29,6 @@ public interface AttributeRepository extends JpaRepository<Attributes, Long> {
     @Query(value = "select attr.* from  attributes attr join product_attributes pa on attr.id = pa.attribute_id " +
             "where pa.product_id = :product_id and pa.is_active = true and attr.is_active = true ", nativeQuery = true)
     List<Attributes> findByProductIdAndIsActive(@Param("product_id") Long productId);
+
+    boolean existsByIdAndIsActiveTrue(Long id);
 }

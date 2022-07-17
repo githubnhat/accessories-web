@@ -12,4 +12,8 @@ public interface BrandRepository extends JpaRepository<Brands, Long> {
     Brands findByNameAndIsActiveTrue(String branchName);
 
     Brands findByCodeAndIsActiveTrue(String branchCode);
+
+    Brands findByIdAndIsActiveTrue(Long brandId);
+
+    boolean existsByIdAndIsActiveTrue(Long id);
 }

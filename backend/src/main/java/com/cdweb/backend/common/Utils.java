@@ -2,7 +2,10 @@ package com.cdweb.backend.common;
 
 import org.springframework.stereotype.Component;
 
+import java.text.DecimalFormat;
 import java.text.Normalizer;
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 public class Utils {
@@ -18,6 +21,18 @@ public class Utils {
         String removeAccent = removeAccent(s);
 
         return removeAccent.replaceAll(" ", "-");
+    }
+
+    public static String formatNumber(Double d) {
+        Locale locale  = new Locale("vi" , "VN");
+        String pattern = "###.##";
+
+        DecimalFormat decimalFormat = (DecimalFormat)
+                NumberFormat.getNumberInstance(locale);
+        decimalFormat.applyPattern(pattern);
+
+        String format = decimalFormat.format(d);
+        return format;
     }
 
     public static String getUniqueStringId(String productVariantName) {

@@ -15,4 +15,6 @@ public interface ICategoryService {
 
     int totalItem();
     boolean existsByCodeAndIsActiveTrue(String code);
+
+    boolean delete(Long [] ids);
 }

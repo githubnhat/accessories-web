@@ -2,6 +2,7 @@ package com.cdweb.backend.services.impl;
 
 import com.cdweb.backend.converters.BrandConverter;
 import com.cdweb.backend.entities.Brands;
+import com.cdweb.backend.entities.Products;
 import com.cdweb.backend.payloads.requests.BrandRequest;
 import com.cdweb.backend.payloads.responses.BrandResponse;
 import com.cdweb.backend.repositories.BrandRepository;
@@ -58,5 +59,22 @@ public class BrandServiceImpl implements IBrandService {
                 .stream().map(brandConverter :: toResponse)
                 .collect(Collectors.toList());
         return responses;
+    }
+
+    @Override
+    public boolean delete(Long[] ids) {
+        boolean exists = true;
+        for (Long id : ids) {
+            if (!brandRepository.existsByIdAndIsActiveTrue(id)) exists = false;
+        }
+        if (exists) {
+            for (Long id :
+                    ids) {
+                Brands entity = brandRepository.findByIdAndIsActiveTrue(id);
+                entity.setActive(false);
+                brandRepository.save(entity);
+            }
+        }
+        return exists;
     }
 }

@@ -18,9 +18,7 @@ public interface IProductService {
 
     int totalItem();
 
-    ProductResponse findById(Long id);
-
-    ProductResponse findByProductName(String productName);
+    ProductResponse findByProductId(Long productId);
 
     ProductResponse save(ProductRequest request);
 

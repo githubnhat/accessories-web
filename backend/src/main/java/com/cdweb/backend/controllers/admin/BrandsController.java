@@ -64,4 +64,11 @@ public class BrandsController {
                         ? new ResponseObject("Success", null, response)
                         : new ResponseObject("Failed", "Brand name already taken", null));
     }
+
+    @DeleteMapping("")
+    ResponseEntity<?> deleteBrand(@RequestBody Long[] ids) {
+        return ResponseEntity.status(HttpStatus.OK).body(brandService.delete(ids) ?
+                new ResponseObject("Success", "Delete brand successfully", true) :
+                new ResponseObject("Failed", "Can not find brand", false));
+    }
 }

@@ -13,4 +13,8 @@ public interface CategoryRepository extends JpaRepository<Categories, Long> {
     Categories findByCodeAndIsActiveTrue(String code); ///
 
     Boolean existsByCodeAndIsActiveTrue(String code);
+
+    Categories findByIdAndIsActiveTrue(Long  categoryId);
+
+    boolean existsByIdAndIsActiveTrue(Long id);
 }

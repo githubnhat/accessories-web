@@ -42,11 +42,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Collections.singletonList("http://localhost:8080/"));
-//        configuration.setAllowedOrigins(Collections.singletonList("*"));
         configuration.setAllowedMethods(Collections.singletonList("*"));
         configuration.setAllowedHeaders(Collections.singletonList("*"));
         configuration.setAllowCredentials(true);
-//        configuration.setExposedHeaders(Collections.singletonList("refresh-token"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
