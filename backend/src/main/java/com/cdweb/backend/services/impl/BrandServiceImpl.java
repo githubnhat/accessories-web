@@ -59,4 +59,15 @@ public class BrandServiceImpl implements IBrandService {
                 .collect(Collectors.toList());
         return responses;
     }
+
+    @Override
+    public boolean existsByNameAndIsActiveTrue(String name) {
+        return brandRepository.existsByNameAndIsActiveTrue(name);
+    }
+
+    @Override
+    public boolean existsByCodeAndIsActiveTrue(String code) {
+        return brandRepository.existsByCodeAndIsActiveTrue(code);
+
+    }
 }

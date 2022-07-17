@@ -15,4 +15,7 @@ public interface IBrandService {
     int totalItem();
 
     List<BrandResponse> findAll(Pageable pageable);
+
+    boolean existsByNameAndIsActiveTrue(String name);
+    boolean existsByCodeAndIsActiveTrue(String code);
 }
