@@ -26,11 +26,9 @@ public class BrandsController {
     @GetMapping("/page/{page}/limit/{limit}")
     ResponseEntity<?> getAll(@PathVariable("page") int page, @PathVariable("limit") int limit) {
         Pageable pageable = PageRequest.of(page - 1, limit);
-        int totalItem = brandService.totalItem();
         PageResponse<BrandResponse> response = PageResponse.<BrandResponse>builder()
                 .page(page)
-                .totalPages((int) Math.ceil((double) (totalItem) / limit))
-                .totalItems(totalItem)
+                .totalPages((int) Math.ceil((double) (brandService.totalItem()) / limit))
                 .data(brandService.findAll(pageable))
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -81,5 +79,12 @@ public class BrandsController {
         Boolean exists = brandService.existsByCodeAndIsActiveTrue(code);
         log.info("kq {}", exists);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", "", exists));
+    }
+
+    @DeleteMapping("")
+    ResponseEntity<?> deleteBrand(@RequestBody Long[] ids) {
+        return ResponseEntity.status(HttpStatus.OK).body(brandService.delete(ids) ?
+                new ResponseObject("Success", "Delete brand successfully", true) :
+                new ResponseObject("Failed", "Can not find brand", false));
     }
 }

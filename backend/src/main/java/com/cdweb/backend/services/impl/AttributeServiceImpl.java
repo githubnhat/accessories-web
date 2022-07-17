@@ -3,6 +3,7 @@ package com.cdweb.backend.services.impl;
 import com.cdweb.backend.converters.AttributeConverter;
 import com.cdweb.backend.converters.VariantConverter;
 import com.cdweb.backend.entities.Attributes;
+import com.cdweb.backend.entities.Brands;
 import com.cdweb.backend.entities.Products;
 import com.cdweb.backend.entities.Variants;
 import com.cdweb.backend.payloads.requests.AttributeAndVariantsRequest;
@@ -114,7 +115,7 @@ public class AttributeServiceImpl implements IAttributeService {
     @Override
     public List<AttributeAndVariantsResponse> findAllAttributeAndVariants(Pageable pageable) {
         List<AttributeAndVariantsResponse> response = new ArrayList<>();
-        List<Attributes> attrs = attributeRepository.findAll(pageable).getContent();
+        List<Attributes> attrs = attributeRepository.findAllByOrderByModifiedDateDesc(pageable).getContent();
        if (attrs.size() > 0) {
            attrs.forEach(a -> {
               if (a.isActive()){
@@ -167,5 +168,22 @@ public class AttributeServiceImpl implements IAttributeService {
     @Override
     public int totalItem() {
         return (int) attributeRepository.count();
+    }
+
+    @Override
+    public boolean delete(Long[] ids) {
+        boolean exists = true;
+        for (Long id : ids) {
+            if (!attributeRepository.existsByIdAndIsActiveTrue(id)) exists = false;
+        }
+        if (exists) {
+            for (Long id :
+                    ids) {
+                Attributes entity = attributeRepository.findByIdAndIsActiveTrue(id);
+                entity.setActive(false);
+                attributeRepository.save(entity);
+            }
+        }
+        return exists;
     }
 }

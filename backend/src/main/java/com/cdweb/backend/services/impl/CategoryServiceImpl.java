@@ -2,6 +2,7 @@ package com.cdweb.backend.services.impl;
 
 import com.cdweb.backend.common.Utils;
 import com.cdweb.backend.converters.CategoryConverter;
+import com.cdweb.backend.entities.Brands;
 import com.cdweb.backend.entities.Categories;
 import com.cdweb.backend.payloads.requests.CategoryRequest;
 import com.cdweb.backend.payloads.responses.CategoryResponse;
@@ -60,6 +61,23 @@ public class CategoryServiceImpl implements ICategoryService {
     @Override
     public boolean existsByCodeAndIsActiveTrue(String code) {
         return categoryRepository.existsByCodeAndIsActiveTrue(code);
+    }
+
+    @Override
+    public boolean delete(Long[] ids) {
+        boolean exists = true;
+        for (Long id : ids) {
+            if (!categoryRepository.existsByIdAndIsActiveTrue(id)) exists = false;
+        }
+        if (exists) {
+            for (Long id :
+                    ids) {
+                Categories entity = categoryRepository.findByIdAndIsActiveTrue(id);
+                entity.setActive(false);
+                categoryRepository.save(entity);
+            }
+        }
+        return exists;
     }
 
     @Override

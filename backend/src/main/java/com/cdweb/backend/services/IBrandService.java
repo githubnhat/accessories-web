@@ -18,4 +18,6 @@ public interface IBrandService {
 
     boolean existsByNameAndIsActiveTrue(String name);
     boolean existsByCodeAndIsActiveTrue(String code);
+
+    boolean delete(Long [] ids);
 }

@@ -29,4 +29,5 @@ public interface IAttributeService {
     int totalItem();
 
 
+    boolean delete(Long[] ids);
 }
