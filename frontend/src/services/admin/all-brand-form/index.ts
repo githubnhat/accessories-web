@@ -115,3 +115,33 @@ export async function checkUniqueBrandCode(code: string) {
     }
   }
 }
+
+// delete brand by array id brand
+
+type DeleteBrandResponse = {
+  data: boolean;
+};
+
+export async function deleteBrands(ids: Array<number>) {
+  try {
+    const path = `admin/brand`;
+    const { data, status } = await axios.delete<DeleteBrandResponse>(path, {
+      data: ids,
+      withCredentials: true,
+    });
+    // console.log(JSON.stringify(data, null, 10));
+
+    // 👇️ "response status is: 200"
+    console.log('response status is: ', status);
+
+    return data?.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log('error message: ', error.message);
+      return error.message;
+    } else {
+      console.log('unexpected error: ', error);
+      return 'An unexpected error occurred';
+    }
+  }
+}
