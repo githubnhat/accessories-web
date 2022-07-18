@@ -37,7 +37,7 @@
             </template>
             <v-card>
               <ValidationObserver v-slot="{ handleSubmit }">
-                <v-form @submit.prevent="handleSubmit(deleteCategory)">
+                <v-form @submit.prevent="handleSubmit(deleteMultiItem)">
                   <v-card-title>
                     <span class="text-h5">Xác nhận xóa (các) danh mục sau:</span>
                   </v-card-title>
@@ -67,7 +67,7 @@
 
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" text @click="closeDelete"> Trở lại </v-btn>
+                    <v-btn color="blue darken-1" text @click="closeDeleteAll"> Trở lại </v-btn>
                     <v-btn
                       color="error darken-1"
                       text
@@ -132,7 +132,7 @@
 
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" text @click="close"> Trở lại </v-btn>
+                    <v-btn color="blue darken-1" text @click="closeAdd"> Trở lại </v-btn>
                     <v-btn
                       color="blue darken-1"
                       text
@@ -150,75 +150,118 @@
       </template>
 
       <template v-slot:[`item.actions`]="{ item }">
-        <v-dialog v-model="dialog.edit" max-width="500px">
-          <v-card>
-            <ValidationObserver v-slot="{ handleSubmit }">
-              <v-form class="mt-5" @submit.prevent="handleSubmit(editItemConfirm(item))">
-                <v-card-title class="text-h5">Chỉnh sửa thông tin danh mục</v-card-title>
-                <v-card-text>
-                  <v-row no-gutters dense>
-                    <v-col cols="12">
-                      <validation-provider name="Tên danh mục" rules="required" v-slot="{ errors }">
-                        <v-text-field
-                          v-model="item.name"
-                          label="Tên danh mục"
-                          prepend-icon="mdi-order-alphabetical-ascending"
-                          color="primary accent-3"
-                          clearable
-                          :error-messages="errors"
-                        >
-                        </v-text-field>
-                      </validation-provider>
-                      <validation-provider
-                        name="Mã danh mục"
-                        rules="required|uniqueCategoryCode"
-                        v-slot="{ errors }"
-                      >
-                        <v-text-field
-                          v-model="item.code"
-                          label="Mã danh mục"
-                          prepend-icon="mdi-alphabetical"
-                          color="primary accent-3"
-                          clearable
-                          :error-messages="errors"
-                        >
-                        </v-text-field>
-                      </validation-provider>
-                    </v-col>
-                  </v-row>
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="closeEdit">Trở lại</v-btn>
-                  <v-btn color="blue darken-1" text type="submit">Đồng ý</v-btn>
-                  <v-spacer></v-spacer>
-                </v-card-actions>
-              </v-form>
-            </ValidationObserver>
-          </v-card>
-        </v-dialog>
-        <v-dialog v-model="dialog.delete" max-width="500px">
-          <v-card>
-            <v-card-title class="text-h5">Bạn có chắc chắn xoá danh mục này?</v-card-title>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="closeDelete">Trở lại</v-btn>
-              <v-btn color="blue darken-1" text @click="deleteItemConfirm(item)">Đồng ý</v-btn>
-              <v-spacer></v-spacer>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-        <v-icon small class="mr-2" @click="openEditDialog"> mdi-pencil </v-icon>
-        <v-icon small @click="openDeleteDialog"> mdi-delete </v-icon>
+        <v-icon small class="mr-2" @click="openEditDialog(item)"> mdi-pencil </v-icon>
+        <v-icon small @click="openDeleteDialog(item)"> mdi-delete </v-icon>
       </template>
       <template v-slot:no-data>
         <v-btn color="primary" @click="initialize"> Reset </v-btn>
       </template>
     </v-data-table>
+    <div class="action-item-dialog">
+      <v-dialog v-model="dialog.edit" max-width="500px">
+        <v-card>
+          <ValidationObserver v-slot="{ handleSubmit }">
+            <v-form class="mt-5" @submit.prevent="handleSubmit(editItemConfirm)">
+              <v-card-title class="text-h5">Chỉnh sửa thông tin danh mục</v-card-title>
+              <v-card-text>
+                <v-row no-gutters dense>
+                  <v-col cols="12">
+                    <validation-provider name="Tên danh mục" rules="required" v-slot="{ errors }">
+                      <v-text-field
+                        v-model="selectedItem.name"
+                        label="Tên danh mục"
+                        prepend-icon="mdi-order-alphabetical-ascending"
+                        color="primary accent-3"
+                        clearable
+                        :error-messages="errors"
+                      >
+                      </v-text-field>
+                    </validation-provider>
+                    <validation-provider
+                      name="Mã danh mục"
+                      rules="required|uniqueCategoryCode"
+                      v-slot="{ errors }"
+                    >
+                      <v-text-field
+                        v-model="selectedItem.code"
+                        label="Mã danh mục"
+                        prepend-icon="mdi-alphabetical"
+                        color="primary accent-3"
+                        clearable
+                        :error-messages="errors"
+                      >
+                      </v-text-field>
+                    </validation-provider>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="closeEdit">Trở lại</v-btn>
+                <v-btn color="blue darken-1" outlined text type="submit">Cập nhật</v-btn>
+                <v-spacer></v-spacer>
+              </v-card-actions>
+            </v-form>
+          </ValidationObserver>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="dialog.delete" max-width="500px">
+        <v-card>
+          <ValidationObserver v-slot="{ handleSubmit }">
+            <v-form class="mt-5" @submit.prevent="handleSubmit(deleteOneItem)">
+              <v-card-title class="text-h5"
+                >Bạn có chắc chắn <strong>&nbsp;xoá&nbsp;</strong> danh mục này?</v-card-title
+              >
+              <v-card-text>
+                <v-row no-gutters dense>
+                  <v-col cols="12">
+                    <v-text-field
+                      v-model="selectedItem.name"
+                      label="Tên danh mục"
+                      prepend-icon="mdi-order-alphabetical-ascending"
+                      color="primary accent-3"
+                      readonly
+                    >
+                    </v-text-field>
+
+                    <v-text-field
+                      v-model="selectedItem.code"
+                      label="Mã danh mục"
+                      prepend-icon="mdi-alphabetical"
+                      color="primary accent-3"
+                      readonly
+                    >
+                    </v-text-field>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="closeDelete">Trở lại</v-btn>
+                <v-btn
+                  color="warning darken-1"
+                  class="warning--text"
+                  outlined
+                  text
+                  type="submit"
+                  :loading="loading.deleteCategory"
+                  >Xóa</v-btn
+                >
+                <v-spacer></v-spacer>
+              </v-card-actions>
+            </v-form>
+          </ValidationObserver>
+        </v-card>
+      </v-dialog>
+    </div>
   </div>
 </template>
 <script>
-import { getAllCategory, insertCategory } from '@/services/admin/all-category-form';
+import {
+  getAllCategory,
+  insertCategory,
+  deleteCategories,
+} from '@/services/admin/all-category-form';
 import { transNameToCode } from '@/utils';
 export default {
   data: () => ({
@@ -269,6 +312,7 @@ export default {
       variantNames: '',
     },
     selectedItems: [],
+    selectedItem: {},
   }),
 
   computed: {},
@@ -295,7 +339,7 @@ export default {
       this.loading.table = true;
       const { page, itemsPerPage } = this.options;
       const data = await getAllCategory(page, itemsPerPage);
-      console.log('data', data);
+
       this.page = data?.page;
       this.totalPages = data?.totalPages;
       this.totalItems = data?.totalItems;
@@ -320,53 +364,58 @@ export default {
       this.loading.addNewCategoryButton = false;
     },
 
-    async deleteCategory() {
+    async deleteMultiItem() {
       this.loading.deleteCategory = true;
+      this.dialog.deleteAll = false;
       const chosenItems = this.selectedItems.map((item) => item.id);
-      console.log('chosenItems', chosenItems);
-      // const {data, status} = await deleteCategorys()
+      this.selectedItems = [];
+      const isUpdateSuccess = await deleteCategories(chosenItems);
+      if (isUpdateSuccess) {
+        alert('Xóa thành công!');
+        this.readDataFromAPI();
+      } else {
+        alert('Xóa không thành công, vui lòng thử lại!');
+      }
       this.loading.deleteCategory = false;
     },
 
-    openEditDialog() {
+    openEditDialog(item) {
+      this.selectedItem = item;
       this.dialog.edit = true;
     },
 
-    openDeleteDialog() {
+    openDeleteDialog(item) {
+      console.log('open delete');
+      this.selectedItem = item;
       this.dialog.delete = true;
     },
 
-    editItem(item) {
-      this.editedIndex = this.data.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
+    async deleteOneItem() {
+      this.loading.deleteCategory = true;
+      this.dialog.delete = false;
+      const isUpdateSuccess = await deleteCategories([this.selectedItem.id]);
+      if (isUpdateSuccess) {
+        alert('Xóa thành công!');
+        this.readDataFromAPI();
+      } else {
+        alert('Xóa không thành công, vui lòng thử lại!');
+      }
+      this.selectedItem = {};
+      this.loading.deleteCategory = false;
     },
 
-    deleteItem(item) {
-      this.editedIndex = this.data.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog.delete = true;
-    },
-
-    deleteItemConfirm() {
-      this.data.splice(this.editedIndex, 1);
-      this.closeDelete();
-    },
-
-    close() {
+    closeAdd() {
       this.dialog.add = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
     },
 
     closeEdit() {
       this.dialog.edit = false;
     },
     closeDelete() {
-      this.dialog.deleteAll = false;
       this.dialog.delete = false;
+    },
+    closeDeleteAll() {
+      this.dialog.deleteAll = false;
     },
   },
   mounted() {
