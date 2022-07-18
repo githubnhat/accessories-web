@@ -186,4 +186,9 @@ public class AttributeServiceImpl implements IAttributeService {
         }
         return exists;
     }
+
+    @Override
+    public Boolean existsByNameAndIsActive(String attributeName) {
+        return attributeRepository.existsByAttributeNameAndIsActiveTrue(attributeName);
+    }
 }

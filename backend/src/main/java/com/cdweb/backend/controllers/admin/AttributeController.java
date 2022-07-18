@@ -2,10 +2,8 @@ package com.cdweb.backend.controllers.admin;
 
 import com.cdweb.backend.payloads.requests.AttributeAndVariantsRequest;
 import com.cdweb.backend.payloads.requests.AttributeRequest;
-import com.cdweb.backend.payloads.requests.VariantRequest;
 import com.cdweb.backend.payloads.responses.*;
 import com.cdweb.backend.services.IAttributeService;
-import com.cdweb.backend.services.IVariantService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -79,7 +77,13 @@ public class AttributeController {
     @DeleteMapping("")
     ResponseEntity<?> deleteAttribute(@RequestBody Long[] ids) {
         return ResponseEntity.status(HttpStatus.OK).body(attributeService.delete(ids) ?
-                new ResponseObject("Success", "Delete brand successfully", true) :
+                new ResponseObject("Success", "Delete attribute successfully", true) :
                 new ResponseObject("Failed", "Can not find brand", false));
+    }
+
+    @GetMapping("/exists/{attributeName}")
+    ResponseEntity<?> existsAttributeByName(@PathVariable("attributeName") String attributeName) {
+        Boolean exists = attributeService.existsByNameAndIsActive(attributeName);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", "", exists));
     }
 }

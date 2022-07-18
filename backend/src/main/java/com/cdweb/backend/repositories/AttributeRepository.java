@@ -33,4 +33,6 @@ public interface AttributeRepository extends JpaRepository<Attributes, Long> {
     boolean existsByIdAndIsActiveTrue(Long id);
 
     long countByIsActiveTrue();
+
+    Boolean existsByAttributeNameAndIsActiveTrue(String attributeName);
 }

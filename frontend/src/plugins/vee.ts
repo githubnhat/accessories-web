@@ -5,6 +5,7 @@ import { required, email, min, max, between, numeric, confirmed } from 'vee-vali
 import { checkUniqueProductName } from '@/services/admin/add-product-form';
 import { checkUniqueCategoryCode } from '@/services/admin/all-category-form';
 import { checkUniqueBrandName, checkUniqueBrandCode } from '@/services/admin/all-brand-form';
+import { checkUniqueAttributeName } from '@/services/admin/attribute';
 // config trigger
 setInteractionMode('lazy');
 
@@ -87,6 +88,16 @@ extend('uniqueBrandCode', {
   },
   message: (field) => field + ' đã tồn tại.',
 });
+
+extend('uniqueAttributeName', {
+  ...required,
+  validate: async (value) => {
+    const result = await checkUniqueAttributeName(value.trim());
+    return !result;
+  },
+  message: (field) => field + ' đã tồn tại.',
+});
+
 
 // end custom rules
 

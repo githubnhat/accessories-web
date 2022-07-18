@@ -2,7 +2,7 @@ import axios from 'axios';
 
 
 type AttributeAndVariants = {
-  id: number;
+  attributeId: number;
   attributeName: string;
   variantNames: Array<string>;
 };
@@ -26,7 +26,7 @@ export async function getAllAttributes(pageNumber: number, itemsPerPage:number) 
   try {
     const { data, status } = await axios.get<GetAttributeAndVariantsResponse>(`/admin/attribute/${pageNumber}/${itemsPerPage}`,{withCredentials: true});
     console.log("test",data?.data)
-    const mapData = data?.data?.data.map(({ id, attributeName, variantNames}) => {
+    const mapData = data?.data?.data.map(({ attributeId, attributeName, variantNames}) => {
       let variantResult = null;
       if (variantNames.length > 0) {
         variantResult = variantNames.reduce((previousValue, currentValue) => {
@@ -35,7 +35,7 @@ export async function getAllAttributes(pageNumber: number, itemsPerPage:number) 
       }
 
       return {
-        id: id,
+        id: attributeId,
         attributeName: attributeName,
         variantNames: variantResult,
       };
@@ -71,7 +71,7 @@ export async function addNewAttributes(dataForm: object) {
           return previousValue + ', ' + currentValue;
         });
         return {
-          id: data?.data.id,
+          id: data?.data.attributeId,
           attributeName: data?.data.attributeName,
           variantNames: variantResult,
         };
@@ -83,6 +83,62 @@ export async function addNewAttributes(dataForm: object) {
       return null;
     
    
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log('error message: ', error.message);
+      return error.message;
+    } else {
+      console.log('unexpected error: ', error);
+      return 'An unexpected error occurred';
+    }
+  }
+}
+
+// check unique brand code
+
+type CheckUniqueAttributeNameResponse = {
+  data: boolean;
+};
+
+export async function checkUniqueAttributeName(name: string) {
+  try {
+    const path = `admin/attribute/exists/${name}`;
+    const { data, status } = await axios.get<CheckUniqueAttributeNameResponse>(path, {
+      withCredentials: true,
+    });
+    // console.log(JSON.stringify(data, null, 10));
+
+    // 👇️ "response status is: 200"
+    console.log('response status is: ', status);
+
+    return data?.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log('error message: ', error.message);
+      return error.message;
+    } else {
+      console.log('unexpected error: ', error);
+      return 'An unexpected error occurred';
+    }
+  }
+}
+
+type DeleteAttributeNameResponse = {
+  data: boolean;
+};
+export async function deleteAttributes(ids: Array<number>) {
+  try {
+    const path = `admin/attribute`;
+    const { data, status } = await axios.delete<DeleteAttributeNameResponse>(path,
+    { data:  ids,
+      withCredentials: true,
+    });
+    // console.log(JSON.stringify(data, null, 10));
+
+    // 👇️ "response status is: 200"
+    console.log('response status is: ', status);
+
+    return data?.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.log('error message: ', error.message);
