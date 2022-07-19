@@ -1,12 +1,21 @@
 <template>
   <v-navigation-drawer :value="drawer" app>
     <v-sheet color="primary lighten-2" class="pa-4">
-      <div class="white--text display-1">{{ 'Hello ' + username }}</div>
+      <div>
+        <v-row>
+          <v-col cols="3" class="d-flex align-self-center">
+            <v-icon size="48">mdi-ballot</v-icon>
+          </v-col>
+          <v-col cols="9">
+            <span class="white--text font-weight-bold title"> AccessoriesShop Administration </span>
+          </v-col>
+        </v-row>
+      </div>
     </v-sheet>
 
     <v-divider></v-divider>
 
-    <v-list>
+    <v-list class="pa-0">
       <v-list-group
         v-for="item in items"
         :key="item.title"
@@ -38,6 +47,7 @@
 <script>
 import jwt_decode from 'jwt-decode';
 import { ADMIN_MENU } from '@/utils/mocks';
+import { mapState } from 'vuex';
 
 export default {
   props: {
@@ -59,9 +69,13 @@ export default {
       return title === this.activeControl ? 'control-admin__active' : '';
     },
   },
+  computed: {
+    ...mapState({
+      accessToken: (state) => state._accessToken.state.accessToken,
+    }),
+  },
   created() {
-    const accessToken = localStorage.getItem('accessToken');
-    this.username = !accessToken ? null : jwt_decode(accessToken).sub;
+    this.username = !this.accessToken ? null : jwt_decode(this.accessToken).fullName;
   },
 };
 </script>
