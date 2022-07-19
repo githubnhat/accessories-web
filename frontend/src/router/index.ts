@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
 import HomeView from '@/pages/HomeView.vue';
+import store from '@/store/index';
+import jwt_decode from 'jwt-decode';
 
 Vue.use(VueRouter);
 
@@ -36,6 +38,17 @@ const routes: Array<RouteConfig> = [
   {
     path: '/admin',
     name: 'admin',
+    beforeEnter: (to, from, next) => {
+      const token: Token = jwt_decode(store.getters['_accessToken/getAccessToken']);
+      const role = token.role;
+
+      if (to.name !== 'login' && !token) {
+        next({ name: 'login' });
+      }
+      if (role !== 'ROLE_ADMIN') {
+        next({ name: 'home' });
+      } else next();
+    },
     // route level code-splitting
     // this generates a separate chunk (admin.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
@@ -65,5 +78,15 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes,
 });
+
+interface Token {
+  access_token: boolean;
+  exp: Date;
+  fullName: string;
+  iat: Date;
+  role: string;
+  sub: string;
+  username: string;
+}
 
 export default router;

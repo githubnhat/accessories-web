@@ -120,7 +120,7 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public int totalItem() {
-        return (int) productRepository.count();
+        return (int) productRepository.countByIsActiveTrue();
     }
 
 

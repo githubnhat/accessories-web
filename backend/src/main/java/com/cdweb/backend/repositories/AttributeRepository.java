@@ -17,7 +17,7 @@ public interface AttributeRepository extends JpaRepository<Attributes, Long> {
 
     Optional<Attributes> findById(Long id);
 
-    Page findAllByOrderByModifiedDateDesc(Pageable pageable);
+    Page<Attributes> findByIsActiveTrueOrderByModifiedDateDesc(Pageable pageable);
 
 
     Attributes findByIdAndIsActiveTrue(Long id);
@@ -31,4 +31,8 @@ public interface AttributeRepository extends JpaRepository<Attributes, Long> {
     List<Attributes> findByProductIdAndIsActive(@Param("product_id") Long productId);
 
     boolean existsByIdAndIsActiveTrue(Long id);
+
+    long countByIsActiveTrue();
+
+    Boolean existsByAttributeNameAndIsActiveTrue(String attributeName);
 }
