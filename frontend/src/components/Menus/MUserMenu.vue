@@ -22,6 +22,7 @@
 <script>
 import router from '@/router';
 import { doLogout } from '@/services';
+import { mapState } from 'vuex';
 export default {
   name: 'MUserMenu',
   props: {
@@ -59,6 +60,7 @@ export default {
         localStorage.removeItem('accessToken');
         const status = await doLogout();
         if (status === 200) {
+          this.$store.commit('_accessToken/resetAccessToken');
           router.push('/login');
         }
       }
