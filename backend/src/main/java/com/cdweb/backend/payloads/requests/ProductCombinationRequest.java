@@ -11,5 +11,6 @@ public class ProductCombinationRequest {
     private String productVariantName;
     private Double price;
     private int quantity;
+    private Boolean isUse;
 
 }

@@ -32,7 +32,9 @@ public class ProductCombinationServiceImpl implements IProductCombinationService
             ProductCombinations newEntity = productCombinationConverter.toEntity(r);
             newEntity.setUniqueStringId(Utils.getUniqueStringId(r.getProductVariantName()));
             newEntity.setProduct(product);
-            newEntity.setActive(true);
+            if (r.getIsUse()){
+                newEntity.setActive(true);
+            }
             response.add(productCombinationConverter.toResponse(productCombinationRepository.save(newEntity)));
         });
         return response;
@@ -60,9 +62,15 @@ public class ProductCombinationServiceImpl implements IProductCombinationService
         String uniqueStringId = Utils.getUniqueStringId(request.getProductVariantName());
         ProductCombinations response =
                 productCombinationRepository.findByProductIdAndUniqueStringId(request.getProductId(), uniqueStringId);
-        return ProductCombinationResponse.builder()
-                .price("₫"+ Utils.formatNumber(response.getPrice()))
-                .quantity(response.getQuantity())
-                .build();
+
+        return response != null ? ProductCombinationResponse.builder()
+                .price(response.getQuantity()==0 ?  "Hết hàng" : "₫"+ Utils.formatNumber(response.getPrice()))
+                .quantity(response.getQuantity()==0 ? 0: response.getQuantity())
+                .build():
+                ProductCombinationResponse.builder()
+                        .price("Hết hàng")
+                        .quantity(0)
+                        .build()
+                ;
     }
 }

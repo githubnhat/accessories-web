@@ -5,7 +5,7 @@
         <v-card class="mt-10" min-height="100vh">
           <v-row class="ml-5">
             <v-col cols="12" sm="5">
-              <v-card elevation="24" max-width="400" class="mx-auto mt-3">
+              <v-card elevation="2" max-width="400" class="mx-auto mt-3">
                 <v-carousel
                   cycle
                   hide-delimiter-background
@@ -80,13 +80,17 @@
                   </v-row>
                 </v-col>
                 <v-col cols="12" sm="8">
-                  <v-btn class="ma-2" outlined color="deep-orange accent-3">
+                  <v-btn class="ma-2" :disabled="disabledBtn" outlined color="deep-orange accent-3">
                     Thêm vào giỏ hàng
                   </v-btn>
-                  <v-btn color="deep-orange accent-3" class="mr-2 ma-2 white--text">
+                  <v-btn
+                    color="deep-orange accent-3"
+                    :disabled="disabledBtn"
+                    class="mr-2 ma-2 white--text"
+                  >
                     Mua ngay
-                  </v-btn>
-                </v-col>
+                  </v-btn> </v-col
+                >¯
               </v-row>
             </v-col>
           </v-row>
@@ -119,6 +123,7 @@ export default {
       price: 0,
       quantity: 0,
       quantityInput: 1,
+      disabledBtn: false,
     };
   },
   created() {
@@ -205,6 +210,14 @@ export default {
       this.quantity = quantity;
       if (this.quantityInput > this.quantity) {
         this.quantityInput = this.quantity;
+      }
+      if (this.quantityInput === 0 && quantity > 0) {
+        this.quantityInput = 1;
+      }
+      if (quantity === 0) {
+        this.disabledBtn = true;
+      } else {
+        this.disabledBtn = false;
       }
     },
 
