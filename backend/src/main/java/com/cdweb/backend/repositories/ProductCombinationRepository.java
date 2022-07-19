@@ -20,4 +20,7 @@ public interface ProductCombinationRepository extends JpaRepository<ProductCombi
             "WHERE product_combinations.product_id = :product_id and product_combinations.is_active = true", nativeQuery = true)
     Double max(@Param("product_id") Long productId);
 
+    @Query(value = "SELECT product_combinations.* FROM product_combinations " +
+            "WHERE product_combinations.product_id = :product_id and product_combinations.unique_string_id = :unique_string_id and product_combinations.is_active = true", nativeQuery = true)
+    ProductCombinations findByProductIdAndUniqueStringId(@Param("product_id") Long productId, @Param("unique_string_id") String uniqueStringId);
 }

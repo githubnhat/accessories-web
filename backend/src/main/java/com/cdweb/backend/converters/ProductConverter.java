@@ -24,6 +24,7 @@ public class ProductConverter {
                 .description(request.getDescription())
                 .originalPrice(request.getOriginalPrice())
                 .originalQuantity(request.getOriginalQuantity())
+                .discount(request.getDiscount())
                 .build();
     }
     public ProductResponse toResponse(Products entity, List<ThumbnailResponse> productGalleries,

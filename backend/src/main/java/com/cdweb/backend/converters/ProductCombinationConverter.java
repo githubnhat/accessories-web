@@ -1,5 +1,6 @@
 package com.cdweb.backend.converters;
 
+import com.cdweb.backend.common.Utils;
 import com.cdweb.backend.entities.ProductCombinations;
 import com.cdweb.backend.payloads.requests.ProductCombinationRequest;
 import com.cdweb.backend.payloads.responses.ProductCombinationResponse;
@@ -18,7 +19,7 @@ public class ProductCombinationConverter {
     public ProductCombinationResponse toResponse(ProductCombinations entity){
         return ProductCombinationResponse.builder()
                 .id(entity.getId())
-                .price(entity.getPrice())
+                .price(Utils.formatNumber(entity.getPrice()))
                 .productVariantName(entity.getProductVariantName())
                 .quantity(entity.getQuantity())
                 .uniqueStringId(entity.getUniqueStringId())

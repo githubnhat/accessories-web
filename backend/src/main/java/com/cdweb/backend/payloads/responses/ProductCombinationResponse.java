@@ -12,7 +12,7 @@ public class ProductCombinationResponse {
     private Long id;
     private String productVariantName;
     private String uniqueStringId;
-    private Double price;
+    private String price;
     private int quantity;
     private Long productId;
 }

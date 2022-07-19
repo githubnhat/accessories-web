@@ -25,7 +25,7 @@ public class Utils {
 
     public static String formatNumber(Double d) {
         Locale locale  = new Locale("vi" , "VN");
-        String pattern = "###.##";
+        String pattern = "###,###.###";
 
         DecimalFormat decimalFormat = (DecimalFormat)
                 NumberFormat.getNumberInstance(locale);

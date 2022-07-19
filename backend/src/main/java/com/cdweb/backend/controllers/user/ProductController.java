@@ -1,8 +1,11 @@
 package com.cdweb.backend.controllers.user;
 
+import com.cdweb.backend.payloads.requests.ProductCombinationRequest;
 import com.cdweb.backend.payloads.responses.PageResponse;
+import com.cdweb.backend.payloads.responses.ProductCombinationResponse;
 import com.cdweb.backend.payloads.responses.ProductResponse;
 import com.cdweb.backend.payloads.responses.ResponseObject;
+import com.cdweb.backend.services.IProductCombinationService;
 import com.cdweb.backend.services.IProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,10 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController(value = "productControllerOfUser")
 @RequestMapping("/api/v1/user/product")
@@ -24,7 +24,9 @@ public class ProductController {
 
     private final IProductService productService;
 
-    @GetMapping("/no-token/{page}/{limit}")
+    private final IProductCombinationService productCombinationService;
+
+    @GetMapping("/no-token/page/{page}/limit/{limit}")
     ResponseEntity<?> getAllProduct(@PathVariable("page") int page, @PathVariable("limit") int limit) {
         PageResponse<ProductResponse> response = new PageResponse<>();
         response.setPage(page);
@@ -40,5 +42,13 @@ public class ProductController {
         ProductResponse response = productService.findByProductId(productId);
             return response != null ?  ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", null, response)) :
                                     ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Fail", "Can not find product!", response));
+    }
+
+    @PostMapping("/no-token/productCombination")
+    ResponseEntity<?> getProductCombination(@RequestBody ProductCombinationRequest request) {
+        ProductCombinationResponse response = productCombinationService.findByProductIdAndUniqueStringId(request);
+        return response != null ?
+                ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", null, response)) :
+                ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Fail", null, ""));
     }
 }
