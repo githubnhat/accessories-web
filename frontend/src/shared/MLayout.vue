@@ -3,7 +3,7 @@
     <div class="m-layout">
       <m-header />
       <div class="m-layout-container">
-        <v-container class="mt-10 scrollable" fluid>
+        <v-container class="mt-10" fluid>
           <slot />
         </v-container>
       </div>
@@ -29,5 +29,6 @@ export default {
 }
 .m-layout-container {
   background: #eceff1;
+  min-height: 100%;
 }
 </style>

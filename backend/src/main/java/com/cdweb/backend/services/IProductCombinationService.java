@@ -15,4 +15,6 @@ public interface IProductCombinationService {
     Double minPrice(Long productId);
 
     Double maxPrice(Long productId);
+
+    ProductCombinationResponse findByProductIdAndUniqueStringId(ProductCombinationRequest request);
 }

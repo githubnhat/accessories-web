@@ -9,6 +9,7 @@ import com.cdweb.backend.payloads.responses.ProductCombinationResponse;
 import com.cdweb.backend.repositories.ProductCombinationRepository;
 import com.cdweb.backend.services.IProductCombinationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProductCombinationServiceImpl implements IProductCombinationService {
     private final ProductCombinationRepository productCombinationRepository;
     private final ProductCombinationConverter productCombinationConverter;
@@ -51,5 +53,16 @@ public class ProductCombinationServiceImpl implements IProductCombinationService
     @Override
     public Double maxPrice(Long productId) {
         return productCombinationRepository.max(productId);
+    }
+
+    @Override
+    public ProductCombinationResponse findByProductIdAndUniqueStringId(ProductCombinationRequest request) {
+        String uniqueStringId = Utils.getUniqueStringId(request.getProductVariantName());
+        ProductCombinations response =
+                productCombinationRepository.findByProductIdAndUniqueStringId(request.getProductId(), uniqueStringId);
+        return ProductCombinationResponse.builder()
+                .price("₫"+ Utils.formatNumber(response.getPrice()))
+                .quantity(response.getQuantity())
+                .build();
     }
 }

@@ -78,7 +78,7 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public List<ProductResponse> findAllForUser(Pageable pageable) {
         List<ProductResponse> response = new ArrayList<>();
-        List<Products> entities = productRepository.findAll(pageable).getContent();
+        List<Products> entities = productRepository.findByIsActiveTrueOrderByCreatedDateDesc(pageable).getContent();
         if (entities.size() > 0) {
             entities.forEach(entity -> {
                 if (entity.isActive()) {
@@ -106,9 +106,9 @@ public class ProductServiceImpl implements IProductService {
                     Double minPrice = productCombinationService.minPrice(entity.getId());
                     if (maxPrice!= null && minPrice != null){
                         if(maxPrice.equals(minPrice)){
-                            product.setOriginalPrice(Utils.formatNumber(maxPrice));
+                            product.setOriginalPrice("₫"+Utils.formatNumber(maxPrice));
                         } else {
-                            product.setOriginalPrice(Utils.formatNumber(minPrice) + " - " + Utils.formatNumber(maxPrice));
+                            product.setOriginalPrice("₫"+ Utils.formatNumber(minPrice) + " - " + "₫" + Utils.formatNumber(maxPrice));
                         }
                     }
                     response.add(product);
@@ -169,9 +169,9 @@ public class ProductServiceImpl implements IProductService {
            Double minPrice = productCombinationService.minPrice(entity.getId());
            if (maxPrice!= null && minPrice != null){
                if(maxPrice.equals(minPrice)){
-                   product.setOriginalPrice(Utils.formatNumber(maxPrice));
+                   product.setOriginalPrice("₫" + Utils.formatNumber(maxPrice));
                } else {
-                   product.setOriginalPrice(Utils.formatNumber(minPrice) + " - " + Utils.formatNumber(maxPrice));
+                   product.setOriginalPrice("₫"+ Utils.formatNumber(minPrice) + " - " + "₫" + Utils.formatNumber(maxPrice));
                }
            }
            return product;
