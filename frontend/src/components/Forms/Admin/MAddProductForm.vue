@@ -378,7 +378,7 @@ export default {
         originalPrice: this.originalPrice,
         originalQuantity: this.originalQuantity,
         imageLinks: this.images,
-        // discount: parseInt(this.discount),
+        discount: parseInt(this.discount),
         attributes: this.attributes.map((item) => ({
           attributeName: item.attributeName,
           variantNames: item.selectedVariants,
@@ -493,7 +493,7 @@ export default {
       const product = await insertProduct(this.payload);
       console.log('product', JSON.stringify(product, null, 10));
 
-      console.log('payload', JSON.stringify(this.payload, null, 10));
+      // console.log('payload', JSON.stringify(this.payload, null, 10));
       this.loading.step3 = false;
     },
   },
