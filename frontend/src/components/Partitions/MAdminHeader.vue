@@ -2,7 +2,7 @@
   <v-app-bar color="primary" dense dark elevate-on-scroll>
     <v-app-bar-nav-icon @click.stop="handleSideBar"></v-app-bar-nav-icon>
 
-    <v-toolbar-title class="text-upper-case">
+    <v-toolbar-title class="text-upper-case" @click="goToHomePage" role="button">
       <span class="font-weight-light">Admin | </span>
       <span>Accessories</span>
     </v-toolbar-title>
@@ -48,6 +48,9 @@ export default {
     },
     handleSideBar() {
       this.$emit('onClickDrawer', !this.drawer);
+    },
+    goToHomePage() {
+      router.push({ name: 'home' });
     },
   },
   components: {

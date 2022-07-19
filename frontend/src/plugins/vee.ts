@@ -1,7 +1,16 @@
 import Vue from 'vue';
 import { ValidationProvider, ValidationObserver, extend, setInteractionMode } from 'vee-validate';
 import * as rules from 'vee-validate/dist/rules';
-import { required, email, min, max, between, numeric, confirmed } from 'vee-validate/dist/rules';
+import {
+  required,
+  email,
+  min,
+  max,
+  between,
+  numeric,
+  confirmed,
+  min_value,
+} from 'vee-validate/dist/rules';
 import { checkUniqueProductName } from '@/services/admin/add-product-form';
 import { checkUniqueCategoryCode } from '@/services/admin/all-category-form';
 import { checkUniqueBrandName, checkUniqueBrandCode } from '@/services/admin/all-brand-form';
@@ -30,6 +39,11 @@ extend('email', {
 extend('min', {
   ...min,
   message: (field, value) => field + ' tối thiểu là ' + value?.length + ' ký tự.',
+});
+
+extend('min_value', {
+  ...min_value,
+  message: (field, value) => field + ' tối thiểu là ' + value?.min + '.',
 });
 
 extend('max', {
@@ -97,7 +111,6 @@ extend('uniqueAttributeName', {
   },
   message: (field) => field + ' đã tồn tại.',
 });
-
 
 // end custom rules
 

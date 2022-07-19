@@ -37,14 +37,8 @@ export default {
         case 'All brands':
           this.controler = 'm-all-brand-form';
           break;
-        case 'Add brand':
-          this.controler = 'm-add-brand-form';
-          break;
         case 'All categories':
           this.controler = 'm-all-category-form';
-          break;
-        case 'Add category':
-          this.controler = 'm-add-category-form';
           break;
         case 'All attribute product':
           this.controler = 'm-all-attribute-form';

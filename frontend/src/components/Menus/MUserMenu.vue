@@ -22,7 +22,6 @@
 <script>
 import router from '@/router';
 import { doLogout } from '@/services';
-import { mapState } from 'vuex';
 export default {
   name: 'MUserMenu',
   props: {

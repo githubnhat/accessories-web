@@ -21,12 +21,12 @@ export const ADMIN_MENU = [
 
   {
     action: 'mdi-watermark',
-    items: [{ title: 'All brands' }, { title: 'Add brand' }],
+    items: [{ title: 'All brands' }],
     title: 'Brand',
   },
   {
     action: 'mdi-label-multiple-outline',
-    items: [{ title: 'All categories' }, { title: 'Add category' }],
+    items: [{ title: 'All categories' }],
     title: 'Category',
   },
   {

@@ -191,6 +191,8 @@
               <v-row v-for="(item, n) in attributes" :key="n">
                 <v-col cols="2">
                   <m-text-field
+                    :nameInput="`Tên thuộc tính`"
+                    :rules="`required`"
                     :nameVar="item.attributeName"
                     label="Tên thuộc tính"
                     @input="handleInputName"
@@ -245,42 +247,32 @@
                 </v-col>
                 <v-col cols="2" />
                 <v-col cols="2">
-                  <validation-provider
-                    name="Quantity"
-                    rules="required|min_value:1|numeric"
-                    v-slot="{ errors }"
+                  <m-text-field
+                    :nameInput="`Số lượng`"
+                    :rules="`required|min_value:1|numeric`"
+                    v-model="item.quantity"
+                    label="Số lượng sản phẩm"
+                    :nameAttribute="item.productVariantName"
+                    @input="handleInputCombinationQuantity"
+                    required
+                    type="number"
+                    :disable="item.isUse"
                   >
-                    <m-text-field
-                      v-model="item.quantity"
-                      label="Số lượng sản phẩm"
-                      :nameAttribute="item.productVariantName"
-                      @input="handleInputCombinationQuantity"
-                      required
-                      :error-messages="errors"
-                      type="number"
-                      :disable="item.isUse"
-                    >
-                    </m-text-field>
-                  </validation-provider>
+                  </m-text-field>
                 </v-col>
                 <v-col cols="1" />
                 <v-col cols="2">
-                  <validation-provider
-                    name="Quantity"
-                    rules="required|numeric|min_value:1"
-                    v-slot="{ errors }"
+                  <m-text-field
+                    :nameInput="`Giá sản phẩm`"
+                    :rules="`required|numeric|min_value:1`"
+                    v-model="item.price"
+                    label="Giá sản phẩm"
+                    :nameAttribute="item.productVariantName"
+                    @input="handleInputCombinationPrice"
+                    required
+                    :disable="item.isUse"
                   >
-                    <m-text-field
-                      v-model="item.price"
-                      label="Giá sản phẩm"
-                      :nameAttribute="item.productVariantName"
-                      @input="handleInputCombinationPrice"
-                      required
-                      :error-messages="errors"
-                      :disable="item.isUse"
-                    >
-                    </m-text-field>
-                  </validation-provider>
+                  </m-text-field>
                 </v-col>
                 <v-col cols="2">
                   <v-select
