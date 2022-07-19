@@ -3,7 +3,7 @@
     <v-app-bar color="primary" dense dark v-bind="$attrs" fixed short>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
 
-      <v-toolbar-title class="text-upper-case">
+      <v-toolbar-title class="text-upper-case" @click="goToHomePage" role="button">
         <span class="font-weight-light">Shop</span>
         <span>Accessories</span>
       </v-toolbar-title>
@@ -80,6 +80,9 @@ export default {
     },
     handleToLogin() {
       router.push('/login');
+    },
+    goToHomePage() {
+      router.push({ name: 'home' });
     },
   },
   computed: {
