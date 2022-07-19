@@ -2,7 +2,7 @@
   <v-app-bar color="primary" dense dark elevate-on-scroll>
     <v-app-bar-nav-icon @click.stop="handleSideBar"></v-app-bar-nav-icon>
 
-    <v-toolbar-title class="text-upper-case" @click="goToHomePage">
+    <v-toolbar-title class="text-upper-case" @click="goToHomePage" role="button">
       <span class="font-weight-light">Admin | </span>
       <span>Accessories</span>
     </v-toolbar-title>
