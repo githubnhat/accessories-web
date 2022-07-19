@@ -63,12 +63,7 @@
                         <v-form class="mt-5" ref="formLogin" @submit.prevent="handleSubmit(login)">
                           <v-card-text class="mt-5">
                             <h1
-                              class="
-                                text-center
-                                display-2
-                                primary--text
-                                text--accent-3 text-capitalize
-                              "
+                              class="text-center display-2 primary--text text--accent-3 text-capitalize"
                             >
                               Đăng nhập
                             </h1>
@@ -171,12 +166,7 @@
                         <v-form class="mt-5" @submit.prevent="handleSubmit(register)">
                           <v-card-text class="mt-5">
                             <h1
-                              class="
-                                text-center
-                                display-2
-                                primary--text
-                                text--accent-3 text-capitalize
-                              "
+                              class="text-center display-2 primary--text text--accent-3 text-capitalize"
                             >
                               Tạo tài khoản
                             </h1>
