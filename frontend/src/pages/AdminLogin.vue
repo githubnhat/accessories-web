@@ -2,56 +2,6 @@
   <div class="admin-login-container">
     <v-main>
       <v-container class="fill-height" fluid>
-        <v-row justify="center">
-          <v-dialog
-            v-model="otpDialog"
-            persistent
-            max-width="600px"
-            @keydown.esc="otpDialog = false"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn v-show="false" color="primary" dark v-bind="attrs" v-on="on">
-                Open Dialog
-              </v-btn>
-            </template>
-            <v-card>
-              <ValidationObserver v-slot="{ handleSubmit }">
-                <v-form class="mt-5" ref="formOTP" @submit.prevent="handleSubmit(verifyOTP)">
-                  <v-card-title>
-                    <span class="text-h5">Xác thực email</span>
-                  </v-card-title>
-                  <v-card-text>
-                    <v-container>
-                      <v-row>
-                        <v-col cols="12">
-                          <validation-provider
-                            name="OTP"
-                            rules="required|min:8|max:8"
-                            v-slot="{ errors }"
-                          >
-                            <v-text-field
-                              label="OTP"
-                              v-model="otpCode"
-                              required
-                              :error-messages="errors"
-                            ></v-text-field>
-                          </validation-provider>
-                        </v-col>
-                      </v-row>
-                    </v-container>
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" text @click="otpDialog = false"> Đóng </v-btn>
-                    <v-btn color="blue darken-1" text type="submit" :loading="loading.verify">
-                      Xác nhận
-                    </v-btn>
-                  </v-card-actions></v-form
-                >
-              </ValidationObserver>
-            </v-card>
-          </v-dialog>
-        </v-row>
         <v-row align="center" justify="center" class="pt-10">
           <v-col cols="12" sm="8" md="8">
             <v-card class="elevation-12" rounded="10">

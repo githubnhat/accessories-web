@@ -8,12 +8,7 @@
     link
     @click="handleClickProduct"
   >
-    <v-img
-      width="200px"
-      height="180px"
-      class="mb-2"
-      src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
-    ></v-img>
+    <v-img width="200px" height="180px" class="mb-2" :src="`${imgLink}`"></v-img>
     <v-card-text>
       <div class="text-product-name mb-2">
         {{ item.productName }}
@@ -33,7 +28,13 @@ export default {
   data() {
     return {
       rating: 5,
+      imgLink: undefined,
     };
+  },
+  created() {
+    const defaultLink =
+      'https://firebasestorage.googleapis.com/v0/b/minhnhat569-eecaa.appspot.com/o/images%2Fimage-not-found.png?alt=media&token=ae8ed2ef-b7ee-4921-b494-fe662aca6778';
+    this.imgLink = this.item.imageLinks[0] ? this.item.imageLinks[0] : defaultLink;
   },
   props: {
     item: {
