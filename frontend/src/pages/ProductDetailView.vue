@@ -27,16 +27,18 @@
             <v-col cols="12" sm="7">
               <h1 class="grey--text text--darken-3 mt-5">{{ this.data?.productName }}</h1>
               <v-row>
-                <v-col class="price-text" cols="7">
-                  <div class="">
-                    <h2>{{ price }}</h2>
-                  </div>
+                <v-col class="price-text" cols="12" v-if="discount != 0 && price != 'Hết hàng'">
+                  <span class="grey--text"
+                    ><del>{{ price }}</del></span
+                  >
                 </v-col>
-                <v-col cols="6">
-                  <div>
-                    <span class="discount-card">{{ this.data?.discount }}% Giảm</span>
-                  </div>
+                <v-col cols="12" v-if="discount != 0 && price != 'Hết hàng'">
+                  <span class="discount-card">{{ discount }}% Giảm</span>
                 </v-col>
+                <v-col class="price-text" cols="12">
+                  <h2>{{ discountPrice }}</h2>
+                </v-col>
+
                 <v-col v-for="(attribute, a) in attributes" :key="a" cols="12" sm="8">
                   <v-row>
                     <v-col cols="4">
@@ -112,6 +114,7 @@
 <script>
 import MLayout from '@/shared/MLayout.vue';
 import { getProductDetail, getProductCombination } from '@/services/user/products';
+import { toDiscountPrice } from '@/utils';
 
 export default {
   data() {
@@ -120,7 +123,9 @@ export default {
       attributes: [],
       listAttrAndVari: [],
       listImages: [],
+      discount: 0,
       price: 0,
+      discountPrice: 0,
       quantity: 0,
       quantityInput: 1,
       disabledBtn: false,
@@ -138,6 +143,7 @@ export default {
       const id = this.$route.params.id;
       this.data = await getProductDetail(id);
       this.listImages = this.data?.imageLinks;
+      this.discount = this.data?.discount;
       this.data?.attributeAndVariants.forEach((i) => {
         let variantNames = [];
         i?.variantNames.forEach((v) => {
@@ -154,6 +160,7 @@ export default {
         });
       });
       this.price = this.data?.originalPrice;
+      this.discountPrice = toDiscountPrice(this.data?.originalPrice, this.discount);
       this.quantity = this.data?.originalQuantity;
     },
     addItem(attrName, variantName) {
@@ -197,6 +204,7 @@ export default {
       }
       if (this.listAttrAndVari.length < this.attributes.length) {
         this.price = this.data?.originalPrice;
+        this.discountPrice = toDiscountPrice(this.data?.originalPrice, this.discount);
         this.quantity = this.data?.originalQuantity;
       }
     },
@@ -207,6 +215,7 @@ export default {
         productVariantName: productVariantName,
       });
       this.price = price;
+      this.discountPrice = toDiscountPrice(price, this.discount);
       this.quantity = quantity;
       if (this.quantityInput > this.quantity) {
         this.quantityInput = this.quantity;

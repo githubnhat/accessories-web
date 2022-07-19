@@ -85,3 +85,24 @@ export function transNameToCode(str) {
 
   return result;
 }
+
+export function toDiscountPrice(str, discount){
+  var result;
+  if(str!== "Hết hàng"){
+    var arr = str.split(" - ");
+  var arrTemp=[];
+  arr.forEach(element => {
+    var price = element.slice(1).replaceAll('.','')*(100-discount)/100;
+    arrTemp.push(price);
+  });
+  
+  if(arrTemp.length==2){
+    result = "₫" + arrTemp[0].toLocaleString('vi-VN') + " - " + "₫" + arrTemp[1].toLocaleString('vi-VN');
+  } else if(arrTemp.length==1){
+    result = "₫" + arrTemp[0].toLocaleString('vi-VN')
+  }
+  } else {
+    result = str
+  }
+  return result;
+}
