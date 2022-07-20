@@ -2,6 +2,7 @@ package com.cdweb.backend.services.impl;
 
 import com.cdweb.backend.converters.AddressConverter;
 import com.cdweb.backend.entities.Address;
+import com.cdweb.backend.entities.Brands;
 import com.cdweb.backend.entities.Users;
 import com.cdweb.backend.payloads.requests.AddressRequest;
 import com.cdweb.backend.payloads.requests.UserRequest;
@@ -80,5 +81,13 @@ public class UserServiceImpl implements IUsersService {
                 .build());
         AddressResponse response = addressConverter.toResponse(address);
         return response;
+    }
+
+    @Override
+    public Boolean deleteAddress(Long id, Users user) {
+        boolean exists = true;
+        if (!addressRepository.existsById(id)) exists = false;
+        addressRepository.deleteById(id);
+        return exists;
     }
 }

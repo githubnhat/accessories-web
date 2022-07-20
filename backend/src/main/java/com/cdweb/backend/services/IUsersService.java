@@ -17,4 +17,6 @@ public interface IUsersService {
     List<AddressResponse> getAllAddresses(Users user);
 
     AddressResponse save(AddressRequest address, Users user);
+
+    Boolean deleteAddress(Long id, Users user);
 }
