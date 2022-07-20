@@ -9,4 +9,6 @@ import java.util.List;
 public interface AddressRepository extends JpaRepository<Address, Long> {
     List<Address> findByUserOrderByCreatedDateDesc(Users user);
     Address findByUserAndIsMainAddressTrue(Users user);
+
+    boolean existsById(Long id);
 }

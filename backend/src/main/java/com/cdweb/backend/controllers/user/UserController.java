@@ -63,6 +63,17 @@ public class UserController {
                         new ResponseObject("Success", "Insert user address successfully", response));
     }
 
+    @DeleteMapping ("/address/{id}")
+    ResponseEntity<?> deleteAddress(HttpServletRequest httpRequest, @PathVariable("id") Long id) {
+        Users user = getUserFromRequest(httpRequest);
+
+        boolean response = userService.deleteAddress(id, user);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                !response ?
+                        new ResponseObject("Failed", "Delete address fail", false) :
+                        new ResponseObject("Success", "Delete address successfully", true));
+    }
+
     private Users getUserFromRequest(HttpServletRequest httpRequest) {
         String authorizationHeader = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
         String token = authorizationHeader.substring(Constant.BEARER.length());
