@@ -5,6 +5,9 @@ import lombok.*;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import java.util.HashSet;
+import java.util.Set;
 
 @Builder
 @Entity
@@ -18,6 +21,9 @@ public class ProductCombinations extends BaseEntity {
     private Double price;
     private int quantity;
     private boolean isActive;
+
+    @OneToMany(mappedBy = "productCombination")
+    private Set<Carts> carts = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "product_id")
