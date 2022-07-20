@@ -32,6 +32,9 @@ public class Products extends BaseEntity {
     private Set<Thumbnails> thumbnails = new HashSet<>();
 
     @OneToMany(mappedBy = "product")
+    private Set<Carts> carts = new HashSet<>();
+
+    @OneToMany(mappedBy = "product")
     private Set<ProductAttributes> productAttributes = new HashSet<>();
 
     @OneToMany(mappedBy = "product")
