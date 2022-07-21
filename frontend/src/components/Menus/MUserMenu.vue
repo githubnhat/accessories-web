@@ -66,6 +66,9 @@ export default {
       if (item.action === 'profile') {
         router.push('/profile');
       }
+      if (item.action === 'cart') {
+        router.push('/shopping-cart');
+      }
     },
   },
 };

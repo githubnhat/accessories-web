@@ -82,7 +82,13 @@
                   </v-row>
                 </v-col>
                 <v-col cols="12" sm="8">
-                  <v-btn class="ma-2" :disabled="disabledBtn" outlined color="deep-orange accent-3">
+                  <v-btn
+                    class="ma-2"
+                    :disabled="disabledBtn"
+                    @click="addToCart"
+                    outlined
+                    color="deep-orange accent-3"
+                  >
                     Thêm vào giỏ hàng
                   </v-btn>
                   <v-btn
@@ -91,8 +97,8 @@
                     class="mr-2 ma-2 white--text"
                   >
                     Mua ngay
-                  </v-btn> </v-col
-                >¯
+                  </v-btn>
+                </v-col>
               </v-row>
             </v-col>
           </v-row>
@@ -115,6 +121,7 @@
 import MLayout from '@/shared/MLayout.vue';
 import { getProductDetail, getProductCombination } from '@/services/user/products';
 import { toDiscountPrice } from '@/utils';
+import { addToCart } from '@/services/user/cart';
 
 export default {
   data() {
@@ -209,6 +216,30 @@ export default {
       }
     },
 
+    async addToCart() {
+      if (this.listAttrAndVari.length === this.attributes.length) {
+        let productVariantName = '';
+        this.listAttrAndVari.forEach((item, index) => {
+          if (index > 0) {
+            productVariantName = productVariantName + '-' + item.variantName;
+          } else {
+            productVariantName = item.variantName;
+          }
+        });
+        const id = this.$route.params.id;
+        const data = await addToCart({
+          productId: id,
+          productVariantName: productVariantName,
+          quantity: this.quantityInput,
+        });
+        if (data != null) {
+          alert('Sản phẩm đã được thêm vào giỏ hàng!');
+        }
+      } else {
+        alert('Vui lòng chọn phần loại!');
+      }
+    },
+
     async readDataFromAPI(id, productVariantName) {
       const { price, quantity } = await getProductCombination({
         productId: id,
@@ -272,7 +303,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .price-text {
   color: #ff3d00;
 }

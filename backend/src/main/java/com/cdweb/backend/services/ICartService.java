@@ -12,4 +12,8 @@ public interface ICartService {
     CartResponse addToCart(CartRequest request, Users user);
 
     List<CartResponse> findByUserOrderByCreatedDateDesc(Users user);
+
+    boolean delete(Long[] ids, Users user);
+
+    CartResponse updateCart(CartRequest request);
 }
