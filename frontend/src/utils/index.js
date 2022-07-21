@@ -106,3 +106,21 @@ export function toDiscountPrice(str, discount){
   }
   return result;
 }
+
+export function formatNumber(str){
+  return (str.replaceAll('.','')/1).toLocaleString('vi-VN');
+}
+
+export function toOneDiscountPrice(str, discount){
+  var result;
+  var price = str.replaceAll('.','')*(100-discount)/100;
+    result = "₫" + price.toLocaleString('vi-VN');
+  return result;
+}
+
+export function totalPrice(price, discount, quantity) { 
+  var result;
+  var totalPrice = ((price.replaceAll('.','') * (100 - discount)) / 100) * quantity;
+  result = "₫" + totalPrice.toLocaleString('vi-VN');
+  return result;
+}

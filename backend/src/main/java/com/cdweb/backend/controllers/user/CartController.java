@@ -18,7 +18,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/user/cart")
 @RequiredArgsConstructor
 public class CartController {
     private final JwtService jwtService;
@@ -36,6 +36,15 @@ public class CartController {
                         ? new ResponseObject("Success", "Add to cart successfully", response)
                         : new ResponseObject("Success", null, null));
     }
+
+    @PostMapping("/update")
+    public ResponseEntity<?> updateCart(@RequestBody CartRequest request){
+        CartResponse response = cartService.updateCart(request);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                (response != null)
+                        ? new ResponseObject("Success", "Update cart successfully", response)
+                        : new ResponseObject("Success", null, null));
+    }
     @GetMapping("/list-cart")
     public ResponseEntity<?> getListCart(HttpServletRequest httpRequest){
         String authorizationHeader = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
@@ -45,6 +54,18 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 (responses.size()> 0)
                         ? new ResponseObject("Success", "Get list cart successfully", responses)
+                        : new ResponseObject("Success", "There are no items available", null));
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteCart(@RequestBody Long[] ids, HttpServletRequest httpRequest){
+        String authorizationHeader = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
+        String token = authorizationHeader.substring(Constant.BEARER.length());
+        Users user =  jwtService.getUserFromToken(token);
+        boolean response = cartService.delete(ids, user);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                (response)
+                        ? new ResponseObject("Success", "Get list cart successfully", response)
                         : new ResponseObject("Success", "There are no items available", null));
     }
 }
