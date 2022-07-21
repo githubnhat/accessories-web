@@ -78,7 +78,18 @@ const routes: Array<RouteConfig> = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '@/pages/ShoppingCart.vue'),
   },
-
+  {
+    path: '/checkout',
+    name: 'checkout',
+    // route level code-splitting
+    // this generates a separate chunk (admin.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "admin-login" */ '@/pages/PaymentPage.vue'),
+    props: (route) => ({
+      ...route.params,
+      itemIds: [],
+    }),
+  },
 ];
 
 const router = new VueRouter({
