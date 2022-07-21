@@ -15,7 +15,6 @@
       </div>
 
       <div class="text-product-price primary--text mb-2">
-        <span class="currency">₫</span>
         {{ item.originalPrice }}
       </div>
       <v-rating v-model="rating" background-color="white" color="yellow darken-3" small></v-rating>
