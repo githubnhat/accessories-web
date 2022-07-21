@@ -10,5 +10,6 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
     List<Address> findByUserOrderByCreatedDateDesc(Users user);
     Address findByUserAndIsMainAddressTrue(Users user);
 
+    List<Address> findByUserOrderByIsMainAddressDesc(Users user);
     boolean existsById(Long id);
 }
