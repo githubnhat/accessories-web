@@ -108,7 +108,9 @@
 
         <v-container>
           <v-btn color="error" larger class="mb-2 mr-2" @click="openDeleteDialog"> Xóa </v-btn>
-          <v-btn color="success" larger style="float: right">Go to payment</v-btn>
+          <v-btn color="success" larger style="float: right" @click="handleCheckout"
+            >Go to payment</v-btn
+          >
           <div class="action-item-dialog">
             <v-dialog v-model="dialog.delete" max-width="500px">
               <v-card>
@@ -315,6 +317,16 @@ export default {
         this.isCheckAll = false;
       }
       console.log(this.cartSeleted);
+    },
+
+    handleCheckout() {
+      const selectedItems = this.data.filter((item) => this.cartSeleted.indexOf(item.id) !== -1);
+      this.$router.push({
+        name: 'checkout',
+        params: {
+          checkoutItems: selectedItems,
+        },
+      });
     },
   },
 };
