@@ -55,7 +55,7 @@ public class UserServiceImpl implements IUsersService {
 
     @Override
     public List<AddressResponse> getAllAddresses(Users user) {
-        List<Address> addresses = addressRepository.findByUserOrderByCreatedDateDesc(user);
+        List<Address> addresses = addressRepository.findByUserOrderByIsMainAddressDesc(user);
         List<AddressResponse> responses = new ArrayList<>();
         for (Address address: addresses) {
             AddressResponse response = addressConverter.toResponse(address);
