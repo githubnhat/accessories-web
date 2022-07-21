@@ -86,41 +86,54 @@ export function transNameToCode(str) {
   return result;
 }
 
-export function toDiscountPrice(str, discount){
+export function toDiscountPrice(str, discount) {
   var result;
-  if(str!== "Hết hàng"){
-    var arr = str.split(" - ");
-  var arrTemp=[];
-  arr.forEach(element => {
-    var price = element.slice(1).replaceAll('.','')*(100-discount)/100;
-    arrTemp.push(price);
-  });
-  
-  if(arrTemp.length==2){
-    result = "₫" + arrTemp[0].toLocaleString('vi-VN') + " - " + "₫" + arrTemp[1].toLocaleString('vi-VN');
-  } else if(arrTemp.length==1){
-    result = "₫" + arrTemp[0].toLocaleString('vi-VN')
-  }
+  if (str !== 'Hết hàng') {
+    var arr = str.split(' - ');
+    var arrTemp = [];
+    arr.forEach((element) => {
+      var price = (element.slice(1).replaceAll('.', '') * (100 - discount)) / 100;
+      arrTemp.push(price);
+    });
+
+    if (arrTemp.length == 2) {
+      result =
+        '₫' + arrTemp[0].toLocaleString('vi-VN') + ' - ' + '₫' + arrTemp[1].toLocaleString('vi-VN');
+    } else if (arrTemp.length == 1) {
+      result = '₫' + arrTemp[0].toLocaleString('vi-VN');
+    }
   } else {
-    result = str
+    result = str;
   }
   return result;
 }
 
-export function formatNumber(str){
-  return (str.replaceAll('.','')/1).toLocaleString('vi-VN');
+export function formatNumber(str) {
+  return (str.replaceAll('.', '') / 1).toLocaleString('vi-VN');
 }
 
-export function toOneDiscountPrice(str, discount){
+export function toOneDiscountPrice(str, discount) {
   var result;
-  var price = str.replaceAll('.','')*(100-discount)/100;
-    result = "₫" + price.toLocaleString('vi-VN');
+  var price = (str.replaceAll('.', '') * (100 - discount)) / 100;
+  result = '₫' + price.toLocaleString('vi-VN');
   return result;
 }
 
-export function totalPrice(price, discount, quantity) { 
+export function totalPrice(price, discount, quantity) {
   var result;
-  var totalPrice = ((price.replaceAll('.','') * (100 - discount)) / 100) * quantity;
-  result = "₫" + totalPrice.toLocaleString('vi-VN');
+  var totalPrice = ((price.replaceAll('.', '') * (100 - discount)) / 100) * quantity;
+  result = '₫' + totalPrice.toLocaleString('vi-VN');
+  return result;
+}
+
+export function toPriceValue(finalPrice) {
+  console.log(finalPrice);
+
+  var result = finalPrice.replaceAll('.', '').replaceAll('₫', '');
+  return parseInt(result);
+}
+
+export function toPriceString(price) {
+  var result = price.toLocaleString('it-IT', { style: 'currency', currency: 'VND' });
   return result;
 }
