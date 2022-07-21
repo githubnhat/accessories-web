@@ -82,9 +82,115 @@
               hide-details
               label="Thêm địa chỉ khác"
             ></v-checkbox>
+            <v-checkbox
+              v-model="isMainAddress"
+              hide-details
+              label="Đặt làm địa chỉ mặc định"
+            ></v-checkbox>
           </v-col>
         </v-row>
       </v-card-title>
+
+      <v-card-text>
+        <!-- for list checkout items:=> product in data  -->
+        <v-list color="transparent" two-line>
+          <v-row>
+            <v-col cols="12">
+              <v-list-item
+                class="mb-5 white"
+                v-for="(product, index) in data"
+                outlined
+                elevation="1"
+                :key="product.id"
+                avatar
+              >
+                <v-card elevation="0" rounded="md" width="100%" height="130px" outlined>
+                  <v-row>
+                    <v-col class="ma-auto">
+                      <h5 class="pa-3">
+                        <span>STT: {{ index }}</span>
+                      </h5>
+                    </v-col>
+                    <v-col class="ma-auto">
+                      <v-list-item>
+                        <img
+                          :src="product.thumbnail"
+                          class="img-thumbnail mt-2 mb-2"
+                          height="100px"
+                        /> </v-list-item
+                    ></v-col>
+                    <v-col cols="2" class="ma-auto">
+                      <v-list-item
+                        ><h3 class="product-name">{{ product.productName }}</h3></v-list-item
+                      >
+                      <v-list-item class="product-variant-name"
+                        >Phân loại: {{ product.productVariantName }}</v-list-item
+                      >
+                    </v-col>
+                    <v-col class="ma-auto">
+                      <v-list-item>
+                        <del class="grey--text mr-2">₫{{ product.price }}</del>
+                        {{ product.priceDiscount }}
+                      </v-list-item>
+                    </v-col>
+                    <v-col cols="2" class="ma-auto">
+                      <v-list-item>
+                        <v-text-field
+                          :disabled="product.disabledQuantity"
+                          v-model="product.quantity"
+                          label="Quantity"
+                          hide-spin-buttons
+                          height="30"
+                          @change="handleOnChangeQuantity(product.id)"
+                          type="number"
+                          readonly
+                        >
+                        </v-text-field>
+                      </v-list-item>
+                    </v-col>
+                    <v-col class="ma-auto">
+                      <v-list-item v-if="product.disabledTotalPrice">
+                        {{ product.totalPrice }}
+                      </v-list-item>
+                    </v-col>
+                  </v-row>
+                </v-card>
+              </v-list-item>
+            </v-col>
+          </v-row>
+        </v-list>
+      </v-card-text>
+
+      <v-card-actions>
+        <v-row dense align-content="center">
+          <v-col cols="6"></v-col>
+          <v-col cols="3">
+            <h2 class="text-right"><span>Phí vận chuyển:</span></h2>
+          </v-col>
+          <v-col cols="3">
+            <span class="pt-4 title primary--text">{{ shippingFee }} VNĐ</span></v-col
+          >
+        </v-row>
+      </v-card-actions>
+      <v-card-actions>
+        <v-row dense align-content="center">
+          <v-col cols="6"></v-col>
+          <v-col cols="3">
+            <h2 class="text-right"><span>Tổng hóa đơn:</span></h2>
+          </v-col>
+          <v-col cols="3"
+            ><span class="pt-4 title error--text"> {{ totalBill }} </span></v-col
+          >
+        </v-row>
+      </v-card-actions>
+      <v-card-actions>
+        <v-row dense>
+          <v-col cols="9"></v-col>
+          <v-col cols="3">
+            <v-btn color="primary" @click="handleCheckout" x-large>Thanh toán</v-btn>
+          </v-col>
+        </v-row>
+      </v-card-actions>
     </v-card>
   </v-container>
 </template>
@@ -92,19 +198,34 @@
 <script>
 import router from '@/router';
 import { getAddresses } from '@/services/user/accounts';
+import { toPriceValue, toPriceString } from '@/utils/index';
 export default {
   data() {
     return {
+      data: [],
       isAnotherAddress: false,
+      isMainAddress: false,
       selectedAddress: {},
       addresses: [],
       newAddress: '',
       newPhone: '',
       loading: false,
+      shippingFee: 30000,
     };
   },
   created() {
     this.init();
+    this.data = this.$route.params?.checkoutItems;
+  },
+  computed: {
+    totalBill() {
+      const result = this.data.reduce((sum, item) => {
+        sum += toPriceValue(item.totalPrice);
+        return sum;
+      }, 0);
+
+      return toPriceString(result);
+    },
   },
   methods: {
     init() {
