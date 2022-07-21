@@ -357,6 +357,7 @@ export default {
       const { data, status } = await insertCategory(this.newCategoryInfor);
       if (status === 'Success') {
         this.dialog.add = false;
+        this.readDataFromAPI();
         alert('Thêm danh mục "' + data?.name + '" với code là "' + data?.code + '" thành công!');
       } else {
         alert(status);
