@@ -12,7 +12,7 @@ import javax.persistence.ManyToOne;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Carts extends BaseEntity{
+public class CartItems extends BaseEntity{
 
     private int quantity;
     @ManyToOne

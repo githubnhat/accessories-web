@@ -88,8 +88,10 @@ export function transNameToCode(str) {
 
 export function toDiscountPrice(str, discount) {
   var result;
+  console.log("price", str)
   if (str !== 'Hết hàng') {
     var arr = str.split(' - ');
+    console.log(arr)
     var arrTemp = [];
     arr.forEach((element) => {
       var price = (element.slice(1).replaceAll('.', '') * (100 - discount)) / 100;
@@ -100,7 +102,9 @@ export function toDiscountPrice(str, discount) {
       result =
         '₫' + arrTemp[0].toLocaleString('vi-VN') + ' - ' + '₫' + arrTemp[1].toLocaleString('vi-VN');
     } else if (arrTemp.length == 1) {
+      console.log("price 1", arrTemp[0])
       result = '₫' + arrTemp[0].toLocaleString('vi-VN');
+      console.log("price 1", result)
     }
   } else {
     result = str;

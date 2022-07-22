@@ -160,7 +160,7 @@
     <div class="action-item-dialog">
       <v-dialog v-model="dialog.edit" max-width="500px">
         <v-card>
-          <ValidationObserver v-slot="{ handleSubmit }">
+          <ValidationObserver ref="editDialog" v-slot="{ handleSubmit }">
             <v-form class="mt-5" @submit.prevent="handleSubmit(editItemConfirm)">
               <v-card-title class="text-h5">Chỉnh sửa thông tin danh mục</v-card-title>
               <v-card-text>
@@ -381,12 +381,11 @@ export default {
     },
 
     openEditDialog(item) {
-      this.selectedItem = item;
+      this.selectedItem = { ...item };
       this.dialog.edit = true;
     },
 
     openDeleteDialog(item) {
-      console.log('open delete');
       this.selectedItem = item;
       this.dialog.delete = true;
     },
@@ -411,6 +410,7 @@ export default {
 
     closeEdit() {
       this.dialog.edit = false;
+      this.$refs.editDialog.reset();
     },
     closeDelete() {
       this.dialog.delete = false;

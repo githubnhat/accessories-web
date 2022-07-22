@@ -17,4 +17,6 @@ public interface IProductCombinationService {
     Double maxPrice(Long productId);
 
     ProductCombinationResponse findByProductIdAndUniqueStringId(ProductCombinationRequest request);
+
+    boolean deleteByProductId(Products product);
 }

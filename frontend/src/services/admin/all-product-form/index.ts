@@ -40,3 +40,26 @@ export async function getAllProducts(pageNumber: number, itemsPerPage:number) {
       }
     }
   }
+
+  type DeleteProducyResponse = {
+    data: boolean;
+  };
+  export async function deleteProducts(ids: Array<number>) {
+    try {
+      const { data, status } = await axios
+      .delete<DeleteProducyResponse>(`admin/product`,{
+        data: ids,
+        withCredentials: true
+      });
+      console.log('response status is: ', status);
+      return data?.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.log('error message: ', error.message);
+        return error.message;
+      } else {
+        console.log('unexpected error: ', error);
+        return 'An unexpected error occurred';
+      }
+    }
+  }

@@ -155,7 +155,7 @@
     <div class="action-item-dialog">
       <v-dialog v-model="dialog.edit" max-width="500px">
         <v-card>
-          <ValidationObserver v-slot="{ handleSubmit }">
+          <ValidationObserver ref="editDialog" v-slot="{ handleSubmit }">
             <v-form class="mt-5" @submit.prevent="handleSubmit(editOneItem)">
               <v-card-title class="text-h5">Chỉnh sửa thông tin thương hiệu</v-card-title>
               <v-card-text>
@@ -334,7 +334,6 @@ export default {
       this.loading.table = true;
       const { page, itemsPerPage } = this.options;
       const data = await getAllBrand(page, itemsPerPage);
-      console.log('data', data);
       this.page = data?.page;
       this.totalPages = data?.totalPages;
       this.totalItems = data?.totalItems;
@@ -376,7 +375,7 @@ export default {
     },
 
     openEditDialog(item) {
-      this.selectedItem = item;
+      this.selectedItem = { ...item };
       this.dialog.edit = true;
     },
 
@@ -409,6 +408,7 @@ export default {
 
     closeEdit() {
       this.dialog.edit = false;
+      this.$refs.editDialog.reset();
     },
     closeDelete() {
       this.dialog.delete = false;

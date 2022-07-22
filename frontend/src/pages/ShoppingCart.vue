@@ -11,6 +11,7 @@
                   @click="checkAll"
                   @change="updateCheckall"
                   v-model="isCheckAll"
+                  v-show="disabledCheckboxAll"
                   label="Tất cả"
                   color="primary"
                 ></v-checkbox>
@@ -44,13 +45,16 @@
                         :src="product.thumbnail"
                         class="img-thumbnail mt-2 mb-2"
                         height="100px"
+                        width="120px"
                       /> </v-list-item
                   ></v-col>
                   <v-col cols="2" class="ma-auto">
                     <v-list-item
-                      ><h3 class="product-name">{{ product.productName }}</h3></v-list-item
+                      ><h3 class="text-truncate">{{ product.productName }}</h3></v-list-item
                     >
-                    <v-list-item class="product-variant-name"
+                    <v-list-item
+                      v-if="product.productVariantName !== null"
+                      class="product-variant-name text-truncate"
                       >Phân loại: {{ product.productVariantName }}</v-list-item
                     >
                   </v-col>
@@ -148,6 +152,7 @@ export default {
     return {
       cartSeleted: [],
       isCheckAll: false,
+      disabledCheckboxAll: true,
       dialog: {
         delete: false,
       },
@@ -182,15 +187,23 @@ export default {
     async initialize() {
       const data = await getListCart();
       this.data = data;
+      let countCheck = 0;
       this.data?.forEach((e) => {
         e.priceDiscount = toOneDiscountPrice(e.price, e.discount);
         e.price = formatNumber(e.price);
         e.totalPrice = totalPrice(e.price, e.discount, e.quantity);
-        console.log(e.quantity);
         e.disabledCheckbox = e.quantity == 0 ? false : true;
         e.disabledQuantity = e.quantity == 0 ? true : false;
         e.disabledTotalPrice = e.quantity == 0 ? false : true;
+        if (e.quantity == 0) {
+          countCheck++;
+        }
+        e.thumbnail =
+          e.thumbnail !== null
+            ? e.thumbnail
+            : 'https://firebasestorage.googleapis.com/v0/b/minhnhat569-eecaa.appspot.com/o/images%2Fimage-not-found.png?alt=media&token=ae8ed2ef-b7ee-4921-b494-fe662aca6778';
       });
+      if (countCheck == this.data.length) this.disabledCheckboxAll = false;
       if (this.data == null) {
         this.data = [
           {
@@ -219,7 +232,6 @@ export default {
           id: dataForm[0]?.id,
           quantity: dataForm[0]?.quantity,
         });
-        console.log('call api');
         if (data) {
           await this.initialize();
         }
@@ -227,14 +239,13 @@ export default {
     },
 
     async append(cardId) {
-      console.log('cong');
       const check = this.data.filter((e) => e.id == cardId);
 
       const data = await getProductCombination({
         productId: check[0].productId,
-        productVariantName: check[0].productVariantName,
+        productVariantName:
+          check[0].productVariantName != null ? check[0].productVariantName : null,
       });
-      console.log('quatity nef', data?.quantity);
       this.data.forEach((e) => {
         if (e.id === cardId && e.quantity < data?.quantity) {
           e.quantity++;
@@ -244,7 +255,6 @@ export default {
       await this.updateCart(cardId);
     },
     async prepend(cardId) {
-      console.log('tru');
       // let check;
       this.data.forEach((e) => {
         if (e.id === cardId && e.quantity > 1) {
@@ -268,7 +278,9 @@ export default {
       const isUpdateSuccess = await deleteCart([cartId]);
       if (isUpdateSuccess) {
         await this.initialize();
-        this.checkAll();
+        if (this.isCheckAll) {
+          this.checkAll();
+        }
       }
     },
 
@@ -295,14 +307,12 @@ export default {
       this.isCheckAll = !this.isCheckAll;
       this.cartSeleted = [];
       if (this.isCheckAll) {
-        // Check all
         this.data.forEach((e) => {
           if (e.disabledCheckbox) {
             this.cartSeleted.push(e.id);
           }
         });
       }
-      // console.log(this.cartSeleted);
     },
     updateCheckall() {
       let count = 0;
@@ -316,7 +326,6 @@ export default {
       } else {
         this.isCheckAll = false;
       }
-      console.log(this.cartSeleted);
     },
 
     handleCheckout() {
