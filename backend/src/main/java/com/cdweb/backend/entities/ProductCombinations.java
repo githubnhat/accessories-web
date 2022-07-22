@@ -23,7 +23,7 @@ public class ProductCombinations extends BaseEntity {
     private boolean isActive;
 
     @OneToMany(mappedBy = "productCombination")
-    private Set<Carts> carts = new HashSet<>();
+    private Set<CartItems> carts = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "product_id")

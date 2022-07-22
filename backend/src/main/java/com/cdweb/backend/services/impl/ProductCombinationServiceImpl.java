@@ -7,7 +7,9 @@ import com.cdweb.backend.entities.Products;
 import com.cdweb.backend.payloads.requests.ProductCombinationRequest;
 import com.cdweb.backend.payloads.responses.ProductCombinationResponse;
 import com.cdweb.backend.repositories.ProductCombinationRepository;
+import com.cdweb.backend.repositories.ProductRepository;
 import com.cdweb.backend.services.IProductCombinationService;
+import com.cdweb.backend.services.IProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,20 +25,34 @@ public class ProductCombinationServiceImpl implements IProductCombinationService
     private final ProductCombinationRepository productCombinationRepository;
     private final ProductCombinationConverter productCombinationConverter;
 
+    private final ProductRepository productRepository;
+
 
 
     @Override
     public List<ProductCombinationResponse> saveListCombinations(Products product, List<ProductCombinationRequest> request) {
         List<ProductCombinationResponse> response = new ArrayList<>();
-        request.forEach(r ->{
-            ProductCombinations newEntity = productCombinationConverter.toEntity(r);
-            newEntity.setUniqueStringId(Utils.getUniqueStringId(r.getProductVariantName()));
-            newEntity.setProduct(product);
-            if (r.getIsUse()){
-                newEntity.setActive(true);
-            }
+        if (request.size() > 0) {
+            request.forEach(r ->{
+                ProductCombinations newEntity = productCombinationConverter.toEntity(r);
+                newEntity.setUniqueStringId(Utils.getUniqueStringId(r.getProductVariantName()));
+                newEntity.setProduct(product);
+                if (r.getIsUse()){
+                    newEntity.setActive(true);
+                }
+                response.add(productCombinationConverter.toResponse(productCombinationRepository.save(newEntity)));
+            });
+        } else {
+            ProductCombinations newEntity = ProductCombinations.builder()
+                    .productVariantName(null)
+                    .quantity(0)
+                    .price(0.0)
+                    .uniqueStringId(null)
+                    .product(product)
+                    .isActive(true)
+                    .build();
             response.add(productCombinationConverter.toResponse(productCombinationRepository.save(newEntity)));
-        });
+        }
         return response;
     }
 
@@ -60,9 +76,18 @@ public class ProductCombinationServiceImpl implements IProductCombinationService
     @Override
     public ProductCombinationResponse findByProductIdAndUniqueStringId(ProductCombinationRequest request) {
         String uniqueStringId = Utils.getUniqueStringId(request.getProductVariantName());
-        ProductCombinations response =
-                productCombinationRepository.findByProductIdAndUniqueStringId(request.getProductId(), uniqueStringId);
-
+        ProductCombinations response = null;
+        if(request.getProductVariantName()!= null){
+            response = productCombinationRepository
+                    .findByProductIdAndUniqueStringId(request.getProductId(),
+                            uniqueStringId);
+        } else {
+                 Products product = productRepository.findByIdAndIsActiveTrue(request.getProductId());
+            response = ProductCombinations.builder()
+                    .price(product.getOriginalPrice())
+                    .quantity(product.getOriginalQuantity())
+                    .build();
+        }
         return response != null ? ProductCombinationResponse.builder()
                 .price(response.getQuantity()==0 ?  "Hết hàng" : "₫"+ Utils.formatNumber(response.getPrice()))
                 .quantity(response.getQuantity()==0 ? 0: response.getQuantity())
@@ -73,4 +98,17 @@ public class ProductCombinationServiceImpl implements IProductCombinationService
                         .build()
                 ;
     }
+
+    @Override
+    public boolean deleteByProductId(Products product) {
+        List<ProductCombinations> entity = productCombinationRepository.findByProductAndIsActiveTrue(product);
+        if (entity == null) return true;
+        entity.forEach((e) -> {
+            e.setActive(false);
+            productCombinationRepository.save(e);
+        });
+        return true;
+    }
+
+
 }

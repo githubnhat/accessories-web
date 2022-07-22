@@ -29,7 +29,7 @@ public class Users extends BaseEntity{
     private Roles roles;
 
     @OneToMany(mappedBy = "user")
-    private Set<Carts> carts = new HashSet<>();
+    private Set<CartItems> carts = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
     private Set<Address> addresses = new HashSet<>();

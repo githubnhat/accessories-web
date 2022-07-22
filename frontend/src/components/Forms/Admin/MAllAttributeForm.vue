@@ -38,7 +38,7 @@
               <ValidationObserver v-slot="{ handleSubmit }">
                 <v-form @submit.prevent="handleSubmit(deleteAttributes)">
                   <v-card-title>
-                    <span class="text-h5">Xác nhận xóa (các) danh mục sau:</span>
+                    <span class="text-h5">Xác nhận xóa (các) thuộc tính sau:</span>
                   </v-card-title>
 
                   <v-card-text>
@@ -90,14 +90,14 @@
               <ValidationObserver v-slot="{ handleSubmit }">
                 <v-form @submit.prevent="handleSubmit(addNewAttributes)">
                   <v-card-title>
-                    <span class="text-h5">Thêm danh mục</span>
+                    <span class="text-h5">Thêm thuộc tính</span>
                   </v-card-title>
 
                   <v-card-text>
                     <v-row>
                       <v-col cols="12">
                         <validation-provider
-                          name="Tên danh mục"
+                          name="Tên thuộc tính"
                           rules="required|uniqueAttributeName"
                           v-slot="{ errors }"
                         >
@@ -140,102 +140,106 @@
           </v-dialog>
         </v-toolbar>
       </template>
-      <template v-slot:[`item.actions`]>
-        <!-- <template v-slot:[`item.actions`]="{ item }"> -->
-        <!-- <v-dialog v-model="dialog.edit" max-width="500px">
-          <v-card>
-            <ValidationObserver v-slot="{ handleSubmit }">
-              <v-form class="mt-5" @submit.prevent="handleSubmit(editItemConfirm(item))">
-                <v-card-title class="text-h5">Chỉnh sửa thông tin thuộc tính</v-card-title>
-                <v-card-text>
-                  <v-row no-gutters dense>
-                    <v-col cols="12">
-                      <validation-provider
-                        name="Tên thuộc tính"
-                        rules="required|uniqueAttributeName"
-                        v-slot="{ errors }"
-                      >
-                        <v-text-field
-                          v-model="item.attributeName"
-                          label="Tên thuộc tính"
-                          prepend-icon="mdi-order-alphabetical-ascending"
-                          color="primary accent-3"
-                          clearable
-                          :error-messages="errors"
-                        >
-                        </v-text-field>
-                      </validation-provider>
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-icon small class="mr-2" @click="openEditDialog(item)"> mdi-pencil </v-icon>
+        <v-icon small @click="openDeleteDialog(item)"> mdi-delete </v-icon>
+      </template>
+      <template v-slot:no-data>
+        <v-btn color="primary" @click="readDataFromAPI"> Reset </v-btn>
+      </template>
+    </v-data-table>
+    <div class="action-item-dialog">
+      <v-dialog retain-focus v-model="dialog.edit" max-width="500px">
+        <v-card>
+          <ValidationObserver ref="editDialog" v-slot="{ handleSubmit }">
+            <v-form class="mt-5" @submit.prevent="handleSubmit(editOneItem)">
+              <v-card-title class="text-h5">Chỉnh sửa thông tin thuộc tính</v-card-title>
+              <v-card-text>
+                <v-row no-gutters dense>
+                  <v-col cols="12">
+                    <validation-provider name="Tên thuộc tính" rules="required" v-slot="{ errors }">
                       <v-text-field
-                        v-model="item.variantNames"
-                        label="Các giá trị được cách nhau bằng dấu phẩy (,)"
+                        v-model="selectedItem.attributeName"
+                        label="Tên thuộc tính"
+                        prepend-icon="mdi-order-alphabetical-ascending"
+                        color="primary accent-3"
+                        clearable
+                        :error-messages="errors"
+                      >
+                      </v-text-field>
+                    </validation-provider>
+                    <validation-provider
+                      name="Mã thuộc tính"
+                      rules="required|uniqueCategoryCode"
+                      v-slot="{ errors }"
+                    >
+                      <v-text-field
+                        v-model="selectedItem.variantNames"
+                        label="Mã thuộc tính"
                         prepend-icon="mdi-alphabetical"
                         color="primary accent-3"
                         clearable
                         :error-messages="errors"
                       >
                       </v-text-field>
-                    </v-col>
-                  </v-row>
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="closeEdit">Trở lại</v-btn>
-                  <v-btn color="blue darken-1" text type="submit">Đồng ý</v-btn>
-                  <v-spacer></v-spacer>
-                </v-card-actions>
-              </v-form>
-            </ValidationObserver>
-          </v-card>
-        </v-dialog>
-        <v-dialog v-model="dialog.delete" max-width="500px">
-          <v-card>
-            <ValidationObserver v-slot="{ handleSubmit }">
-              <v-form @submit.prevent="handleSubmit(deleteOneItem(item))">
-                <v-card-title>
-                  <span class="text-h5">Xác nhận xóa (các) danh mục sau:</span>
-                </v-card-title>
+                    </validation-provider>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="closeEdit">Trở lại</v-btn>
+                <v-btn color="blue darken-1" outlined text type="submit">Cập nhật</v-btn>
+                <v-spacer></v-spacer>
+              </v-card-actions>
+            </v-form>
+          </ValidationObserver>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="dialog.delete" max-width="500px">
+        <v-card>
+          <ValidationObserver v-slot="{ handleSubmit }">
+            <v-form class="mt-5" @submit.prevent="handleSubmit(deleteOneItem)">
+              <v-card-title class="text-h5"
+                >Bạn có chắc chắn <strong class="warning--text">&nbsp;xoá&nbsp;</strong> thuộc tính
+                này?</v-card-title
+              >
+              <v-card-text>
+                <v-row no-gutters dense>
+                  <v-col cols="12">
+                    <v-text-field
+                      v-model="selectedItem.attributeName"
+                      label="Tên thuộc tính"
+                      prepend-icon="mdi-order-alphabetical-ascending"
+                      color="primary accent-3"
+                      readonly
+                    >
+                    </v-text-field>
 
-                <v-card-text>
-                  <v-row dense>
-                    <v-col cols="6">
-                      <v-text-field
-                        v-model="item.attributeName"
-                        label="Tên thuộc tính"
-                        outlined
-                        dense
-                        readonly
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="6">
-                      <v-text-field
-                        v-model="item.variantNames"
-                        label="Giá trị"
-                        outlined
-                        dense
-                        readonly
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                </v-card-text>
-
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="closeDelete"> Trở lại </v-btn>
-                  <v-btn color="error darken-1" text type="submit" :loading="loading.delete">
-                    Xóa
-                  </v-btn>
-                </v-card-actions>
-              </v-form>
-            </ValidationObserver>
-          </v-card>
-        </v-dialog> -->
-        <v-icon small class="mr-2" @click="openEditDialog"> mdi-pencil </v-icon>
-        <v-icon small @click="openDeleteDialog"> mdi-delete </v-icon>
-      </template>
-      <template v-slot:no-data>
-        <v-btn color="primary" @click="initialize"> Reset </v-btn>
-      </template>
-    </v-data-table>
+                    <v-text-field
+                      v-model="selectedItem.variantNames"
+                      label="Mã thuộc tính"
+                      prepend-icon="mdi-alphabetical"
+                      color="primary accent-3"
+                      readonly
+                    >
+                    </v-text-field>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="closeDelete">Trở lại</v-btn>
+                <v-btn color="error darken-1" text type="submit" :loading="loading.deleteAttribute"
+                  >Xóa</v-btn
+                >
+                <v-spacer></v-spacer>
+              </v-card-actions>
+            </v-form>
+          </ValidationObserver>
+        </v-card>
+      </v-dialog>
+    </div>
   </div>
 </template>
 <script>
@@ -258,7 +262,7 @@ export default {
       table: true,
       addNewAttributeButton: false,
       deleteListAttribute: false,
-      delete: false,
+      deleteAttribute: false,
     },
     dialog: {
       add: false,
@@ -284,6 +288,7 @@ export default {
     ],
     data: [],
     selectedItems: [],
+    selectedItem: {},
     editedIndex: -1,
     editedItem: {
       attributeName: '',
@@ -319,16 +324,13 @@ export default {
       this.loading.table = false;
     },
 
-    deleteItemConfirm() {
-      this.data.splice(this.editedIndex, 1);
-      this.closeDelete();
-    },
-
-    openEditDialog() {
+    openEditDialog(item) {
+      this.selectedItem = { ...item };
       this.dialog.edit = true;
     },
 
-    openDeleteDialog() {
+    openDeleteDialog(item) {
+      this.selectedItem = item;
       this.dialog.delete = true;
     },
     openDeleteAllDialog() {
@@ -340,34 +342,34 @@ export default {
     },
 
     closeDelete() {
-      // this.dialog.deleteAll = false;
+      this.dialog.deleteAll = false;
       this.dialog.delete = false;
     },
+    closeEdit() {
+      this.dialog.edit = false;
+      this.selectedItem = {};
+      this.$refs.editDialog.reset();
+    },
 
-    async deleteOneItem(item) {
-      console.log(item);
-      this.selectedItems.push(item);
-      this.loading.delete = true;
-      const chosenItems = this.selectedItems.map((item) => item.id);
+    async deleteOneItem() {
+      this.loading.deleteAttribute = true;
       this.dialog.delete = false;
-      this.selectedItems = [];
-      console.log('chosenItems', chosenItems);
-      const data = await deleteAttributes(chosenItems);
-      if (data === true) {
-        this.readDataFromAPI();
-        alert('Xoá thành công');
+      const isUpdateSuccess = await deleteAttributes([this.selectedItem.id]);
+      if (isUpdateSuccess) {
+        alert('Xóa thành công!');
+        await this.readDataFromAPI();
       } else {
-        alert('Xoá không thành công, vui lòng thử lại!');
+        alert('Xóa không thành công, vui lòng thử lại!');
       }
-      this.loading.delete = false;
+      this.selectedItem = {};
+      this.loading.deleteAttribute = false;
     },
 
     async deleteAttributes() {
-      this.loading.deleteAttributes = true;
+      this.loading.deleteAttribute = true;
       const chosenItems = this.selectedItems.map((item) => item.id);
       this.dialog.deleteAll = false;
       this.selectedItems = [];
-      console.log('chosenItems', chosenItems);
       const data = await deleteAttributes(chosenItems);
       if (data === true) {
         this.readDataFromAPI();
@@ -375,7 +377,7 @@ export default {
       } else {
         alert('Xoá không thành công, vui lòng thử lại!');
       }
-      this.loading.deleteAttributes = false;
+      this.loading.deleteAttribute = false;
     },
 
     async addNewAttributes() {
@@ -403,7 +405,9 @@ export default {
       if (newData !== null) this.readDataFromAPI();
       this.closeAdd();
     },
-
+    editOneItem() {
+      console.log('edit');
+    },
     async update() {
       // const newData = await addNewAttributes(
       //   'http://localhost:8081/api/v1/admin/attribute',

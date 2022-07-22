@@ -40,7 +40,7 @@
                 </v-col>
 
                 <v-col v-for="(attribute, a) in attributes" :key="a" cols="12" sm="8">
-                  <v-row>
+                  <v-row v-if="attribute?.variantNames.length !== 0">
                     <v-col cols="4">
                       <h3 class="mt-4">{{ attribute?.attributeName }}:</h3>
                     </v-col>
@@ -64,13 +64,28 @@
                     <v-col cols="4">
                       <v-text-field
                         hide-spin-buttons
+                        :disabled="disabledQuantity"
                         :value="quantityInput"
                         height="30"
                         @change="handleOnChangeQuantity"
                         type="number"
                       >
-                        <v-icon slot="append" color="red" @click="append"> mdi-plus </v-icon>
-                        <v-icon slot="prepend" color="green" @click="prepend"> mdi-minus </v-icon>
+                        <v-icon
+                          slot="append"
+                          :disabled="disabledQuantity"
+                          color="red"
+                          @click="append"
+                        >
+                          mdi-plus
+                        </v-icon>
+                        <v-icon
+                          slot="prepend"
+                          :disabled="disabledQuantity"
+                          color="green"
+                          @click="prepend"
+                        >
+                          mdi-minus
+                        </v-icon>
                       </v-text-field>
                     </v-col>
                     <v-col cols="8">
@@ -136,6 +151,7 @@ export default {
       quantity: 0,
       quantityInput: 1,
       disabledBtn: false,
+      disabledQuantity: false,
     };
   },
   created() {
@@ -217,7 +233,8 @@ export default {
     },
 
     async addToCart() {
-      if (this.listAttrAndVari.length === this.attributes.length) {
+      const check = this.attributes.filter((e) => e.variantNames.length !== 0);
+      if (this.listAttrAndVari.length === check.length) {
         let productVariantName = '';
         this.listAttrAndVari.forEach((item, index) => {
           if (index > 0) {
@@ -229,7 +246,7 @@ export default {
         const id = this.$route.params.id;
         const data = await addToCart({
           productId: id,
-          productVariantName: productVariantName,
+          productVariantName: productVariantName !== '' ? productVariantName : null,
           quantity: this.quantityInput,
         });
         if (data != null) {
@@ -256,8 +273,10 @@ export default {
       }
       if (quantity === 0) {
         this.disabledBtn = true;
+        this.disabledQuantity = true;
       } else {
         this.disabledBtn = false;
+        this.disabledQuantity = false;
       }
     },
 
