@@ -79,11 +79,13 @@
           <v-col cols="3">
             <v-checkbox
               v-model="isAnotherAddress"
+              v-show="this.addresses.length > 0"
               hide-details
               label="Thêm địa chỉ khác"
             ></v-checkbox>
             <v-checkbox
               v-model="isMainAddress"
+              :readonly="!(this.addresses.length > 0)"
               hide-details
               label="Đặt làm địa chỉ mặc định"
             ></v-checkbox>
@@ -210,7 +212,7 @@ export default {
       newAddress: '',
       newPhone: '',
       loading: false,
-      shippingFee: 30000,
+      shippingFee: '30.000',
     };
   },
   created() {
@@ -219,11 +221,12 @@ export default {
   },
   computed: {
     totalBill() {
-      const result = this.data.reduce((sum, item) => {
+      let result = this.data.reduce((sum, item) => {
         sum += toPriceValue(item.totalPrice);
         return sum;
       }, 0);
-
+      const shippingFee = 30000;
+      result += shippingFee;
       return toPriceString(result);
     },
   },
@@ -236,9 +239,12 @@ export default {
       const { data } = await getAddresses();
 
       this.addresses = data?.data;
-      console.log('data address: ', this.addresses);
-      this.selectedAddress = this.addresses[0];
-
+      if (this.addresses.length > 0) {
+        this.selectedAddress = this.addresses[0];
+      } else {
+        this.isAnotherAddress = true;
+        this.isMainAddress = true;
+      }
       this.loading = false;
     },
 
