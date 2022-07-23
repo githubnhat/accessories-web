@@ -1,21 +1,26 @@
 package com.cdweb.backend.services.impl;
 
 import com.cdweb.backend.converters.AddressConverter;
-import com.cdweb.backend.entities.Address;
-import com.cdweb.backend.entities.Brands;
-import com.cdweb.backend.entities.Users;
+import com.cdweb.backend.converters.OrderConverter;
+import com.cdweb.backend.converters.OrderItemConverter;
+import com.cdweb.backend.entities.*;
 import com.cdweb.backend.payloads.requests.AddressRequest;
+import com.cdweb.backend.payloads.requests.OrderRequest;
 import com.cdweb.backend.payloads.requests.UserRequest;
-import com.cdweb.backend.payloads.responses.AddressResponse;
-import com.cdweb.backend.payloads.responses.UserResponse;
+import com.cdweb.backend.payloads.responses.*;
 import com.cdweb.backend.repositories.AddressRepository;
+import com.cdweb.backend.repositories.OrderItemRepository;
+import com.cdweb.backend.repositories.OrderRepository;
 import com.cdweb.backend.repositories.UserRepository;
+import com.cdweb.backend.services.ICartItemService;
 import com.cdweb.backend.services.IUsersService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +30,17 @@ public class UserServiceImpl implements IUsersService {
     private final AddressRepository addressRepository;
 
     private final AddressConverter addressConverter;
+
+    private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
+
+    private final OrderConverter orderConverter;
+
+    private final OrderItemConverter orderItemConverter;
+
+    private final ICartItemService cartItemService;
+
+    private final OrderItemServiceImpl orderItemService;
 
     @Override
     public List<UserResponse> getAllUsers() {
@@ -90,4 +106,53 @@ public class UserServiceImpl implements IUsersService {
         addressRepository.deleteById(id);
         return exists;
     }
+
+    @Override
+    public List<OrderResponse> getOrders(Pageable pageable, Users user) {
+        List<OrderResponse> responses = new ArrayList<>();
+        List<Orders> entities = orderRepository.findByUserOrderByModifiedDateDesc(user, pageable).getContent();
+        if (entities.size() > 0) {
+            entities.forEach(entity -> {
+                List<OrderItemResponse> orderItemResponses = orderItemService.findByOrderAndOrderByModifiedDateDesc(entity);
+                OrderResponse response = orderConverter.toResponse(entity, orderItemResponses);
+                responses.add(response);
+            });
+        }
+        return responses;
+    }
+
+    @Override
+    public OrderResponse save(OrderRequest orderRequest, Users user) {
+        Orders order = orderConverter.toEntity(orderRequest);
+        order.setStatus("Chờ xác nhận");
+        order.setUser(user);
+        Orders newEntity = orderRepository.save(order);
+        List<OrderItemResponse> orderItems = orderItemService.saveOrderItemList(newEntity, orderRequest.getOrderItems());
+
+        return orderConverter.toResponse(newEntity, orderItems);
+    }
+
+    @Override
+    public Boolean updateOrderStatus(Long orderId, String status) {
+        Orders order = orderRepository.findById(orderId).orElseGet(null);
+        if(order != null) {
+            order.setStatus(status);
+            orderRepository.save(order);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int totalOrder() {
+        return (int) orderRepository.count();
+    }
+
+    @Override
+    public int totalOrderByUser(Users user) {
+        long result = orderRepository.countByUser(user);
+        return (int) result;
+    }
+
+
 }
