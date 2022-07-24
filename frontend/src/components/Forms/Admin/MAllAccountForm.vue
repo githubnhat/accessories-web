@@ -1,14 +1,15 @@
 <template>
   <div>
-    <div class="display-1 text-center mb-3">Danh sách thuộc tính</div>
+    <div class="display-1 text-center mb-3">Danh sách tài khoản - Account</div>
+
     <v-data-table
       v-model="selectedItems"
       :page="page"
       :pageCount="totalPages"
-      :headers="headers"
-      :items="data"
-      :options.sync="options"
       :server-items-length="totalItems"
+      :headers="headers"
+      :options.sync="options"
+      :items="data"
       :loading="loading.table"
       class="elevation-1"
       :footer-props="{
@@ -36,17 +37,17 @@
             </template>
             <v-card>
               <ValidationObserver v-slot="{ handleSubmit }">
-                <v-form @submit.prevent="handleSubmit(deleteAttributes)">
+                <v-form @submit.prevent="handleSubmit(deleteAccount)">
                   <v-card-title>
-                    <span class="text-h5">Xác nhận xóa (các) thuộc tính sau:</span>
+                    <span class="text-h5">Xác nhận xóa (các) thương hiệu sau:</span>
                   </v-card-title>
 
                   <v-card-text>
                     <v-row dense v-for="item in selectedItems" :key="item.id">
                       <v-col cols="6">
                         <v-text-field
-                          v-model="item.attributeName"
-                          label="Tên thuộc tính"
+                          v-model="item.name"
+                          label="Tên thương hiệu"
                           outlined
                           dense
                           readonly
@@ -54,8 +55,8 @@
                       </v-col>
                       <v-col cols="6">
                         <v-text-field
-                          v-model="item.variantNames"
-                          label="Giá trị"
+                          v-model="item.code"
+                          label="Mã thương hiệu"
                           outlined
                           dense
                           readonly
@@ -71,7 +72,7 @@
                       color="error darken-1"
                       text
                       type="submit"
-                      :loading="loading.deleteListAttribute"
+                      :loading="loading.deleteAccount"
                     >
                       Xóa
                     </v-btn>
@@ -83,41 +84,48 @@
           <v-dialog v-model="dialog.add" max-width="500px">
             <template v-slot:activator="{ on, attrs }">
               <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
-                Thêm thuộc tính
+                Thêm thương hiệu
               </v-btn>
             </template>
             <v-card>
               <ValidationObserver v-slot="{ handleSubmit }">
-                <v-form @submit.prevent="handleSubmit(addNewAttributes)">
+                <v-form @submit.prevent="handleSubmit(addNewAccount)">
                   <v-card-title>
-                    <span class="text-h5">Thêm thuộc tính</span>
+                    <span class="text-h5">Thêm thương hiệu mới</span>
                   </v-card-title>
 
                   <v-card-text>
                     <v-row>
                       <v-col cols="12">
                         <validation-provider
-                          name="Tên thuộc tính"
-                          rules="required|uniqueAttributeName"
+                          name="Tên thương hiệu"
+                          rules="required|uniqueBrandName"
                           v-slot="{ errors }"
                         >
                           <v-text-field
-                            v-model="editedItem.attributeName"
-                            label="Tên thuộc tính"
+                            v-model="newBrandInfor.name"
+                            label="Tên thương hiệu"
                             :error-messages="errors"
+                            @blur="handleOnblurBrandNameInput"
                             outlined
                             dense
                           ></v-text-field>
                         </validation-provider>
                       </v-col>
                       <v-col cols="12">
-                        <v-text-field
-                          v-model="editedItem.variantNames"
-                          label="Các giá trị được cách nhau bằng dấu phẩy (,)"
-                          :error-messages="errors"
-                          outlined
-                          dense
-                        ></v-text-field>
+                        <validation-provider
+                          name="Mã thương hiệu"
+                          rules="required|uniqueBrandCode"
+                          v-slot="{ errors }"
+                        >
+                          <v-text-field
+                            v-model="newBrandInfor.code"
+                            label="Mã thương hiệu"
+                            :error-messages="errors"
+                            outlined
+                            dense
+                          ></v-text-field>
+                        </validation-provider>
                       </v-col>
                     </v-row>
                   </v-card-text>
@@ -129,7 +137,7 @@
                       color="blue darken-1"
                       text
                       type="submit"
-                      :loading="loading.addNewAttributeButton"
+                      :loading="loading.addNewBrandButton"
                     >
                       Thêm mới
                     </v-btn>
@@ -140,27 +148,32 @@
           </v-dialog>
         </v-toolbar>
       </template>
+
       <template v-slot:[`item.actions`]="{ item }">
         <v-icon small class="mr-2" @click="openEditDialog(item)"> mdi-pencil </v-icon>
         <v-icon small @click="openDeleteDialog(item)"> mdi-delete </v-icon>
       </template>
       <template v-slot:no-data>
-        <v-btn color="primary" @click="readDataFromAPI"> Reset </v-btn>
+        <v-btn color="primary" @click="initialize"> Reset </v-btn>
       </template>
     </v-data-table>
     <div class="action-item-dialog">
-      <v-dialog retain-focus v-model="dialog.edit" max-width="500px">
+      <v-dialog v-model="dialog.edit" max-width="500px">
         <v-card>
           <ValidationObserver ref="editDialog" v-slot="{ handleSubmit }">
-            <v-form class="mt-5" @submit.prevent="handleSubmit(updateItem)">
-              <v-card-title class="text-h5">Chỉnh sửa thông tin thuộc tính</v-card-title>
+            <v-form class="mt-5" @submit.prevent="handleSubmit(editOneItem)">
+              <v-card-title class="text-h5">Chỉnh sửa thông tin thương hiệu</v-card-title>
               <v-card-text>
                 <v-row no-gutters dense>
                   <v-col cols="12">
-                    <validation-provider name="Tên thuộc tính" rules="required" v-slot="{ errors }">
+                    <validation-provider
+                      name="Tên thương hiệu"
+                      rules="required"
+                      v-slot="{ errors }"
+                    >
                       <v-text-field
-                        v-model="selectedItem.attributeName"
-                        label="Tên thuộc tính"
+                        v-model="selectedItem.name"
+                        label="Tên thương hiệu"
                         prepend-icon="mdi-order-alphabetical-ascending"
                         color="primary accent-3"
                         clearable
@@ -169,13 +182,13 @@
                       </v-text-field>
                     </validation-provider>
                     <validation-provider
-                      name="Mã thuộc tính"
+                      name="Mã thương hiệu"
                       rules="required|uniqueCategoryCode"
                       v-slot="{ errors }"
                     >
                       <v-text-field
-                        v-model="selectedItem.variantNames"
-                        label="Mã thuộc tính"
+                        v-model="selectedItem.code"
+                        label="Mã thương hiệu"
                         prepend-icon="mdi-alphabetical"
                         color="primary accent-3"
                         clearable
@@ -201,15 +214,15 @@
           <ValidationObserver v-slot="{ handleSubmit }">
             <v-form class="mt-5" @submit.prevent="handleSubmit(deleteOneItem)">
               <v-card-title class="text-h5"
-                >Bạn có chắc chắn <strong class="warning--text">&nbsp;xoá&nbsp;</strong> thuộc tính
+                >Bạn có chắc chắn <strong class="warning--text">&nbsp;xoá&nbsp;</strong> thương hiệu
                 này?</v-card-title
               >
               <v-card-text>
                 <v-row no-gutters dense>
                   <v-col cols="12">
                     <v-text-field
-                      v-model="selectedItem.attributeName"
-                      label="Tên thuộc tính"
+                      v-model="selectedItem.name"
+                      label="Tên thương hiệu"
                       prepend-icon="mdi-order-alphabetical-ascending"
                       color="primary accent-3"
                       readonly
@@ -217,8 +230,8 @@
                     </v-text-field>
 
                     <v-text-field
-                      v-model="selectedItem.variantNames"
-                      label="Mã thuộc tính"
+                      v-model="selectedItem.code"
+                      label="Mã thương hiệu"
                       prepend-icon="mdi-alphabetical"
                       color="primary accent-3"
                       readonly
@@ -230,7 +243,12 @@
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="blue darken-1" text @click="closeDelete">Trở lại</v-btn>
-                <v-btn color="error darken-1" text type="submit" :loading="loading.deleteAttribute"
+                <v-btn
+                  color="warning darken-1"
+                  outlined
+                  text
+                  type="submit"
+                  :loading="loading.deleteAccount"
                   >Xóa</v-btn
                 >
                 <v-spacer></v-spacer>
@@ -243,27 +261,21 @@
   </div>
 </template>
 <script>
-import {
-  getAllAttributes,
-  addNewAttributes,
-  deleteAttributes,
-  updateAttributes,
-} from '@/services/admin/all-attribute-form/index';
+import { getAllAccounts } from '@/services/admin/all-account-form';
+import { sortItems } from 'vuetify/src/util/helpers';
 export default {
   data: () => ({
     page: 0,
     totalItems: 0,
     totalPages: 0,
-    itemsPerPage: 0,
     options: {
       page: 1,
-      itemsPerPage: 10,
+      itemsPerPage: 5,
     },
     loading: {
       table: true,
-      addNewAttributeButton: false,
-      deleteListAttribute: false,
-      deleteAttribute: false,
+      addNewBrandButton: false,
+      deleteAccount: false,
     },
     dialog: {
       add: false,
@@ -271,8 +283,6 @@ export default {
       deleteAll: false,
       edit: false,
     },
-    // dialog: false,
-    // dialogDelete: false,
     search: '',
     headers: [
       {
@@ -281,16 +291,20 @@ export default {
         value: 'id',
       },
       {
-        text: 'Tên thuộc tính',
-        value: 'attributeName',
+        text: 'Tên tài khoản',
+        value: 'username',
       },
-      { text: 'Giá trị', value: 'variantNames' },
+      { text: 'Gmail', value: 'gmail' },
+      { text: 'Họ và tên', value: 'fullName' },
+      { text: 'Phân quyền', value: 'role' },
       { text: 'Hành động', value: 'actions', sortable: false },
     ],
     data: [],
-    selectedItems: [],
-    selectedItem: {},
     editedIndex: -1,
+    newBrandInfor: {
+      name: '',
+      code: '',
+    },
     editedItem: {
       attributeName: '',
       variantNames: '',
@@ -299,6 +313,8 @@ export default {
       attributeName: '',
       variantNames: '',
     },
+    selectedItems: [],
+    selectedItem: {},
   }),
 
   computed: {},
@@ -312,17 +328,57 @@ export default {
     deep: true,
   },
 
+  async created() {
+    await this.initialize();
+  },
+
   methods: {
+    async initialize() {
+      await this.readDataFromAPI();
+    },
+
     async readDataFromAPI() {
       this.loading.table = true;
       const { page, itemsPerPage } = this.options;
-      this.data = await getAllAttributes(page, itemsPerPage);
-      //Then injecting the result to datatable parameters.
-      this.itemsPerPage = itemsPerPage;
-      this.totalItems = this.data.totalItems;
-      this.totalPages = this.data.totalPages;
-      this.data = this.data.data;
+      const data = await getAllAccounts(page, itemsPerPage);
+      this.page = data?.page;
+      this.totalPages = data?.totalPages;
+      this.totalItems = data?.totalItems;
+      this.data = data?.data;
       this.loading.table = false;
+    },
+
+    // handleOnblurBrandNameInput() {
+    //   const result = transNameToCode(this.newBrandInfor.name);
+    //   this.newBrandInfor.code = result;
+    // },
+
+    async addNewAccount() {
+      this.loading.addNewBrandButton = true;
+      this.dialog.add = false;
+      // const { data, status } = await insertBrand(this.newBrandInfor);
+      // if (status === 'Success') {
+      //   this.readDataFromAPI();
+      //   alert('Thêm thương hiệu "' + data?.name + '" với code là "' + data?.code + '" thành công!');
+      // } else {
+      //   alert(status);
+      // }
+      this.loading.addNewBrandButton = false;
+    },
+
+    async deleteAccount() {
+      this.loading.deleteAccount = true;
+      this.dialog.deleteAll = false;
+      const chosenItems = this.selectedItems.map((item) => item.id);
+      this.selectedItems = [];
+      // const isUpdateSuccess = await deleteBrands(chosenItems);
+      // if (isUpdateSuccess) {
+      //   alert('Xóa thành công!');
+      //   this.readDataFromAPI();
+      // } else {
+      //   alert('Xóa không thành công, vui lòng thử lại!');
+      // }
+      this.loading.deleteAccount = false;
     },
 
     openEditDialog(item) {
@@ -334,118 +390,38 @@ export default {
       this.selectedItem = item;
       this.dialog.delete = true;
     },
-    openDeleteAllDialog() {
-      this.dialog.deleteAll = true;
+
+    async deleteOneItem() {
+      this.loading.deleteAccount = true;
+      this.dialog.delete = false;
+      // const isUpdateSuccess = await deleteBrands([this.selectedItem.id]);
+      // if (isUpdateSuccess) {
+      //   alert('Xóa thành công!');
+      //   this.readDataFromAPI();
+      // } else {
+      //   alert('Xóa không thành công, vui lòng thử lại!');
+      // }
+      this.selectedItem = {};
+      this.loading.deleteAccount = false;
+    },
+
+    editOneItem() {
+      // do edit item
     },
 
     closeAdd() {
       this.dialog.add = false;
     },
 
-    closeDelete() {
-      this.dialog.deleteAll = false;
-      this.dialog.delete = false;
-    },
     closeEdit() {
       this.dialog.edit = false;
-      this.selectedItem = {};
       this.$refs.editDialog.reset();
     },
-
-    async updateItem() {
-      this.loading.edit = true;
-      this.dialog.edit = false;
-      var listVariantNames = this.selectedItem.variantNames.split(',').map((a) => a.trim());
-      var res = [];
-      listVariantNames.forEach(function (i) {
-        let isInclude = false;
-        res.forEach((_x) => {
-          if (_x.toLowerCase() == i.toLowerCase()) {
-            isInclude = true;
-          }
-        });
-        if (!isInclude) {
-          res.push(i);
-        }
-      });
-      listVariantNames = res.filter(function (element) {
-        return element !== '';
-      });
-      const data = await updateAttributes({
-        attributeId: this.selectedItem.id,
-        attributeName: this.selectedItem.attributeName,
-        variantNames: listVariantNames,
-      });
-      if (data !== null) {
-        await this.readDataFromAPI();
-      }
-      this.loading.edit = false;
-    },
-
-    async deleteOneItem() {
-      this.loading.deleteAttribute = true;
+    closeDelete() {
       this.dialog.delete = false;
-      const isUpdateSuccess = await deleteAttributes([this.selectedItem.id]);
-      if (isUpdateSuccess) {
-        alert('Xóa thành công!');
-        await this.readDataFromAPI();
-      } else {
-        alert('Xóa không thành công, vui lòng thử lại!');
-      }
-      this.selectedItem = {};
-      this.loading.deleteAttribute = false;
     },
-
-    async deleteAttributes() {
-      this.loading.deleteAttribute = true;
-      const chosenItems = this.selectedItems.map((item) => item.id);
+    closeDeleteAll() {
       this.dialog.deleteAll = false;
-      this.selectedItems = [];
-      const data = await deleteAttributes(chosenItems);
-      if (data === true) {
-        this.readDataFromAPI();
-        alert('Xoá thành công');
-      } else {
-        alert('Xoá không thành công, vui lòng thử lại!');
-      }
-      this.loading.deleteAttribute = false;
-    },
-
-    async addNewAttributes() {
-      var listVariantNames = this.editedItem.variantNames.split(',').map((a) => a.trim());
-      var res = [];
-      listVariantNames.forEach(function (i) {
-        let isInclude = false;
-        res.forEach((_x) => {
-          if (_x.toLowerCase() == i.toLowerCase()) {
-            isInclude = true;
-          }
-        });
-        if (!isInclude) {
-          res.push(i);
-        }
-      });
-      listVariantNames = res.filter(function (element) {
-        return element !== '';
-      });
-      let request = {
-        attributeName: this.editedItem.attributeName,
-        variantNames: listVariantNames,
-      };
-      const newData = await addNewAttributes(request);
-      if (newData !== null) this.readDataFromAPI();
-      this.closeAdd();
-    },
-    editOneItem() {
-      console.log('edit');
-    },
-    async update() {
-      // const newData = await addNewAttributes(
-      //   'http://localhost:8081/api/v1/admin/attribute',
-      //   this.editedItem,
-      // );
-      // this.data = [...this.data, newData];
-      this.close();
     },
   },
   mounted() {
@@ -454,5 +430,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

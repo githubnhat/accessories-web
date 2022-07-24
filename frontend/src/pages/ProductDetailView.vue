@@ -149,9 +149,10 @@ export default {
       price: 0,
       discountPrice: 0,
       quantity: 0,
-      quantityInput: 1,
+      quantityInput: 0,
       disabledBtn: false,
       disabledQuantity: false,
+      check: false,
     };
   },
   created() {
@@ -166,7 +167,6 @@ export default {
       const id = this.$route.params.id;
       this.data = await getProductDetail(id);
       this.listImages = this.data?.imageLinks;
-      this.discount = this.data?.discount;
       this.data?.attributeAndVariants.forEach((i) => {
         let variantNames = [];
         i?.variantNames.forEach((v) => {
@@ -175,16 +175,29 @@ export default {
             color: '',
           });
         });
-
-        this.attributes.push({
-          attributeId: i.attributeId,
-          attributeName: i.attributeName,
-          variantNames: variantNames,
-        });
+        if (variantNames.length > 0) {
+          this.attributes.push({
+            attributeId: i.attributeId,
+            attributeName: i.attributeName,
+            variantNames: variantNames,
+          });
+        } else {
+          this.check = true;
+        }
       });
-      this.price = this.data?.originalPrice;
-      this.discountPrice = toDiscountPrice(this.data?.originalPrice, this.discount);
-      this.quantity = this.data?.originalQuantity;
+      if (this.check) {
+        this.discount = '';
+        this.price = 'Hết hàng';
+        this.quantity = 0;
+        this.discountPrice = 'Hết hàng';
+        this.disabledQuantity = true;
+        this.disabledBtn = true;
+      } else {
+        this.discount = this.data?.discount;
+        this.price = this.data?.originalPrice;
+        this.discountPrice = toDiscountPrice(this.data?.originalPrice, this.discount);
+        this.quantity = this.data?.originalQuantity;
+      }
     },
     addItem(attrName, variantName) {
       this.tranColorBtn(attrName, variantName);
@@ -226,9 +239,14 @@ export default {
         this.readDataFromAPI(id, productVariantName);
       }
       if (this.listAttrAndVari.length < this.attributes.length) {
-        this.price = this.data?.originalPrice;
-        this.discountPrice = toDiscountPrice(this.data?.originalPrice, this.discount);
-        this.quantity = this.data?.originalQuantity;
+        if (this.check) {
+          this.price = 'Hết hàng';
+          this.discountPrice = '';
+          this.quantity = 0;
+          this.discountPrice = 'Hết hàng';
+          this.disabledQuantity = true;
+          this.disabledBtn = true;
+        }
       }
     },
 
