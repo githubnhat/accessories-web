@@ -3,7 +3,7 @@
     <v-app-bar-nav-icon @click.stop="handleSideBar"></v-app-bar-nav-icon>
 
     <v-toolbar-title class="text-upper-case" @click="goToHomePage" role="button">
-      <span class="font-weight-light">Admin | </span>
+      <span class="font-weight-light">{{ title }} | </span>
       <span>Accessories</span>
     </v-toolbar-title>
 
@@ -28,10 +28,13 @@ export default {
     menuList: ADMIN_MENU,
   }),
   created() {
-    // const accessToken = localStorage.getItem('accessToken');
     this.username = !this.accessToken ? null : jwt_decode(this.accessToken).fullName;
   },
   props: {
+    title: {
+      type: String,
+      default: 'Admin',
+    },
     drawer: {
       type: Boolean,
       default: true,

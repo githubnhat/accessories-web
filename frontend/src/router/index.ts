@@ -33,7 +33,7 @@ const routes: Array<RouteConfig> = [
   {
     path: '/profile',
     name: 'profile',
-    component: () => import(/* webpackChunkName: "profile" */ '@/pages/Profile.vue'),
+    component: () => import(/* webpackChunkName: "profile" */ '@/pages/UserProfilePage.vue'),
   },
   {
     path: '/admin',

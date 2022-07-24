@@ -83,12 +83,19 @@
           </v-dialog>
           <v-dialog v-model="dialog.add" max-width="500px">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
+              <v-btn
+                color="primary"
+                dark
+                class="mb-2"
+                v-bind="attrs"
+                v-on="on"
+                @click="openAddDialog"
+              >
                 Thêm danh mục
               </v-btn>
             </template>
             <v-card>
-              <ValidationObserver v-slot="{ handleSubmit }">
+              <ValidationObserver v-slot="{ handleSubmit }" ref="addDialog">
                 <v-form @submit.prevent="handleSubmit(addNewCategory)">
                   <v-card-title>
                     <span class="text-h5">Thêm danh mục</span>
@@ -378,6 +385,11 @@ export default {
         alert('Xóa không thành công, vui lòng thử lại!');
       }
       this.loading.deleteCategory = false;
+    },
+
+    openAddDialog() {
+      this.newCategoryInfor = { name: '', code: '' };
+      this.$refs.editDialog.reset();
     },
 
     openEditDialog(item) {

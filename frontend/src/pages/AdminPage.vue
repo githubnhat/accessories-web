@@ -1,5 +1,5 @@
 <template>
-  <m-admin-layout @changeControl="handleControlAdmin">
+  <m-admin-layout :controlList="controlList" @changeControl="handleControlAdmin">
     <component v-bind:is="controler"></component>
   </m-admin-layout>
 </template>
@@ -12,6 +12,8 @@ import MAllProductForm from '@/components/Forms/Admin/MAllProductForm.vue';
 import MAllCategoryForm from '@/components/Forms/Admin/MAllCategoryForm.vue';
 import MAllBrandForm from '@/components/Forms/Admin/MAllBrandForm.vue';
 import MAllAccountForm from '@/components/Forms/Admin/MAllAccountForm.vue';
+import { ADMIN_MENU } from '@/utils/mocks';
+
 
 export default {
   data() {
@@ -19,6 +21,7 @@ export default {
       dialog: false,
       searchKey: '',
       controler: 'm-all-order-form',
+      controlList: ADMIN_MENU,
     };
   },
   methods: {
