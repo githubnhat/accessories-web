@@ -11,7 +11,9 @@ import MAllAttributeForm from '@/components/Forms/Admin/MAllAttributeForm.vue';
 import MAllProductForm from '@/components/Forms/Admin/MAllProductForm.vue';
 import MAllCategoryForm from '@/components/Forms/Admin/MAllCategoryForm.vue';
 import MAllBrandForm from '@/components/Forms/Admin/MAllBrandForm.vue';
+import MAllAccountForm from '@/components/Forms/Admin/MAllAccountForm.vue';
 import { ADMIN_MENU } from '@/utils/mocks';
+
 
 export default {
   data() {
@@ -46,7 +48,7 @@ export default {
           this.controler = 'm-all-attribute-form';
           break;
         case 'All accounts':
-          this.controler = 'm-add-account-form';
+          this.controler = 'm-all-account-form';
           break;
         default:
           this.controler = 'm-all-order-form';
@@ -61,6 +63,7 @@ export default {
     MAllProductForm,
     MAllCategoryForm,
     MAllBrandForm,
+    MAllAccountForm,
   },
   created() {
     // authentication

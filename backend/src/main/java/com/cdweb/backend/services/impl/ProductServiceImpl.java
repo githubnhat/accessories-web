@@ -89,35 +89,98 @@ public class ProductServiceImpl implements IProductService {
                             .id(entity.getId())
                             .productName(entity.getProductName())
                             .description(entity.getDescription())
-                            .originalPrice(String.valueOf(entity.getOriginalPrice()))
+                            .originalPrice("₫" + Utils.formatNumber(entity.getOriginalPrice()))
                             .originalQuantity(entity.getOriginalQuantity())
                             .discount(entity.getDiscount())
                             .imageLinks(imageLinks)
                             .build();
                     List<ProductCombinationResponse> proComRs = productCombinationService
                             .findByProductAndIsActiveTrue(entity);
+                    log.info("AAA {}", proComRs);
                     boolean check = true;
                     if ((proComRs.size() == 1 && proComRs.get(0).getProductVariantName() == null)) {
                         check = false;
                     }
                     if (check) {
-                        if (proComRs != null) {
+                        if (!proComRs.isEmpty()) {
                             int quantity = 0;
                             for (ProductCombinationResponse p : proComRs) {
                                 quantity += p.getQuantity();
                             }
                             product.setOriginalQuantity(quantity);
-                        }
-                        Double maxPrice = productCombinationService.maxPrice(entity.getId());
-                        Double minPrice = productCombinationService.minPrice(entity.getId());
-                        if (maxPrice != null && minPrice != null) {
-                            if (maxPrice.equals(minPrice)) {
-                                product.setOriginalPrice("₫" + Utils.formatNumber(maxPrice));
-                            } else {
-                                product.setOriginalPrice("₫" + Utils.formatNumber(minPrice) + " - " + "₫"
-                                        + Utils.formatNumber(maxPrice));
+                            Double maxPrice = productCombinationService.maxPrice(entity.getId());
+                            Double minPrice = productCombinationService.minPrice(entity.getId());
+                            if (maxPrice != null && minPrice != null) {
+                                if (maxPrice.equals(minPrice)) {
+                                    product.setOriginalPrice("₫" + Utils.formatNumber(maxPrice));
+                                } else {
+                                    product.setOriginalPrice("₫" + Utils.formatNumber(minPrice) + " - " + "₫"
+                                            + Utils.formatNumber(maxPrice));
+                                }
                             }
+                        } else {
+                            product.setOriginalPrice("₫" + 0);
+                            product.setOriginalQuantity(0);
                         }
+
+                    }
+                    response.add(product);
+                }
+            });
+        }
+        return response;
+    }
+
+    @Override
+    public List<ProductResponse> findAllByCategoryCodeForUser(String categoryCode, Pageable pageable) {
+        List<ProductResponse> response = new ArrayList<>();
+        Categories category =  categoryRepository.findByCodeAndIsActiveTrue(categoryCode);
+        List<Products> entities = productRepository.findByCategoriesAndIsActiveTrue(category, pageable);
+        if (entities.size() > 0) {
+            entities.forEach(entity -> {
+                if (entity.isActive()) {
+                    List<ThumbnailResponse> productThumbnails = productGalleryService
+                            .findByProductAndIsActiveTrue(entity);
+                    List<String> imageLinks = new ArrayList<>();
+                    productThumbnails.forEach(p -> imageLinks.add(p.getImageLink()));
+                    ProductResponse product = ProductResponse.builder()
+                            .id(entity.getId())
+                            .productName(entity.getProductName())
+//                            .description(entity.getDescription())
+                            .originalPrice("₫" + Utils.formatNumber(entity.getOriginalPrice()))
+                            .originalQuantity(entity.getOriginalQuantity())
+                            .discount(entity.getDiscount())
+                            .imageLinks(imageLinks)
+                            .build();
+                    List<ProductCombinationResponse> proComRs = productCombinationService
+                            .findByProductAndIsActiveTrue(entity);
+                    log.info("AAA {}", proComRs);
+                    boolean check = true;
+                    if ((proComRs.size() == 1 && proComRs.get(0).getProductVariantName() == null)) {
+                        check = false;
+                    }
+                    if (check) {
+                        if (!proComRs.isEmpty()) {
+                            int quantity = 0;
+                            for (ProductCombinationResponse p : proComRs) {
+                                quantity += p.getQuantity();
+                            }
+                            product.setOriginalQuantity(quantity);
+                            Double maxPrice = productCombinationService.maxPrice(entity.getId());
+                            Double minPrice = productCombinationService.minPrice(entity.getId());
+                            if (maxPrice != null && minPrice != null) {
+                                if (maxPrice.equals(minPrice)) {
+                                    product.setOriginalPrice("₫" + Utils.formatNumber(maxPrice));
+                                } else {
+                                    product.setOriginalPrice("₫" + Utils.formatNumber(minPrice) + " - " + "₫"
+                                            + Utils.formatNumber(maxPrice));
+                                }
+                            }
+                        } else {
+                            product.setOriginalPrice("₫" + 0);
+                            product.setOriginalQuantity(0);
+                        }
+
                     }
                     response.add(product);
                 }
@@ -170,25 +233,27 @@ public class ProductServiceImpl implements IProductService {
                 check = false;
             }
             if (check) {
-                if (proComRs != null) {
+                if (!proComRs.isEmpty()) {
                     int quantity = 0;
                     for (ProductCombinationResponse p : proComRs) {
                         quantity += p.getQuantity();
                     }
                     product.setOriginalQuantity(quantity);
-                }
-                Double maxPrice = productCombinationService.maxPrice(entity.getId());
-                Double minPrice = productCombinationService.minPrice(entity.getId());
-                if (maxPrice != null && minPrice != null) {
-                    if (maxPrice.equals(minPrice)) {
-                        product.setOriginalPrice("₫" + Utils.formatNumber(maxPrice));
-                    } else {
-                        product.setOriginalPrice(
-                                "₫" + Utils.formatNumber(minPrice) + " - " + "₫" + Utils.formatNumber(maxPrice));
+                    Double maxPrice = productCombinationService.maxPrice(entity.getId());
+                    Double minPrice = productCombinationService.minPrice(entity.getId());
+                    if (maxPrice != null && minPrice != null) {
+                        if (maxPrice.equals(minPrice)) {
+                            product.setOriginalPrice("₫" + Utils.formatNumber(maxPrice));
+                        } else {
+                            product.setOriginalPrice(
+                                    "₫" + Utils.formatNumber(minPrice) + " - " + "₫" + Utils.formatNumber(maxPrice));
+                        }
                     }
+                } else {
+                    product.setOriginalPrice("₫0");
+                    product.setOriginalQuantity(0);
                 }
             }
-
             return product;
         }
         return null;
@@ -288,6 +353,64 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public List<ProductResponse> getArrivalProducts() {
         return null;
+    }
+
+    @Override
+    public List<ProductResponse> findAllByBrandCodeForUser(String code, Pageable pageable) {
+        List<ProductResponse> response = new ArrayList<>();
+        Brands brand =  brandRepository.findByCodeAndIsActiveTrue(code);
+        List<Products> entities = productRepository.findByBrandsAndIsActiveTrue(brand, pageable);
+        if (entities.size() > 0) {
+            entities.forEach(entity -> {
+                if (entity.isActive()) {
+                    List<ThumbnailResponse> productThumbnails = productGalleryService
+                            .findByProductAndIsActiveTrue(entity);
+                    List<String> imageLinks = new ArrayList<>();
+                    productThumbnails.forEach(p -> imageLinks.add(p.getImageLink()));
+                    ProductResponse product = ProductResponse.builder()
+                            .id(entity.getId())
+                            .productName(entity.getProductName())
+//                            .description(entity.getDescription())
+                            .originalPrice("₫" + Utils.formatNumber(entity.getOriginalPrice()))
+                            .originalQuantity(entity.getOriginalQuantity())
+                            .discount(entity.getDiscount())
+                            .imageLinks(imageLinks)
+                            .build();
+                    List<ProductCombinationResponse> proComRs = productCombinationService
+                            .findByProductAndIsActiveTrue(entity);
+                    log.info("AAA {}", proComRs);
+                    boolean check = true;
+                    if ((proComRs.size() == 1 && proComRs.get(0).getProductVariantName() == null)) {
+                        check = false;
+                    }
+                    if (check) {
+                        if (!proComRs.isEmpty()) {
+                            int quantity = 0;
+                            for (ProductCombinationResponse p : proComRs) {
+                                quantity += p.getQuantity();
+                            }
+                            product.setOriginalQuantity(quantity);
+                            Double maxPrice = productCombinationService.maxPrice(entity.getId());
+                            Double minPrice = productCombinationService.minPrice(entity.getId());
+                            if (maxPrice != null && minPrice != null) {
+                                if (maxPrice.equals(minPrice)) {
+                                    product.setOriginalPrice("₫" + Utils.formatNumber(maxPrice));
+                                } else {
+                                    product.setOriginalPrice("₫" + Utils.formatNumber(minPrice) + " - " + "₫"
+                                            + Utils.formatNumber(maxPrice));
+                                }
+                            }
+                        } else {
+                            product.setOriginalPrice("₫" + 0);
+                            product.setOriginalQuantity(0);
+                        }
+
+                    }
+                    response.add(product);
+                }
+            });
+        }
+        return response;
     }
 
 }

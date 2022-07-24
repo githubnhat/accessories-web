@@ -10,6 +10,7 @@ import java.util.List;
 @Setter
 @ToString
 public class AttributeAndVariantsRequest {
+    private Long attributeId;
     private String attributeName;
     private List<String> variantNames;
 }

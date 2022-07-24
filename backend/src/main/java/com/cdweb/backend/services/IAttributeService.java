@@ -15,7 +15,7 @@ public interface IAttributeService {
 
     List<AttributeResponse> saveListAttribute(List<String> attributeNames);
 
-    AttributeResponse update(AttributeRequest request, Long id);
+    AttributeAndVariantsResponse update(AttributeAndVariantsRequest request);
 
     List<AttributeResponse> findByIsActiveTrue();
     List<AttributeAndVariantsResponse> findAllAttributeAndVariants(Pageable pageable);

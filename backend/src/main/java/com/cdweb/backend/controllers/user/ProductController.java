@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +34,28 @@ public class ProductController {
         Pageable pageable = PageRequest.of(page - 1, limit);
         response.setTotalPages((int) Math.ceil((double) (productService.totalItem()) / limit));
         response.setData(productService.findAllForUser(pageable));
+        log.info("{}", response);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", null, response));
+    }
+
+    @GetMapping("/no-token/page/{page}/limit/{limit}/category/{code}")
+    ResponseEntity<?> getProductByCategoryCode(@PathVariable("page") int page, @PathVariable("limit") int limit, @PathVariable("code") String code) {
+        PageResponse<ProductResponse> response = new PageResponse<>();
+        response.setPage(page);
+        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by("modifiedDate").descending());
+        response.setTotalPages((int) Math.ceil((double) (productService.totalItem()) / limit));
+        response.setData(productService.findAllByCategoryCodeForUser(code, pageable));
+        log.info("{}", response);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", null, response));
+    }
+
+    @GetMapping("/no-token/page/{page}/limit/{limit}/brand/{code}")
+    ResponseEntity<?> getProductByBrandCode(@PathVariable("page") int page, @PathVariable("limit") int limit, @PathVariable("code") String code) {
+        PageResponse<ProductResponse> response = new PageResponse<>();
+        response.setPage(page);
+        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by("modifiedDate").descending());
+        response.setTotalPages((int) Math.ceil((double) (productService.totalItem()) / limit));
+        response.setData(productService.findAllByBrandCodeForUser(code, pageable));
         log.info("{}", response);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", null, response));
     }
