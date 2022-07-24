@@ -11,6 +11,14 @@ export const VARIANTS = [
   },
 ];
 
+export const USER_MENU = [
+  {
+    action: 'mdi-account-tie',
+    active: true,
+    items: [{ title: 'Informations' }, { title: 'Orders' }],
+    title: 'Profile',
+  },
+];
 export const ADMIN_MENU = [
   {
     action: 'mdi-package-variant-closed',

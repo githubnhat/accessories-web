@@ -34,6 +34,9 @@ public class Users extends BaseEntity{
     @OneToMany(mappedBy = "user")
     private Set<Address> addresses = new HashSet<>();
 
+    @OneToMany(mappedBy = "user")
+    private Set<Orders> orders = new HashSet<>();
+
     public boolean isOTPRequired() {
         if (this.getOtpCode() == null) {
             return false;

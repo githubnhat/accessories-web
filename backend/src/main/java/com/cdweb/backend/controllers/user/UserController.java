@@ -2,17 +2,15 @@ package com.cdweb.backend.controllers.user;
 
 import com.cdweb.backend.common.Constant;
 import com.cdweb.backend.common.JwtService;
-import com.cdweb.backend.entities.Address;
 import com.cdweb.backend.entities.Users;
 import com.cdweb.backend.payloads.requests.AddressRequest;
-import com.cdweb.backend.payloads.requests.ProductRequest;
-import com.cdweb.backend.payloads.requests.UserRequest;
-import com.cdweb.backend.payloads.responses.AddressResponse;
-import com.cdweb.backend.payloads.responses.ProductResponse;
-import com.cdweb.backend.payloads.responses.ResponseObject;
+import com.cdweb.backend.payloads.requests.OrderRequest;
+import com.cdweb.backend.payloads.responses.*;
 import com.cdweb.backend.services.IUsersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,7 +72,38 @@ public class UserController {
                         new ResponseObject("Success", "Delete address successfully", true));
     }
 
-    private Users getUserFromRequest(HttpServletRequest httpRequest) {
+    @PostMapping("/order")
+    ResponseEntity<?> insertOrder(HttpServletRequest httpRequest, @RequestBody OrderRequest orderRequest) {
+        Users user = getUserFromRequest(httpRequest);
+
+        OrderResponse response = userService.save(orderRequest, user);
+        return ResponseEntity.status(HttpStatus.OK).body(
+               response == null  ?
+                        new ResponseObject("Failed", "Order fail", null) :
+                        new ResponseObject("Success", "Order successfully", response));
+    }
+
+    @GetMapping("/orders/page/{page}/limit/{limit}")
+    ResponseEntity<?> getOrderByUser(HttpServletRequest httpRequest, @PathVariable("page") int page, @PathVariable("limit") int limit) {
+        Users user = getUserFromRequest(httpRequest);
+
+        Pageable pageable = PageRequest.of(page - 1, limit);
+        int totalItem = userService.totalOrderByUser(user);
+
+        PageResponse<OrderResponse> response = PageResponse.<OrderResponse>builder()
+                .page(page)
+                .totalPages((int) Math.ceil((double) (totalItem) / limit))
+                .totalItems(totalItem)
+                .data(userService.getOrders(pageable, user))
+                .build();
+
+        return  ResponseEntity.status(HttpStatus.OK).body(
+                (response.getData().size() > 0)
+                        ? new ResponseObject("Success", null, response)
+                        : new ResponseObject("Success", "Have no order", null));
+    }
+
+        private Users getUserFromRequest(HttpServletRequest httpRequest) {
         String authorizationHeader = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
         String token = authorizationHeader.substring(Constant.BEARER.length());
         Users user = jwtService.getUserFromToken(token);

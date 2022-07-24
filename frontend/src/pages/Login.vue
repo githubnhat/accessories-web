@@ -226,7 +226,7 @@
 
                             <validation-provider
                               name="Mật khẩu"
-                              rules="required|min:4"
+                              rules="required|min:8"
                               v-slot="{ errors }"
                               vid="password"
                             >
@@ -244,7 +244,7 @@
 
                             <validation-provider
                               name="Xác nhận mật khẩu"
-                              rules="required|min:4|confirmed:password"
+                              rules="required|min:8|confirmed:password"
                               v-slot="{ errors }"
                             >
                               <v-text-field

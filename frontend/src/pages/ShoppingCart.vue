@@ -329,13 +329,17 @@ export default {
     },
 
     handleCheckout() {
-      const selectedItems = this.data.filter((item) => this.cartSeleted.indexOf(item.id) !== -1);
-      this.$router.push({
-        name: 'checkout',
-        params: {
-          checkoutItems: selectedItems,
-        },
-      });
+      if (this.cartSeleted.length > 0) {
+        const selectedItems = this.data.filter((item) => this.cartSeleted.indexOf(item.id) !== -1);
+        this.$router.push({
+          name: 'checkout',
+          params: {
+            checkoutItems: selectedItems,
+          },
+        });
+      } else {
+        alert('Chọn ít nhất một sản phẩm để thanh toán');
+      }
     },
   },
 };
