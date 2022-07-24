@@ -29,6 +29,7 @@ export default {
     };
   },
   async created() {
+    // get products from api
     const data = await getHomePageProduct();
     this.products = data?.data;
   },

@@ -9,7 +9,8 @@
       </v-toolbar-title>
 
       <v-spacer></v-spacer>
-
+      <m-menu open-on-hover offset-y :btnTitle="titleCategory" :menuList="categories" />
+      <m-menu open-on-hover offset-y :btnTitle="titleBrand" :menuList="brands" />
       <v-form v-if="hidden">
         <v-row>
           <v-btn @click="handleSubmit" icon><v-icon> mdi-magnify </v-icon></v-btn>
@@ -52,16 +53,17 @@
 </template>
 
 <script>
-import MUserMenu from '../Menus/MUserMenu.vue';
+import MUserMenu from '@/components/Menus/MUserMenu.vue';
+import MMenu from '@/components/Menus/MMenu.vue';
 import jwt_decode from 'jwt-decode';
 import router from '@/router';
 import { mapState } from 'vuex';
+import { getBrandList, getCategoryList } from '@/services/index';
 
 export default {
   name: 'MHeader',
   data: () => ({
     username: '',
-
     hidden: false,
     drawer: false,
     links: [
@@ -69,12 +71,44 @@ export default {
       { icon: 'mdi-hat-fedora', text: 'Hats', route: '/hats' },
       { icon: 'mdi-bag-personal', text: 'Bags', route: '/bags' },
     ],
+    brands: [],
+    categories: [],
+    titleBrand: 'Thương hiệu',
+    titleCategory: 'Danh mục sản phẩm',
   }),
   created() {
-    this.username = !this.accessToken ? undefined : jwt_decode(this.accessToken).fullName;
+    this.init();
   },
-  props: {},
+
   methods: {
+    async init() {
+      // get user name from vuex store
+      this.username = !this.accessToken ? undefined : jwt_decode(this.accessToken).fullName;
+
+      // get brands from api
+      const brandData = await getBrandList();
+      this.brands = [...this.brands, ...brandData];
+      this.brands = this.brands.map((item) => {
+        return {
+          id: item.id,
+          title: item.name,
+          code: item.code,
+          link: `/brand/${item.code}`,
+        };
+      });
+
+      // get categories from api
+      const categoryData = await getCategoryList();
+      this.categories = [...this.categories, ...categoryData];
+      this.categories = this.categories.map((item) => {
+        return {
+          id: item.id,
+          title: item.name,
+          code: item.code,
+          link: `/category/${item.code}`,
+        };
+      });
+    },
     handleSubmit() {
       console.log('click');
     },
@@ -92,6 +126,7 @@ export default {
   },
   components: {
     MUserMenu,
+    MMenu,
   },
   watch: {},
 };
