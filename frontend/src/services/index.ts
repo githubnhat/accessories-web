@@ -68,7 +68,6 @@ export async function doAdminLogin(dataForm: object) {
   }
 }
 
-
 // register new account
 
 type Register = {
@@ -149,11 +148,77 @@ export async function doLogout() {
   try {
     const path = '/auth/logout';
 
-    const { status } = await axios.get<GetRegisterResponse>(path,{withCredentials: true});
+    const { status } = await axios.get<GetRegisterResponse>(path, { withCredentials: true });
 
     console.log('response status is: ', status);
 
     return status;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log('error message: ', error.message);
+      return error.message;
+    } else {
+      console.log('unexpected error: ', error);
+      return 'An unexpected error occurred';
+    }
+  }
+}
+
+// get brands for display to customer
+
+type Brand = {
+  id: number;
+  name: string;
+  code: string;
+};
+
+type GetBrandsResponse = {
+  data: Array<Brand>;
+};
+
+export async function getBrandList() {
+  try {
+    const path = '/user/brand/no-token';
+
+    const { data, status } = await axios.get<GetBrandsResponse>(path, { withCredentials: true });
+    // console.log(JSON.stringify(data, null, 10));
+
+    console.log('response status is: ', status);
+
+    return data?.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log('error message: ', error.message);
+      return error.message;
+    } else {
+      console.log('unexpected error: ', error);
+      return 'An unexpected error occurred';
+    }
+  }
+}
+
+type Category = {
+  id: number;
+  name: string;
+  code: string;
+};
+
+type GetCategoriesResponse = {
+  data: Array<Category>;
+};
+
+export async function getCategoryList() {
+  try {
+    const path = '/user/category/no-token';
+
+    const { data, status } = await axios.get<GetCategoriesResponse>(path, {
+      withCredentials: true,
+    });
+    console.log(JSON.stringify(data, null, 10));
+
+    console.log('response status is: ', status);
+
+    return data?.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.log('error message: ', error.message);

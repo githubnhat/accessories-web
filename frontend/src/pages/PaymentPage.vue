@@ -278,8 +278,10 @@ export default {
         this.orderResponse = await insertOrder(this.payload);
 
         console.log('response: ', this.orderResponse);
+        alert('Đặt hàng thành công!');
       } catch (error) {
         console.log('error: ' + error);
+        alert('Lỗi hệ thống! Vui lòng thử lại...');
       }
 
       console.log('payload', this.payload);

@@ -8,10 +8,7 @@ import com.cdweb.backend.payloads.requests.AddressRequest;
 import com.cdweb.backend.payloads.requests.OrderRequest;
 import com.cdweb.backend.payloads.requests.UserRequest;
 import com.cdweb.backend.payloads.responses.*;
-import com.cdweb.backend.repositories.AddressRepository;
-import com.cdweb.backend.repositories.OrderItemRepository;
-import com.cdweb.backend.repositories.OrderRepository;
-import com.cdweb.backend.repositories.UserRepository;
+import com.cdweb.backend.repositories.*;
 import com.cdweb.backend.services.ICartItemService;
 import com.cdweb.backend.services.IUsersService;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +29,8 @@ public class UserServiceImpl implements IUsersService {
     private final AddressConverter addressConverter;
 
     private final OrderRepository orderRepository;
-    private final OrderItemRepository orderItemRepository;
+
+    private final ProductCombinationRepository productCombinationRepository;
 
     private final OrderConverter orderConverter;
 
@@ -128,7 +126,15 @@ public class UserServiceImpl implements IUsersService {
         order.setUser(user);
         Orders newEntity = orderRepository.save(order);
         List<OrderItemResponse> orderItems = orderItemService.saveOrderItemList(newEntity, orderRequest.getOrderItems());
-
+        orderItems.forEach(orderItem -> {
+            ProductCombinations productCombinations = productCombinationRepository
+                    .findByProductIdAndProductVariantName(
+                            orderItem.getProductId(),
+                            orderItem.getProductCombination()
+                    );
+            productCombinations.setQuantity(productCombinations.getQuantity() - orderItem.getQuantity());
+            productCombinationRepository.save(productCombinations);
+        });
         return orderConverter.toResponse(newEntity, orderItems);
     }
 
