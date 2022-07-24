@@ -14,9 +14,10 @@
         {{ item.productName }}
       </div>
 
-      <div class="text-product-price primary--text mb-2">
+      <div v-if="item.originalQuantity != 0" class="text-product-price primary--text mb-2">
         {{ item.originalPrice }}
       </div>
+      <div v-else class="red--text">Hết hàng</div>
       <v-rating v-model="rating" background-color="white" color="yellow darken-3" small></v-rating>
     </v-card-text>
   </v-card>

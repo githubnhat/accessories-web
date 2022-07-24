@@ -1,8 +1,11 @@
 package com.cdweb.backend.repositories;
 
+import com.cdweb.backend.entities.Brands;
+import com.cdweb.backend.entities.Categories;
 import com.cdweb.backend.entities.Products;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,4 +31,7 @@ public interface ProductRepository extends JpaRepository<Products, Long> {
             "where v.id = :variant_id", nativeQuery = true)
     List<Products> findByVariantIdAndIsActive(@Param("variant_id") Long variantId);
 
+    List<Products> findByCategoriesAndIsActiveTrue(Categories category, Pageable pageable);
+
+    List<Products> findByBrandsAndIsActiveTrue(Brands brand, Pageable pageable);
 }
