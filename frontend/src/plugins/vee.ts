@@ -14,7 +14,7 @@ import {
 import { checkUniqueProductName } from '@/services/admin/add-product-form';
 import { checkUniqueCategoryCode } from '@/services/admin/all-category-form';
 import { checkUniqueBrandName, checkUniqueBrandCode } from '@/services/admin/all-brand-form';
-import { checkUniqueAttributeName } from '@/services/admin/attribute';
+import { checkUniqueAttributeName } from '@/services/admin/all-attribute-form';
 // config trigger
 setInteractionMode('lazy');
 

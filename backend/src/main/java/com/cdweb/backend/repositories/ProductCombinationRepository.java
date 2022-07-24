@@ -30,4 +30,14 @@ public interface ProductCombinationRepository extends JpaRepository<ProductCombi
             "WHERE product_combinations.product_id = :product_id " +
             "and product_combinations.is_active = true", nativeQuery = true)
     ProductCombinations findByProductId(@Param("product_id") Long productId);
-}
+
+    @Query(value = "SELECT product_combinations.* FROM product_combinations " +
+            "WHERE product_combinations.product_id in (select p.id from products p join product_attributes pa on p.id = pa.product_id " +
+            "join product_attribute_variants pav on pa.id = pav.product_attribute_id" +
+            " join variants v on v.id = pav.variant_id " +
+            "where v.id = :variant_id and pa.attribute_id = :attribute_id) and product_combinations.product_variant_name like %:variant_name%" +
+            " and product_combinations.is_active = true", nativeQuery = true)
+    List<ProductCombinations> findByVariantIdAndProductVariantNameAndIsActiveTrue(@Param("variant_id") Long variantId,
+                                                                                  @Param("variant_name") String variantName,
+                                                                                  @Param("attribute_id") Long attributeId);
+    }

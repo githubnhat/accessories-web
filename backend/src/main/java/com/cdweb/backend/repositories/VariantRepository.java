@@ -1,6 +1,8 @@
 package com.cdweb.backend.repositories;
 
+import com.cdweb.backend.entities.Attributes;
 import com.cdweb.backend.entities.Variants;
+import com.cdweb.backend.payloads.requests.AttributeAndVariantsRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,4 +24,7 @@ public interface VariantRepository extends JpaRepository<Variants, Long> {
             " join variants v on v.id = pav.variant_id " +
             "where pa.product_id = :product_id and pa.attribute_id = :attribute_id and v.is_active = true and pa.is_active = true and pav.is_active = true", nativeQuery = true)
     List<Variants> findByProductIdAndIsActive(@Param("product_id") Long productId, @Param("attribute_id") Long attributeId);
+
+    List<Variants> findByAttributeAndIsActiveTrue(Attributes attributes);
+
 }

@@ -107,15 +107,15 @@ public class ProductServiceImpl implements IProductService {
                                 quantity += p.getQuantity();
                             }
                             product.setOriginalQuantity(quantity);
-                        }
-                        Double maxPrice = productCombinationService.maxPrice(entity.getId());
-                        Double minPrice = productCombinationService.minPrice(entity.getId());
-                        if (maxPrice != null && minPrice != null) {
-                            if (maxPrice.equals(minPrice)) {
-                                product.setOriginalPrice("₫" + Utils.formatNumber(maxPrice));
-                            } else {
-                                product.setOriginalPrice("₫" + Utils.formatNumber(minPrice) + " - " + "₫"
-                                        + Utils.formatNumber(maxPrice));
+                            Double maxPrice = productCombinationService.maxPrice(entity.getId());
+                            Double minPrice = productCombinationService.minPrice(entity.getId());
+                            if (maxPrice != null && minPrice != null) {
+                                if (maxPrice.equals(minPrice)) {
+                                    product.setOriginalPrice("₫" + Utils.formatNumber(maxPrice));
+                                } else {
+                                    product.setOriginalPrice("₫" + Utils.formatNumber(minPrice) + " - " + "₫"
+                                            + Utils.formatNumber(maxPrice));
+                                }
                             }
                         }
                     }
@@ -176,17 +176,21 @@ public class ProductServiceImpl implements IProductService {
                         quantity += p.getQuantity();
                     }
                     product.setOriginalQuantity(quantity);
-                }
-                Double maxPrice = productCombinationService.maxPrice(entity.getId());
-                Double minPrice = productCombinationService.minPrice(entity.getId());
-                if (maxPrice != null && minPrice != null) {
-                    if (maxPrice.equals(minPrice)) {
-                        product.setOriginalPrice("₫" + Utils.formatNumber(maxPrice));
-                    } else {
-                        product.setOriginalPrice(
-                                "₫" + Utils.formatNumber(minPrice) + " - " + "₫" + Utils.formatNumber(maxPrice));
+                    Double maxPrice = productCombinationService.maxPrice(entity.getId());
+                    Double minPrice = productCombinationService.minPrice(entity.getId());
+                    if (maxPrice != null && minPrice != null) {
+                        if (maxPrice.equals(minPrice)) {
+                            product.setOriginalPrice("₫" + Utils.formatNumber(maxPrice));
+                        } else {
+                            product.setOriginalPrice(
+                                    "₫" + Utils.formatNumber(minPrice) + " - " + "₫" + Utils.formatNumber(maxPrice));
+                        }
                     }
+                } else {
+                    product.setOriginalPrice("₫0");
+                    product.setOriginalQuantity(0);
                 }
+
             }
 
             return product;

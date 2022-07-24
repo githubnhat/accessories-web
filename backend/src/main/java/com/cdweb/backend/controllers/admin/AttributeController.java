@@ -65,9 +65,9 @@ public class AttributeController {
                         new ResponseObject("Success", "Insert Attribute Successfully", response));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateAttribute(@RequestBody AttributeRequest request, @PathVariable("id") Long id){
-        AttributeResponse response = attributeService.update(request, id);
+    @PutMapping("/update")
+    public ResponseEntity<?> updateAttribute(@RequestBody AttributeAndVariantsRequest request){
+        AttributeAndVariantsResponse response = attributeService.update(request);
         return ResponseEntity.status(HttpStatus.OK).body(
                 (response==null) ?
                         new ResponseObject("Failed", "Attribute name already taken", "") :
