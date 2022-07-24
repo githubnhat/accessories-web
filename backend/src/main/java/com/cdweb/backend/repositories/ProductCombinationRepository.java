@@ -6,6 +6,7 @@ import com.cdweb.backend.payloads.responses.ProductCombinationResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 
@@ -30,4 +31,14 @@ public interface ProductCombinationRepository extends JpaRepository<ProductCombi
             "WHERE product_combinations.product_id = :product_id " +
             "and product_combinations.is_active = true", nativeQuery = true)
     ProductCombinations findByProductId(@Param("product_id") Long productId);
+
+    @Query(value =
+            "SELECT pc.* " +
+            "FROM product_combinations as pc " +
+            "WHERE " +
+                "pc.product_id = :product_id " +
+                "and pc.product_variant_name = :p_var_name " +
+                "and pc.is_active = true",
+            nativeQuery = true)
+    ProductCombinations findByProductIdAndProductVariantName(@Param("product_id") Long id, @Param("p_var_name") String productVariantName);
 }
