@@ -16,6 +16,8 @@ public interface IProductService {
 
     List<ProductResponse> findAllForUser(Pageable pageable);
 
+    List<ProductResponse> findAllByCategoryCodeForUser(String categoryCode, Pageable pageable);
+
     int totalItem();
 
     ProductResponse findByProductId(Long productId);
@@ -29,4 +31,5 @@ public interface IProductService {
     List<ProductResponse> getArrivalProducts();
 
 
+    List<ProductResponse> findAllByBrandCodeForUser(String code, Pageable pageable);
 }
