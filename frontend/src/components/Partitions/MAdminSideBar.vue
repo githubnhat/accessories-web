@@ -7,7 +7,7 @@
             <v-icon size="48">mdi-ballot</v-icon>
           </v-col>
           <v-col cols="9">
-            <span class="white--text font-weight-bold title"> AccessoriesShop Administration </span>
+            <span class="white--text font-weight-bold title"> {{ title }}</span>
           </v-col>
         </v-row>
       </div>
@@ -17,7 +17,7 @@
 
     <v-list class="pa-0">
       <v-list-group
-        v-for="item in items"
+        v-for="item in controlList"
         :key="item.title"
         v-model="item.active"
         :prepend-icon="item.action"
@@ -46,18 +46,24 @@
 
 <script>
 import jwt_decode from 'jwt-decode';
-import { ADMIN_MENU } from '@/utils/mocks';
 import { mapState } from 'vuex';
 
 export default {
   props: {
+    title: {
+      type: String,
+      default: 'AccessoriesShop Administration ',
+    },
+    controlList: {
+      type: Array,
+      default: () => [],
+    },
     drawer: {
       type: Boolean,
       default: true,
     },
   },
   data: () => ({
-    items: ADMIN_MENU,
     activeControl: 'All orders',
   }),
   methods: {
