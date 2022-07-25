@@ -149,7 +149,7 @@ export default {
       price: 0,
       discountPrice: 0,
       quantity: 0,
-      quantityInput: 0,
+      quantityInput: 1,
       disabledBtn: false,
       disabledQuantity: false,
       check: false,

@@ -1,11 +1,14 @@
 import axios, { AxiosRequestConfig } from "axios";
+import store from '../store'
 
 axios.defaults.baseURL ='http://localhost:8081/api/v1';
+
+
 
 export function setup() {
     axios.interceptors.request.use(
       (config: AxiosRequestConfig) => {
-        const accessToken = localStorage.getItem('accessToken')
+        const accessToken = store.getters['_accessToken/getAccessToken'];
         if (!config.headers) {
           config.headers = {}
         }
@@ -32,7 +35,7 @@ export function setup() {
             try {
               const {data, status} = await axios.get('/auth/refresh-token', {withCredentials: true})
               if(status===200){
-                localStorage.setItem('accessToken', data?.data?.accessToken);
+                store.commit('_accessToken/setAccessToken', data?.data?.accessToken);
               }
               return axios(originalConfig);
             } catch (_error) {
