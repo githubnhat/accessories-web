@@ -8,6 +8,7 @@
       :headers="headers"
       :items="data"
       :options.sync="options"
+      multiSort
       :server-items-length="totalItems"
       :loading="loading.table"
       class="elevation-1"
@@ -258,6 +259,8 @@ export default {
     options: {
       page: 1,
       itemsPerPage: 10,
+      sortBy: [],
+      sortDesc: [],
     },
     loading: {
       table: true,
@@ -284,7 +287,7 @@ export default {
         text: 'Tên thuộc tính',
         value: 'attributeName',
       },
-      { text: 'Giá trị', value: 'variantNames' },
+      { text: 'Giá trị', value: 'variantNames', sortable: false },
       { text: 'Hành động', value: 'actions', sortable: false },
     ],
     data: [],
@@ -316,7 +319,8 @@ export default {
     async readDataFromAPI() {
       this.loading.table = true;
       const { page, itemsPerPage } = this.options;
-      this.data = await getAllAttributes(page, itemsPerPage);
+      const sort = this.getSort();
+      this.data = await getAllAttributes(page, itemsPerPage, sort);
       //Then injecting the result to datatable parameters.
       this.itemsPerPage = itemsPerPage;
       this.totalItems = this.data.totalItems;
@@ -439,15 +443,27 @@ export default {
     editOneItem() {
       console.log('edit');
     },
-    async update() {
-      // const newData = await addNewAttributes(
-      //   'http://localhost:8081/api/v1/admin/attribute',
-      //   this.editedItem,
-      // );
-      // this.data = [...this.data, newData];
-      this.close();
+    getSort() {
+      let listParamSort = [];
+      const length = this.options.sortBy.length;
+      if (length > 0) {
+        listParamSort = [];
+        for (let i = 0; i < length; i++) {
+          listParamSort.push({
+            sortBy: this.options.sortBy[i],
+            sortDesc: this.options.sortDesc[i],
+          });
+        }
+      } else {
+        listParamSort.push({
+          sortBy: null,
+          sortDesc: null,
+        });
+      }
+      return listParamSort;
     },
   },
+
   mounted() {
     this.readDataFromAPI();
   },

@@ -16,7 +16,7 @@ public class UserResponse {
     private String password;
     private String fullName;
     private String gmail;
-    private String roles;
+    private String role;
     private String createdBy;
     private Date createdDate;
     private String modifiedBy;

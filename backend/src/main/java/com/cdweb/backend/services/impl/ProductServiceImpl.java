@@ -45,28 +45,30 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public List<ProductResponse> findAllForAdmin(Pageable pageable) {
         List<ProductResponse> response = new ArrayList<>();
-        List<Products> entities = productRepository.findByIsActiveTrueOrderByModifiedDateDesc(pageable).getContent();
+        List<Products> entities = productRepository.findByIsActiveTrue(pageable).getContent();
         if (entities.size() > 0) {
             entities.forEach(entity -> {
                 if (entity.isActive()) {
-                    List<ThumbnailResponse> productThumbnails = productGalleryService
-                            .findByProductAndIsActiveTrue(entity);
-                    List<AttributeResponse> attributes = attributeService.findByProductIdAndIsActive(entity.getId());
-                    List<AttributeAndVariantsResponse> attrAndVarRs = new ArrayList<>();
-                    attributes.forEach(a -> {
-                        List<String> variants = variantService.findByProductIdAndIsActive(entity.getId(), a.getId())
-                                .stream().map(VariantResponse::getVariantName).collect(Collectors.toList());
-                        AttributeAndVariantsResponse attrAndVar = AttributeAndVariantsResponse.builder()
-                                .attributeId(a.getId())
-                                .attributeName(a.getAttributeName())
-                                .variantNames(variants)
-                                .build();
-                        attrAndVarRs.add(attrAndVar);
-                    });
-                    List<ProductCombinationResponse> proComRs = productCombinationService
-                            .findByProductAndIsActiveTrue(entity);
-                    ProductResponse product = productConverter.toResponse(entity, productThumbnails, attrAndVarRs,
-                            proComRs);
+                    // List<ThumbnailResponse> productThumbnails = productGalleryService
+                    // .findByProductAndIsActiveTrue(entity);
+                    // List<AttributeResponse> attributes =
+                    // attributeService.findByProductIdAndIsActive(entity.getId());
+                    // List<AttributeAndVariantsResponse> attrAndVarRs = new ArrayList<>();
+                    // attributes.forEach(a -> {
+                    // List<String> variants =
+                    // variantService.findByProductIdAndIsActive(entity.getId(), a.getId())
+                    // .stream().map(VariantResponse::getVariantName).collect(Collectors.toList());
+                    // AttributeAndVariantsResponse attrAndVar =
+                    // AttributeAndVariantsResponse.builder()
+                    // .attributeId(a.getId())
+                    // .attributeName(a.getAttributeName())
+                    // .variantNames(variants)
+                    // .build();
+                    // attrAndVarRs.add(attrAndVar);
+                    // });
+                    // List<ProductCombinationResponse> proComRs = productCombinationService
+                    // .findByProductAndIsActiveTrue(entity);
+                    ProductResponse product = productConverter.toResponse(entity);
                     response.add(product);
                 }
             });
@@ -96,7 +98,6 @@ public class ProductServiceImpl implements IProductService {
                             .build();
                     List<ProductCombinationResponse> proComRs = productCombinationService
                             .findByProductAndIsActiveTrue(entity);
-                    log.info("AAA {}", proComRs);
                     boolean check = true;
                     if ((proComRs.size() == 1 && proComRs.get(0).getProductVariantName() == null)) {
                         check = false;
@@ -134,7 +135,7 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public List<ProductResponse> findAllByCategoryCodeForUser(String categoryCode, Pageable pageable) {
         List<ProductResponse> response = new ArrayList<>();
-        Categories category =  categoryRepository.findByCodeAndIsActiveTrue(categoryCode);
+        Categories category = categoryRepository.findByCodeAndIsActiveTrue(categoryCode);
         List<Products> entities = productRepository.findByCategoriesAndIsActiveTrue(category, pageable);
         if (entities.size() > 0) {
             entities.forEach(entity -> {
@@ -146,7 +147,7 @@ public class ProductServiceImpl implements IProductService {
                     ProductResponse product = ProductResponse.builder()
                             .id(entity.getId())
                             .productName(entity.getProductName())
-//                            .description(entity.getDescription())
+                            // .description(entity.getDescription())
                             .originalPrice("₫" + Utils.formatNumber(entity.getOriginalPrice()))
                             .originalQuantity(entity.getOriginalQuantity())
                             .discount(entity.getDiscount())
@@ -154,7 +155,6 @@ public class ProductServiceImpl implements IProductService {
                             .build();
                     List<ProductCombinationResponse> proComRs = productCombinationService
                             .findByProductAndIsActiveTrue(entity);
-                    log.info("AAA {}", proComRs);
                     boolean check = true;
                     if ((proComRs.size() == 1 && proComRs.get(0).getProductVariantName() == null)) {
                         check = false;
@@ -358,7 +358,7 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public List<ProductResponse> findAllByBrandCodeForUser(String code, Pageable pageable) {
         List<ProductResponse> response = new ArrayList<>();
-        Brands brand =  brandRepository.findByCodeAndIsActiveTrue(code);
+        Brands brand = brandRepository.findByCodeAndIsActiveTrue(code);
         List<Products> entities = productRepository.findByBrandsAndIsActiveTrue(brand, pageable);
         if (entities.size() > 0) {
             entities.forEach(entity -> {
@@ -370,7 +370,7 @@ public class ProductServiceImpl implements IProductService {
                     ProductResponse product = ProductResponse.builder()
                             .id(entity.getId())
                             .productName(entity.getProductName())
-//                            .description(entity.getDescription())
+                            // .description(entity.getDescription())
                             .originalPrice("₫" + Utils.formatNumber(entity.getOriginalPrice()))
                             .originalQuantity(entity.getOriginalQuantity())
                             .discount(entity.getDiscount())
@@ -378,7 +378,6 @@ public class ProductServiceImpl implements IProductService {
                             .build();
                     List<ProductCombinationResponse> proComRs = productCombinationService
                             .findByProductAndIsActiveTrue(entity);
-                    log.info("AAA {}", proComRs);
                     boolean check = true;
                     if ((proComRs.size() == 1 && proComRs.get(0).getProductVariantName() == null)) {
                         check = false;

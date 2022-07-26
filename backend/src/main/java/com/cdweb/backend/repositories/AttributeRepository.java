@@ -17,7 +17,7 @@ public interface AttributeRepository extends JpaRepository<Attributes, Long> {
 
     Optional<Attributes> findById(Long id);
 
-    Page<Attributes> findByIsActiveTrueOrderByModifiedDateDesc(Pageable pageable);
+    Page<Attributes> findByIsActiveTrue(Pageable pageable);
 
 
     Attributes findByIdAndIsActiveTrue(Long id);
