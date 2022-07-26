@@ -24,10 +24,31 @@ type Product = {
   type GetProductResponse = {
     data: ProductResponse;
   };
-export async function getAllProducts(pageNumber: number, itemsPerPage:number) {
+
+  type SortRequest = {
+    sortBy: string;
+    sortDesc: boolean;
+  };
+
+export async function getAllProducts(pageNumber: number, itemsPerPage:number, sort: Array<SortRequest>) {
     try {
+      let dataForm = null;
+      if (sort[0].sortBy != null) {
+        dataForm = {
+          page: pageNumber,
+          limit: itemsPerPage,
+          sort: sort,
+        };
+      } else {
+        dataForm = {
+          page: pageNumber,
+          limit: itemsPerPage,
+          sort: null,
+        };
+      }
       const { data, status } = await axios
-      .get<GetProductResponse>(`admin/product/${pageNumber}/${itemsPerPage}`,{withCredentials: true});
+      .post<GetProductResponse>(`admin/product/list-products`,dataForm,{withCredentials: true});
+      console.log(data?.data)
       console.log('response status is: ', status);
       return data?.data;
     } catch (error) {

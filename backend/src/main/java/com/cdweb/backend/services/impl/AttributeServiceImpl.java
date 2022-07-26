@@ -167,7 +167,7 @@ public class AttributeServiceImpl implements IAttributeService {
     @Override
     public List<AttributeAndVariantsResponse> findAllAttributeAndVariants(Pageable pageable) {
         List<AttributeAndVariantsResponse> response = new ArrayList<>();
-        List<Attributes> attrs = attributeRepository.findByIsActiveTrueOrderByModifiedDateDesc(pageable).getContent();
+        List<Attributes> attrs = attributeRepository.findByIsActiveTrue(pageable).getContent();
         if (attrs.size() > 0) {
             attrs.forEach(a -> {
                 if (a.isActive()) {

@@ -50,7 +50,7 @@ public class UserServiceImpl implements IUsersService {
                     .fullName(user.getFullName())
                     .username(user.getUsername())
                     .gmail(user.getGmail())
-                    .roles(user.getRoles().getRoleName())
+                    .role(user.getRoles().getRoleName())
                     .createdBy(user.getCreatedBy())
                     .createdDate(user.getCreatedDate())
                     .modifiedBy(user.getModifiedBy())
@@ -158,6 +158,35 @@ public class UserServiceImpl implements IUsersService {
     public int totalOrderByUser(Users user) {
         long result = orderRepository.countByUser(user);
         return (int) result;
+    }
+
+    @Override
+    public int totalItem() {
+        return (int) usersRepository.countByIsActiveTrue();
+    }
+
+    @Override
+    public List<UserResponse> findAllAccountIsActiveTrue(Pageable pageable) {
+        List<UserResponse> responses = new ArrayList<>();
+        List<Users> userEntities = usersRepository.findByIsActiveTrue(pageable).getContent();
+        if (!userEntities.isEmpty()){
+            userEntities.forEach(u ->{
+                responses.add(UserResponse.builder()
+                        .id(u.getId())
+                        .fullName(u.getFullName())
+                        .username(u.getUsername())
+                        .gmail(u.getGmail())
+                        .role(u.getRoles().getRoleName())
+                        .createdBy(u.getCreatedBy())
+                        .createdDate(u.getCreatedDate())
+                        .modifiedBy(u.getModifiedBy())
+                        .modifiedDate(u.getModifiedDate())
+                        .build());
+            });
+            return responses;
+        } else {
+            return null;
+        }
     }
 
 

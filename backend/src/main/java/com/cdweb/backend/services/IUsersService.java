@@ -31,4 +31,8 @@ public interface IUsersService {
     int totalOrder();
 
     int totalOrderByUser(Users user);
+
+    int totalItem();
+
+    List<UserResponse> findAllAccountIsActiveTrue(Pageable pageable);
 }

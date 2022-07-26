@@ -10,6 +10,7 @@
       :items="data"
       :options.sync="options"
       :server-items-length="totalItems"
+      multi-sort
       :loading="loading.table"
       :footer-props="{
         showFirstLastPage: true,
@@ -151,6 +152,8 @@ export default {
     options: {
       page: 1,
       itemsPerPage: 10,
+      sortBy: [],
+      sortDesc: [],
     },
     dialog: {
       deleteAll: false,
@@ -206,7 +209,8 @@ export default {
     async readDataFromAPI() {
       this.loading.table = true;
       const { page, itemsPerPage } = this.options;
-      this.data = await getAllProducts(page, itemsPerPage);
+      const sort = this.getSort();
+      this.data = await getAllProducts(page, itemsPerPage, sort);
 
       this.itemsPerPage = itemsPerPage;
       this.totalItems = this.data.totalItems;
@@ -273,6 +277,37 @@ export default {
     deleteItemConfirm() {
       this.data.splice(this.editedIndex, 1);
       this.closeDelete();
+    },
+    getSort() {
+      let listParamSort = [];
+      const length = this.options.sortBy.length;
+      if (length > 0) {
+        listParamSort = [];
+        for (let i = 0; i < length; i++) {
+          if (this.options.sortBy[i] === 'brandName') {
+            listParamSort.push({
+              sortBy: 'brands_name',
+              sortDesc: this.options.sortDesc[i],
+            });
+          } else if (this.options.sortBy[i] === 'categoryName') {
+            listParamSort.push({
+              sortBy: 'categories_name',
+              sortDesc: this.options.sortDesc[i],
+            });
+          } else {
+            listParamSort.push({
+              sortBy: this.options.sortBy[i],
+              sortDesc: this.options.sortDesc[i],
+            });
+          }
+        }
+      } else {
+        listParamSort.push({
+          sortBy: null,
+          sortDesc: null,
+        });
+      }
+      return listParamSort;
     },
   },
   mounted() {

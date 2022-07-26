@@ -10,6 +10,7 @@
       :headers="headers"
       :options.sync="options"
       :items="data"
+      multi-sort
       :loading="loading.table"
       class="elevation-1"
       :footer-props="{
@@ -262,7 +263,6 @@
 </template>
 <script>
 import { getAllAccounts } from '@/services/admin/all-account-form';
-import { sortItems } from 'vuetify/src/util/helpers';
 export default {
   data: () => ({
     page: 0,
@@ -271,6 +271,8 @@ export default {
     options: {
       page: 1,
       itemsPerPage: 5,
+      sortBy: [],
+      sortDesc: [],
     },
     loading: {
       table: true,
@@ -296,7 +298,7 @@ export default {
       },
       { text: 'Gmail', value: 'gmail' },
       { text: 'Họ và tên', value: 'fullName' },
-      { text: 'Phân quyền', value: 'role' },
+      { text: 'Vai trò', value: 'role' },
       { text: 'Hành động', value: 'actions', sortable: false },
     ],
     data: [],
@@ -340,12 +342,39 @@ export default {
     async readDataFromAPI() {
       this.loading.table = true;
       const { page, itemsPerPage } = this.options;
-      const data = await getAllAccounts(page, itemsPerPage);
+      const sort = this.getSort();
+      const data = await getAllAccounts(page, itemsPerPage, sort);
       this.page = data?.page;
       this.totalPages = data?.totalPages;
       this.totalItems = data?.totalItems;
       this.data = data?.data;
       this.loading.table = false;
+    },
+    getSort() {
+      let listParamSort = [];
+      const length = this.options.sortBy.length;
+      if (length > 0) {
+        listParamSort = [];
+        for (let i = 0; i < length; i++) {
+          if (this.options.sortBy[i] === 'role') {
+            listParamSort.push({
+              sortBy: 'roles_roleName',
+              sortDesc: this.options.sortDesc[i],
+            });
+          } else {
+            listParamSort.push({
+              sortBy: this.options.sortBy[i],
+              sortDesc: this.options.sortDesc[i],
+            });
+          }
+        }
+      } else {
+        listParamSort.push({
+          sortBy: null,
+          sortDesc: null,
+        });
+      }
+      return listParamSort;
     },
 
     // handleOnblurBrandNameInput() {
