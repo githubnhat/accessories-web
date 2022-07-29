@@ -266,6 +266,8 @@ export default {
     options: {
       page: 1,
       itemsPerPage: 5,
+      sortBy: [],
+      sortDesc: [],
     },
     loading: {
       table: true,
@@ -333,7 +335,9 @@ export default {
     async readDataFromAPI() {
       this.loading.table = true;
       const { page, itemsPerPage } = this.options;
-      const data = await getAllBrand(page, itemsPerPage);
+      const sort = this.getSort();
+
+      const data = await getAllBrand(page, itemsPerPage, sort);
       this.page = data?.page;
       this.totalPages = data?.totalPages;
       this.totalItems = data?.totalItems;
@@ -415,6 +419,25 @@ export default {
     },
     closeDeleteAll() {
       this.dialog.deleteAll = false;
+    },
+    getSort() {
+      let listParamSort = [];
+      const length = this.options.sortBy.length;
+      if (length > 0) {
+        listParamSort = [];
+        for (let i = 0; i < length; i++) {
+          listParamSort.push({
+            sortBy: this.options.sortBy[i],
+            sortDesc: this.options.sortDesc[i],
+          });
+        }
+      } else {
+        listParamSort.push({
+          sortBy: null,
+          sortDesc: null,
+        });
+      }
+      return listParamSort;
     },
   },
   mounted() {
