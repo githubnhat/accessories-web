@@ -21,6 +21,7 @@ public class Users extends BaseEntity{
     private String fullName;
     private String gmail;
     private String otpCode;
+    private String thumbnail;
     private Date otpRequestedTime;
     @Column(name = "is_active")
     private boolean isActive;

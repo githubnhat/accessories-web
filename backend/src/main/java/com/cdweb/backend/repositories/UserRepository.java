@@ -31,4 +31,10 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     long countByIsActiveTrue();
 
     Page<Users> findByIsActiveTrue(Pageable pageable);
+
+    Boolean existsByGmailAndIdNot(String gmail, Long id);
+
+    Users findByUsernameAndIsActiveTrue(String username);
+
+    boolean existsByIdAndIsActiveTrue(Long id);
 }

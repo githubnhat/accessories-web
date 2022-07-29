@@ -98,6 +98,7 @@ public class JwtService {
                 .withClaim("username", user.getUsername())
                 .withClaim("fullName", user.getFullName())
                 .withClaim("role", user.getRoles().getRoleCode())
+                .withClaim("avatar", user.getThumbnail())
                 .withClaim("access_token", true);;
         return creator.sign(algorithm);
     }

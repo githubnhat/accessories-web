@@ -31,5 +31,5 @@ public interface IAttributeService {
 
     boolean delete(Long[] ids);
 
-    Boolean existsByNameAndIsActive(String attributeName);
+    Boolean existsByNameAndIsActive(String attributeName, Long id);
 }

@@ -11,4 +11,5 @@ public class RegistrationRequest {
     private String fullName;
     private String gmail;
     private String roleCode;
+    private String thumbnail;
 }

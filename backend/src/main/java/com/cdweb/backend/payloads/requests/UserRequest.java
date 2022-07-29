@@ -11,4 +11,6 @@ public class UserRequest {
     private String password;
     private String fullName;
     private String gmail;
+    private String thumbnail;
+    private String roleCode;
 }

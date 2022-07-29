@@ -12,6 +12,7 @@ import java.util.Date;
 public class RoleResponse {
     private Long id;
     private String roleName;
+    private String roleCode;
     private String createdBy;
     private Date createdDate;
     private String modifiedBy;

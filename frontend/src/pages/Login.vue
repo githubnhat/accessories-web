@@ -63,7 +63,12 @@
                         <v-form class="mt-5" ref="formLogin" @submit.prevent="handleSubmit(login)">
                           <v-card-text class="mt-5">
                             <h1
-                              class="text-center display-2 primary--text text--accent-3 text-capitalize"
+                              class="
+                                text-center
+                                display-2
+                                primary--text
+                                text--accent-3 text-capitalize
+                              "
                             >
                               Đăng nhập
                             </h1>
@@ -166,7 +171,12 @@
                         <v-form class="mt-5" @submit.prevent="handleSubmit(register)">
                           <v-card-text class="mt-5">
                             <h1
-                              class="text-center display-2 primary--text text--accent-3 text-capitalize"
+                              class="
+                                text-center
+                                display-2
+                                primary--text
+                                text--accent-3 text-capitalize
+                              "
                             >
                               Tạo tài khoản
                             </h1>
@@ -361,10 +371,15 @@ export default {
     async verifyOTP() {
       this.loading.verify = true;
       // service verify otpCode here
-      await verifyOTP({
+      const { data, status } = await verifyOTP({
         userId: this.userId,
         otpCode: this.otpCode,
       });
+      if (status === 200) {
+        const token = data?.data?.accessToken;
+        this.$store.commit('_accessToken/setAccessToken', token);
+        router.push('/');
+      }
       this.loading.verify = false;
     },
   },

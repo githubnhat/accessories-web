@@ -8,14 +8,17 @@ import com.cdweb.backend.payloads.responses.AuthResponse;
 import com.cdweb.backend.payloads.responses.ResponseObject;
 import com.cdweb.backend.payloads.responses.UserResponse;
 import com.cdweb.backend.services.IAuthService;
+import com.cdweb.backend.services.IUsersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 
@@ -27,6 +30,8 @@ import java.io.UnsupportedEncodingException;
 public class AuthController {
 
     private final IAuthService authService;
+
+    private final IUsersService usersService;
 
     private final JwtService jwtService;
 
@@ -44,6 +49,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("fail", ex.getMessage(), null));
         }
     }
+
     @PostMapping("admin/login")
     public ResponseEntity<?> loginAdmin(@RequestBody AuthRequest request, HttpServletResponse response) {
         try {
@@ -78,7 +84,7 @@ public class AuthController {
 
     @GetMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
-       addRefreshTokenToCookie(response, "", 0);
+        addRefreshTokenToCookie(response, "", 0);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -121,14 +127,43 @@ public class AuthController {
     }
 
     @GetMapping("/check-username/{userName}")
-    public ResponseEntity<?> existsProductByName(@PathVariable("userName") String userName) {
+    public ResponseEntity<?> existsAccountByName(@PathVariable("userName") String userName) {
         Boolean exists = authService.existsByUserName(userName);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", "", exists));
     }
 
     @GetMapping("/check-gmail/{gmail}")
-    public ResponseEntity<?> existsProductByGmail(@PathVariable("gmail") String gmail) {
-        Boolean exists = authService.existsByGmail(gmail);
+    public ResponseEntity<?> existsAccountByGmail(@PathVariable("gmail") String gmail, HttpServletRequest request) {
+        Users user = this.getUserFromRequest(request);
+        Boolean exists = authService.existsByGmail(gmail, user.getId());
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", "", exists));
+    }
+
+    @GetMapping("/infor")
+    public ResponseEntity<?> getInfor(HttpServletRequest request) {
+        Users user = this.getUserFromRequest(request);
+        UserResponse response = usersService.getUser(user.getId());
+        return response != null ?
+                ResponseEntity.status(HttpStatus.OK)
+                        .body(new ResponseObject("Success", null, response)) :
+                ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ResponseObject("Failed", null, null));
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<?> updateInformation( @RequestBody RegistrationRequest request, HttpServletRequest httpRequest) {
+        Users user = this.getUserFromRequest(httpRequest);
+        UserResponse response = usersService.update(request, user.getId());
+        return response != null ?
+                ResponseEntity.status(HttpStatus.OK)
+                        .body(new ResponseObject("Success", null, response)) :
+                ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ResponseObject("Failed", null, null));
+    }
+    private Users getUserFromRequest(HttpServletRequest httpRequest) {
+        String authorizationHeader = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
+        String token = authorizationHeader.substring(Constant.BEARER.length());
+        Users user = jwtService.getUserFromToken(token);
+        return user;
     }
 }

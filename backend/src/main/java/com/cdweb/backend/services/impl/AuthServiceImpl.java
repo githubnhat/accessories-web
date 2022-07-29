@@ -43,11 +43,9 @@ public class AuthServiceImpl implements IAuthService {
         if (entityByGmail != null && passwordEncoder.matches(request.getPassword(), entityByGmail.getPassword())) {
             return AuthResponse.builder()
                     .accessToken(jwtService.generateAccessToken(entityByGmail))
-                    .accessToken(jwtService.generateAccessToken(entityByGmail))
                     .build();
         } else if(entityByUsername != null && passwordEncoder.matches(request.getPassword(), entityByUsername.getPassword())) {
             return AuthResponse.builder()
-                    .accessToken(jwtService.generateAccessToken(entityByUsername))
                     .accessToken(jwtService.generateAccessToken(entityByUsername))
                     .build();
         } else {
@@ -65,11 +63,9 @@ public class AuthServiceImpl implements IAuthService {
         if (entityByGmail != null && passwordEncoder.matches(request.getPassword(), entityByGmail.getPassword())) {
             return AuthResponse.builder()
                     .accessToken(jwtService.generateAccessToken(entityByGmail))
-                    .accessToken(jwtService.generateAccessToken(entityByGmail))
                     .build();
         } else if(entityByUsername != null && passwordEncoder.matches(request.getPassword(), entityByUsername.getPassword())) {
             return AuthResponse.builder()
-                    .accessToken(jwtService.generateAccessToken(entityByUsername))
                     .accessToken(jwtService.generateAccessToken(entityByUsername))
                     .build();
         } else {
@@ -94,6 +90,7 @@ public class AuthServiceImpl implements IAuthService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .fullName(request.getFullName())
                 .gmail(request.getGmail())
+                .thumbnail(request.getThumbnail())
                 .roles(role)
                 .isActive(false)
                 .build();
@@ -123,9 +120,11 @@ public class AuthServiceImpl implements IAuthService {
     }
 
     @Override
-    public Boolean existsByGmail(String gmail) {
-        return usersRepository.existsByGmail(gmail);
+    public Boolean existsByGmail(String gmail, Long id) {
+        if(id!= null){
+            return usersRepository.existsByGmailAndIdNot(gmail, id);
+        } else {
+            return usersRepository.existsByGmail(gmail);
+        }
     }
-
-
 }

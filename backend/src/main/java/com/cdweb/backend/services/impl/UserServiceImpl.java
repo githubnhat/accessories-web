@@ -3,9 +3,11 @@ package com.cdweb.backend.services.impl;
 import com.cdweb.backend.converters.AddressConverter;
 import com.cdweb.backend.converters.OrderConverter;
 import com.cdweb.backend.converters.OrderItemConverter;
+import com.cdweb.backend.converters.UserConverter;
 import com.cdweb.backend.entities.*;
 import com.cdweb.backend.payloads.requests.AddressRequest;
 import com.cdweb.backend.payloads.requests.OrderRequest;
+import com.cdweb.backend.payloads.requests.RegistrationRequest;
 import com.cdweb.backend.payloads.requests.UserRequest;
 import com.cdweb.backend.payloads.responses.*;
 import com.cdweb.backend.repositories.*;
@@ -13,6 +15,7 @@ import com.cdweb.backend.services.ICartItemService;
 import com.cdweb.backend.services.IUsersService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -40,23 +43,22 @@ public class UserServiceImpl implements IUsersService {
 
     private final OrderItemServiceImpl orderItemService;
 
+    private final RoleRepository rolesRepository;
+
+    private final PasswordEncoder passwordEncoder;
+
+    private final UserConverter userConverter;
+
     @Override
-    public List<UserResponse> getAllUsers() {
-        List<UserResponse> response = new ArrayList<>();
-        List<Users> entities = usersRepository.findByIsActiveTrue();
-        for (Users user: entities) {
-            response.add(UserResponse.builder()
-                    .id(user.getId())
-                    .fullName(user.getFullName())
-                    .username(user.getUsername())
-                    .gmail(user.getGmail())
-                    .role(user.getRoles().getRoleName())
-                    .createdBy(user.getCreatedBy())
-                    .createdDate(user.getCreatedDate())
-                    .modifiedBy(user.getModifiedBy())
-                    .modifiedDate(user.getModifiedDate())
-                    .build());
-        }
+    public UserResponse getUser(Long id) {
+        Users user = usersRepository.findByIdAndIsActiveTrue(id);
+        UserResponse response = UserResponse.builder()
+                .id(user.getId())
+                .fullName(user.getFullName())
+                .username(user.getUsername())
+                .gmail(user.getGmail())
+                .thumbnail(user.getThumbnail())
+                .build();
         return response;
     }
 
@@ -71,7 +73,7 @@ public class UserServiceImpl implements IUsersService {
     public List<AddressResponse> getAllAddresses(Users user) {
         List<Address> addresses = addressRepository.findByUserOrderByIsMainAddressDesc(user);
         List<AddressResponse> responses = new ArrayList<>();
-        for (Address address: addresses) {
+        for (Address address : addresses) {
             AddressResponse response = addressConverter.toResponse(address);
             responses.add(response);
         }
@@ -80,18 +82,18 @@ public class UserServiceImpl implements IUsersService {
 
     @Override
     public AddressResponse save(AddressRequest request, Users user) {
-        if(request.getIsMainAddress() == true) {
+        if (request.getIsMainAddress() == true) {
             Address address = addressRepository.findByUserAndIsMainAddressTrue(user);
-            if(address!=null){
+            if (address != null) {
                 address.setIsMainAddress(false);
                 addressRepository.save(address);
             }
         }
         Address address = addressRepository.save(Address.builder()
-                        .address(request.getAddress())
-                        .isMainAddress(request.getIsMainAddress())
-                        .phone(request.getPhone())
-                        .user(user)
+                .address(request.getAddress())
+                .isMainAddress(request.getIsMainAddress())
+                .phone(request.getPhone())
+                .user(user)
                 .build());
         AddressResponse response = addressConverter.toResponse(address);
         return response;
@@ -141,7 +143,7 @@ public class UserServiceImpl implements IUsersService {
     @Override
     public Boolean updateOrderStatus(Long orderId, String status) {
         Orders order = orderRepository.findById(orderId).orElseGet(null);
-        if(order != null) {
+        if (order != null) {
             order.setStatus(status);
             orderRepository.save(order);
             return true;
@@ -169,8 +171,8 @@ public class UserServiceImpl implements IUsersService {
     public List<UserResponse> findAllAccountIsActiveTrue(Pageable pageable) {
         List<UserResponse> responses = new ArrayList<>();
         List<Users> userEntities = usersRepository.findByIsActiveTrue(pageable).getContent();
-        if (!userEntities.isEmpty()){
-            userEntities.forEach(u ->{
+        if (!userEntities.isEmpty()) {
+            userEntities.forEach(u -> {
                 responses.add(UserResponse.builder()
                         .id(u.getId())
                         .fullName(u.getFullName())
@@ -187,6 +189,85 @@ public class UserServiceImpl implements IUsersService {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public UserResponse update(RegistrationRequest request, Long id) {
+        Users user = usersRepository.findByIdAndIsActiveTrue(id);
+        if(user != null){
+            user.setFullName(request.getFullName());
+            user.setGmail(request.getGmail());
+            user.setThumbnail(request.getThumbnail());
+        }
+        Users updatedUser = usersRepository.save(user);
+        return UserResponse.builder()
+                .thumbnail(updatedUser.getThumbnail())
+                .username(updatedUser.getUsername())
+                .fullName(updatedUser.getFullName())
+                .gmail(updatedUser.getGmail())
+                .build();
+    }
+
+    @Override
+    public UserResponse update(UserRequest request) {
+        Users user = usersRepository.findByIdAndIsActiveTrue(request.getId());
+        if (user != null){
+            user.setFullName(request.getFullName());
+            user.setGmail(request.getGmail());
+            Roles role = rolesRepository.findByRoleCode(request.getRoleCode());
+            user.setRoles(role);
+            Users updatedUser = usersRepository.save(user);
+            return UserResponse.builder()
+                    .gmail(updatedUser.getGmail())
+                    .role(updatedUser.getRoles().getRoleName())
+                    .fullName(updatedUser.getFullName())
+                    .thumbnail(updatedUser.getThumbnail())
+                    .username(updatedUser.getUsername())
+                    .id(updatedUser.getId())
+                    .build();
+        }
+        return null;
+    }
+
+    @Override
+    public UserResponse saveNewAccount(UserRequest request) {
+        if (usersRepository.findByUsernameAndIsActiveTrue(request.getUsername()) != null) {
+            throw new IllegalArgumentException("Username already exists!");
+        }
+        Roles role = rolesRepository.findByRoleCode(request.getRoleCode());
+        //save
+        Users userEntity = Users.builder()
+                .username(request.getUsername())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .fullName(request.getFullName())
+                .gmail(request.getGmail())
+                .thumbnail(request.getThumbnail())
+                .roles(role)
+                .isActive(true)
+                .build();
+
+        Users savedEntity = usersRepository.save(userEntity);
+        return userConverter.toResponse(savedEntity);
+    }
+
+    @Override
+    public boolean delete(Long[] ids, Long id) {
+        boolean exists = true;
+        for (Long i : ids) {
+            if (i==id) {
+                throw new IllegalArgumentException("Không thể xoá tài khoản của mình!");
+            } else if (!usersRepository.existsByIdAndIsActiveTrue(i)) {
+                exists = false;
+            }
+        }
+        if (exists) {
+            for (Long i : ids) {
+                Users entity = usersRepository.findByIdAndIsActiveTrue(i);
+                entity.setActive(false);
+                usersRepository.save(entity);
+            }
+        }
+        return exists;
     }
 
 
