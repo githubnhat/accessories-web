@@ -45,7 +45,7 @@ public class OrderItemServiceImpl implements IOrderItemService {
     @Override
     public List<OrderItemResponse> saveOrderItemList(Orders order, List<OrderItemRequest> requests) {
         List<OrderItemResponse> responses = new ArrayList<>();
-
+        if(requests.size() > 0) {
             requests.forEach(item ->{
                 OrderItems newEntity = orderItemConverter.toEntity(item);
                 Products product = productRepository.findByIdAndIsActiveTrue(item.getProductId());
@@ -61,7 +61,7 @@ public class OrderItemServiceImpl implements IOrderItemService {
 
                 responses.add(orderItemConverter.toResponse(newEntity));
             });
-
+        }
         return responses;
     }
 }

@@ -6,6 +6,7 @@ import com.cdweb.backend.entities.Users;
 import com.cdweb.backend.payloads.requests.AddressRequest;
 import com.cdweb.backend.payloads.requests.OrderRequest;
 import com.cdweb.backend.payloads.responses.*;
+import com.cdweb.backend.repositories.UserRepository;
 import com.cdweb.backend.services.IUsersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,8 @@ import java.util.List;
 @Slf4j
 public class UserController {
     private final IUsersService userService;
+
+    private final UserRepository userRepository;
 
     private final JwtService jwtService;
 
@@ -104,9 +107,11 @@ public class UserController {
     }
 
         private Users getUserFromRequest(HttpServletRequest httpRequest) {
-        String authorizationHeader = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
-        String token = authorizationHeader.substring(Constant.BEARER.length());
-        Users user = jwtService.getUserFromToken(token);
-        return user;
+            String authorizationHeader = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
+            String token = authorizationHeader.substring(Constant.BEARER.length());
+            Users user = jwtService.getUserFromToken(token);
+            user = userRepository.findByIdAndIsActiveTrue(user.getId());
+
+            return user;
     }
 }
