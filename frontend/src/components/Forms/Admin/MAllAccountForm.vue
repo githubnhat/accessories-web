@@ -40,14 +40,14 @@
               <ValidationObserver v-slot="{ handleSubmit }">
                 <v-form @submit.prevent="handleSubmit(deleteAccount)">
                   <v-card-title>
-                    <span class="text-h5">Xác nhận xóa (các) thương hiệu sau:</span>
+                    <span class="text-h5">Xác nhận xóa (các) tài khoản sau:</span>
                   </v-card-title>
 
                   <v-card-text>
                     <v-row dense v-for="item in selectedItems" :key="item.id">
                       <v-col cols="6">
                         <v-text-field
-                          v-model="item.name"
+                          v-model="item.username"
                           label="Tên thương hiệu"
                           outlined
                           dense
@@ -56,7 +56,7 @@
                       </v-col>
                       <v-col cols="6">
                         <v-text-field
-                          v-model="item.code"
+                          v-model="item.gmail"
                           label="Mã thương hiệu"
                           outlined
                           dense
@@ -84,28 +84,35 @@
           </v-dialog>
           <v-dialog v-model="dialog.add" max-width="500px">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
-                Thêm thương hiệu
+              <v-btn
+                color="primary"
+                dark
+                class="mb-2"
+                v-bind="attrs"
+                @click="openAddDialog"
+                v-on="on"
+              >
+                Thêm tài khoản
               </v-btn>
             </template>
             <v-card>
-              <ValidationObserver v-slot="{ handleSubmit }">
+              <ValidationObserver ref="addDialog" v-slot="{ handleSubmit }">
                 <v-form @submit.prevent="handleSubmit(addNewAccount)">
                   <v-card-title>
-                    <span class="text-h5">Thêm thương hiệu mới</span>
+                    <span class="text-h5">Thêm tài khoản mới</span>
                   </v-card-title>
 
                   <v-card-text>
                     <v-row>
                       <v-col cols="12">
                         <validation-provider
-                          name="Tên thương hiệu"
-                          rules="required|uniqueBrandName"
+                          name="Tên người dùng"
+                          rules="required"
                           v-slot="{ errors }"
                         >
                           <v-text-field
-                            v-model="newBrandInfor.name"
-                            label="Tên thương hiệu"
+                            v-model="newAccount.username"
+                            label="Tên người dùng"
                             :error-messages="errors"
                             @blur="handleOnblurBrandNameInput"
                             outlined
@@ -115,18 +122,54 @@
                       </v-col>
                       <v-col cols="12">
                         <validation-provider
-                          name="Mã thương hiệu"
-                          rules="required|uniqueBrandCode"
+                          name="Gmail"
+                          rules="required|email"
                           v-slot="{ errors }"
                         >
                           <v-text-field
-                            v-model="newBrandInfor.code"
-                            label="Mã thương hiệu"
+                            v-model="newAccount.gmail"
+                            label="Gmail"
                             :error-messages="errors"
                             outlined
                             dense
                           ></v-text-field>
                         </validation-provider>
+                      </v-col>
+                      <v-col cols="12">
+                        <validation-provider name="Tên đầy đủ" rules="required" v-slot="{ errors }">
+                          <v-text-field
+                            v-model="newAccount.fullName"
+                            label="Tên đầy đủ"
+                            :error-messages="errors"
+                            outlined
+                            dense
+                          ></v-text-field>
+                        </validation-provider>
+                      </v-col>
+                      <v-col cols="12">
+                        <validation-provider name="Mật khẩu" rules="required" v-slot="{ errors }">
+                          <v-text-field
+                            v-model="newAccount.password"
+                            label="Mật khẩu"
+                            :error-messages="errors"
+                            type="password"
+                            clearable
+                            outlined
+                            dense
+                          ></v-text-field>
+                        </validation-provider>
+                      </v-col>
+                      <v-col cols="12">
+                        <v-select
+                          label="Phân quyền"
+                          :items="roles"
+                          item-text="roleName"
+                          persistent-hint
+                          return-object
+                          dense
+                          outlined
+                          v-model="selectedRole"
+                        ></v-select>
                       </v-col>
                     </v-row>
                   </v-card-text>
@@ -163,40 +206,55 @@
         <v-card>
           <ValidationObserver ref="editDialog" v-slot="{ handleSubmit }">
             <v-form class="mt-5" @submit.prevent="handleSubmit(editOneItem)">
-              <v-card-title class="text-h5">Chỉnh sửa thông tin thương hiệu</v-card-title>
+              <v-card-title class="text-h5">Chỉnh sửa thông tin tài khoản</v-card-title>
               <v-card-text>
-                <v-row no-gutters dense>
+                <v-row>
                   <v-col cols="12">
-                    <validation-provider
-                      name="Tên thương hiệu"
-                      rules="required"
-                      v-slot="{ errors }"
-                    >
+                    <validation-provider name="Tên người dùng" rules="required" v-slot="{ errors }">
                       <v-text-field
-                        v-model="selectedItem.name"
-                        label="Tên thương hiệu"
-                        prepend-icon="mdi-order-alphabetical-ascending"
-                        color="primary accent-3"
-                        clearable
+                        v-model="selectedItem.username"
+                        label="Tên người dùng"
                         :error-messages="errors"
-                      >
-                      </v-text-field>
+                        @blur="handleOnblurBrandNameInput"
+                        disabled
+                        outlined
+                        dense
+                      ></v-text-field>
                     </validation-provider>
-                    <validation-provider
-                      name="Mã thương hiệu"
-                      rules="required|uniqueCategoryCode"
-                      v-slot="{ errors }"
-                    >
+                  </v-col>
+                  <v-col cols="12">
+                    <validation-provider name="Gmail" rules="required|email" v-slot="{ errors }">
                       <v-text-field
-                        v-model="selectedItem.code"
-                        label="Mã thương hiệu"
-                        prepend-icon="mdi-alphabetical"
-                        color="primary accent-3"
-                        clearable
+                        v-model="selectedItem.gmail"
+                        label="Gmail"
                         :error-messages="errors"
-                      >
-                      </v-text-field>
+                        outlined
+                        dense
+                      ></v-text-field>
                     </validation-provider>
+                  </v-col>
+                  <v-col cols="12">
+                    <validation-provider name="Tên đầy đủ" rules="required" v-slot="{ errors }">
+                      <v-text-field
+                        v-model="selectedItem.fullName"
+                        label="Tên đầy đủ"
+                        :error-messages="errors"
+                        outlined
+                        dense
+                      ></v-text-field>
+                    </validation-provider>
+                  </v-col>
+                  <v-col cols="12">
+                    <v-select
+                      label="Phân quyền"
+                      :items="roles"
+                      item-text="roleName"
+                      persistent-hint
+                      return-object
+                      dense
+                      outlined
+                      v-model="selectedRole"
+                    ></v-select>
                   </v-col>
                 </v-row>
               </v-card-text>
@@ -215,14 +273,14 @@
           <ValidationObserver v-slot="{ handleSubmit }">
             <v-form class="mt-5" @submit.prevent="handleSubmit(deleteOneItem)">
               <v-card-title class="text-h5"
-                >Bạn có chắc chắn <strong class="warning--text">&nbsp;xoá&nbsp;</strong> thương hiệu
+                >Bạn có chắc chắn <strong class="warning--text">&nbsp;xoá&nbsp;</strong> tài khoản
                 này?</v-card-title
               >
               <v-card-text>
                 <v-row no-gutters dense>
                   <v-col cols="12">
                     <v-text-field
-                      v-model="selectedItem.name"
+                      v-model="selectedItem.username"
                       label="Tên thương hiệu"
                       prepend-icon="mdi-order-alphabetical-ascending"
                       color="primary accent-3"
@@ -231,7 +289,7 @@
                     </v-text-field>
 
                     <v-text-field
-                      v-model="selectedItem.code"
+                      v-model="selectedItem.gmail"
                       label="Mã thương hiệu"
                       prepend-icon="mdi-alphabetical"
                       color="primary accent-3"
@@ -244,12 +302,7 @@
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="blue darken-1" text @click="closeDelete">Trở lại</v-btn>
-                <v-btn
-                  color="warning darken-1"
-                  outlined
-                  text
-                  type="submit"
-                  :loading="loading.deleteAccount"
+                <v-btn color="warning darken-1" text type="submit" :loading="loading.deleteAccount"
                   >Xóa</v-btn
                 >
                 <v-spacer></v-spacer>
@@ -262,12 +315,27 @@
   </div>
 </template>
 <script>
-import { getAllAccounts } from '@/services/admin/all-account-form';
+import {
+  getAllAccounts,
+  getAllRoles,
+  addAccount,
+  updateAccount,
+  deleteAccount,
+} from '@/services/admin/all-account-form';
 export default {
   data: () => ({
     page: 0,
+    newAccount: {
+      username: '',
+      fullName: '',
+      gmail: '',
+      password: '',
+      roleCode: '',
+    },
     totalItems: 0,
     totalPages: 0,
+    roles: [],
+    roleNames: [],
     options: {
       page: 1,
       itemsPerPage: 5,
@@ -315,7 +383,9 @@ export default {
       attributeName: '',
       variantNames: '',
     },
+    selectedRole: '',
     selectedItems: [],
+    editItem: {},
     selectedItem: {},
   }),
 
@@ -348,7 +418,12 @@ export default {
       this.totalPages = data?.totalPages;
       this.totalItems = data?.totalItems;
       this.data = data?.data;
+      await this.getAllRoles();
       this.loading.table = false;
+    },
+    async getAllRoles() {
+      this.roles = await getAllRoles();
+      this.selectedRole = this.roles[1];
     },
     getSort() {
       let listParamSort = [];
@@ -377,22 +452,23 @@ export default {
       return listParamSort;
     },
 
-    // handleOnblurBrandNameInput() {
-    //   const result = transNameToCode(this.newBrandInfor.name);
-    //   this.newBrandInfor.code = result;
-    // },
+    handleOnblurBrandNameInput() {
+      // const result = transNameToCode(this.newBrandInfor.name);
+      this.newBrandInfor.code = '';
+    },
 
     async addNewAccount() {
       this.loading.addNewBrandButton = true;
-      this.dialog.add = false;
-      // const { data, status } = await insertBrand(this.newBrandInfor);
-      // if (status === 'Success') {
-      //   this.readDataFromAPI();
-      //   alert('Thêm thương hiệu "' + data?.name + '" với code là "' + data?.code + '" thành công!');
-      // } else {
-      //   alert(status);
-      // }
+      this.newAccount.roleCode = this.selectedRole.roleCode;
+      const data = await addAccount(this.newAccount);
+      if (data?.status === 'Success') {
+        await this.readDataFromAPI();
+        alert('Tài khoản mới thêm thành công!');
+      } else {
+        alert('Thêm tài khoản không thành công!');
+      }
       this.loading.addNewBrandButton = false;
+      this.closeAdd();
     },
 
     async deleteAccount() {
@@ -400,18 +476,31 @@ export default {
       this.dialog.deleteAll = false;
       const chosenItems = this.selectedItems.map((item) => item.id);
       this.selectedItems = [];
-      // const isUpdateSuccess = await deleteBrands(chosenItems);
-      // if (isUpdateSuccess) {
-      //   alert('Xóa thành công!');
-      //   this.readDataFromAPI();
-      // } else {
-      //   alert('Xóa không thành công, vui lòng thử lại!');
-      // }
+      const data = await deleteAccount(chosenItems);
+      const isUpdateSuccess = data?.data.data;
+      if (isUpdateSuccess) {
+        alert(data?.data.message);
+        this.readDataFromAPI();
+      } else {
+        alert(data?.data.message);
+      }
       this.loading.deleteAccount = false;
+    },
+
+    async openAddDialog() {
+      this.newAccount = {
+        username: '',
+        fullName: '',
+        gmail: '',
+        password: '',
+        roleCode: '',
+      };
+      await this.getAllRoles();
     },
 
     openEditDialog(item) {
       this.selectedItem = { ...item };
+      this.selectedRole = this.roles.filter((r) => r.roleName === item.role)[0];
       this.dialog.edit = true;
     },
 
@@ -422,23 +511,38 @@ export default {
 
     async deleteOneItem() {
       this.loading.deleteAccount = true;
-      this.dialog.delete = false;
-      // const isUpdateSuccess = await deleteBrands([this.selectedItem.id]);
-      // if (isUpdateSuccess) {
-      //   alert('Xóa thành công!');
-      //   this.readDataFromAPI();
-      // } else {
-      //   alert('Xóa không thành công, vui lòng thử lại!');
-      // }
+      const data = await deleteAccount([this.selectedItem.id]);
+      const isUpdateSuccess = data?.data.data;
+      if (isUpdateSuccess) {
+        alert(data?.data.message);
+        this.readDataFromAPI();
+      } else {
+        alert(data?.data.message);
+      }
       this.selectedItem = {};
       this.loading.deleteAccount = false;
+      this.closeDelete();
     },
 
-    editOneItem() {
-      // do edit item
+    async editOneItem() {
+      this.editItem = {
+        id: this.selectedItem.id,
+        fullName: this.selectedItem.fullName,
+        gmail: this.selectedItem.gmail,
+        roleCode: this.selectedRole.roleCode,
+      };
+      const data = await updateAccount(this.editItem);
+      if (data?.status === 'Success') {
+        await this.readDataFromAPI();
+        alert('Cập nhật tài khoản thành công!');
+      } else {
+        alert('Cập nhật tài khoản không thành công!');
+      }
+      this.closeEdit();
     },
 
     closeAdd() {
+      this.$refs.addDialog.reset();
       this.dialog.add = false;
     },
 
@@ -448,8 +552,6 @@ export default {
     },
     closeDelete() {
       this.dialog.delete = false;
-    },
-    closeDeleteAll() {
       this.dialog.deleteAll = false;
     },
   },

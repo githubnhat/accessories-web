@@ -164,6 +164,86 @@ export async function doLogout() {
   }
 }
 
+
+type UserInfor = {
+  username: string,
+  fullName: string,
+  gmail: string,
+  thumbnail: string,
+}
+
+type GetUserInfor = {
+  data: UserInfor
+}
+
+
+export async function getUserInfor() {
+  try {
+    const path = '/auth/infor';
+
+    const { data, status } = await axios.get<GetUserInfor>(path, { withCredentials: true });
+
+    console.log('response status is: ', status);
+
+    return data?.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log('error message: ', error.message);
+      return error.message;
+    } else {
+      console.log('unexpected error: ', error);
+      return 'An unexpected error occurred';
+    }
+  }
+}
+//update user information
+export async function updateUserInfor(dataForm: object) {
+  try {
+    const path = '/auth/update';
+
+    const { data, status } = await axios.put<GetUserInfor>(path, dataForm, { withCredentials: true });
+
+    console.log('response status is: ', status);
+
+    return data?.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log('error message: ', error.message);
+      return error.message;
+    } else {
+      console.log('unexpected error: ', error);
+      return 'An unexpected error occurred';
+    }
+  }
+}
+
+//check unique email
+type CheckUniqueEmailResponse = {
+  data: boolean;
+};
+
+export async function checkUniqueEmail(gmail: string) {
+  try {
+    const path = `auth/check-gmail/${gmail}`;
+    const { data, status } = await axios.get<CheckUniqueEmailResponse>(path, {
+      withCredentials: true,
+    });
+    // console.log(JSON.stringify(data, null, 10));
+
+    // 👇️ "response status is: 200"
+    console.log('response status is: ', status);
+    
+    return data?.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log('error message: ', error.message);
+      return error.message;
+    } else {
+      console.log('unexpected error: ', error);
+      return 'An unexpected error occurred';
+    }
+  }
+}
 // get brands for display to customer
 
 type Brand = {

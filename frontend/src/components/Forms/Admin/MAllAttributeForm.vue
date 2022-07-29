@@ -88,7 +88,7 @@
               </v-btn>
             </template>
             <v-card>
-              <ValidationObserver v-slot="{ handleSubmit }">
+              <ValidationObserver ref="editDialog" v-slot="{ handleSubmit }">
                 <v-form @submit.prevent="handleSubmit(addNewAttributes)">
                   <v-card-title>
                     <span class="text-h5">Thêm thuộc tính</span>
@@ -99,7 +99,7 @@
                       <v-col cols="12">
                         <validation-provider
                           name="Tên thuộc tính"
-                          rules="required|uniqueAttributeName"
+                          rules="uniqueAttributeName|required"
                           v-slot="{ errors }"
                         >
                           <v-text-field
@@ -112,13 +112,19 @@
                         </validation-provider>
                       </v-col>
                       <v-col cols="12">
-                        <v-text-field
-                          v-model="editedItem.variantNames"
-                          label="Các giá trị được cách nhau bằng dấu phẩy (,)"
-                          :error-messages="errors"
-                          outlined
-                          dense
-                        ></v-text-field>
+                        <validation-provider
+                          name="Tên thuộc tính"
+                          rules="required"
+                          v-slot="{ errors }"
+                        >
+                          <v-text-field
+                            v-model="editedItem.variantNames"
+                            label="Các giá trị được cách nhau bằng dấu phẩy (,)"
+                            :error-messages="errors"
+                            outlined
+                            dense
+                          ></v-text-field>
+                        </validation-provider>
                       </v-col>
                     </v-row>
                   </v-card-text>
@@ -158,7 +164,11 @@
               <v-card-text>
                 <v-row no-gutters dense>
                   <v-col cols="12">
-                    <validation-provider name="Tên thuộc tính" rules="required" v-slot="{ errors }">
+                    <validation-provider
+                      name="Tên thuộc tính"
+                      :rules="`required|uniqueAttributeName:${selectedItem.id}`"
+                      v-slot="{ errors }"
+                    >
                       <v-text-field
                         v-model="selectedItem.attributeName"
                         label="Tên thuộc tính"
@@ -169,11 +179,7 @@
                       >
                       </v-text-field>
                     </validation-provider>
-                    <validation-provider
-                      name="Mã thuộc tính"
-                      rules="required|uniqueCategoryCode"
-                      v-slot="{ errors }"
-                    >
+                    <validation-provider name="Mã thuộc tính" rules="required" v-slot="{ errors }">
                       <v-text-field
                         v-model="selectedItem.variantNames"
                         label="Mã thuộc tính"
@@ -439,9 +445,6 @@ export default {
       const newData = await addNewAttributes(request);
       if (newData !== null) this.readDataFromAPI();
       this.closeAdd();
-    },
-    editOneItem() {
-      console.log('edit');
     },
     getSort() {
       let listParamSort = [];

@@ -127,9 +127,9 @@ type CheckUniqueAttributeNameResponse = {
   data: boolean;
 };
 
-export async function checkUniqueAttributeName(name: string) {
+export async function checkUniqueAttributeName(name: string, id: number) {
   try {
-    const path = `admin/attribute/exists/${name}`;
+    const path = `admin/attribute/exists/${id}/${name}`;
     const { data, status } = await axios.get<CheckUniqueAttributeNameResponse>(path, {
       withCredentials: true,
     });

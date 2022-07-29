@@ -15,6 +15,7 @@ import { checkUniqueProductName } from '@/services/admin/add-product-form';
 import { checkUniqueCategoryCode } from '@/services/admin/all-category-form';
 import { checkUniqueBrandName, checkUniqueBrandCode } from '@/services/admin/all-brand-form';
 import { checkUniqueAttributeName } from '@/services/admin/all-attribute-form';
+import {checkUniqueEmail} from '@/services'
 // config trigger
 setInteractionMode('lazy');
 
@@ -66,6 +67,14 @@ extend('confirmed', {
   ...confirmed,
   message: (field) => field + ' không khớp.',
 });
+extend('existedEmail', {
+  ...required,
+  validate: async (value) => {
+    const result = await checkUniqueEmail(value.trim());
+    return !result;
+  },
+  message: (field) => field + ' đã tồn tại.',
+});
 
 extend('uniqueProductName', {
   ...required,
@@ -104,9 +113,11 @@ extend('uniqueBrandCode', {
 });
 
 extend('uniqueAttributeName', {
-  ...required,
-  validate: async (value) => {
-    const result = await checkUniqueAttributeName(value.trim());
+  ...min,
+  validate: async (value, min) => {
+    let id = min.length;
+    id= !isNaN(id) ? id : -1;
+    const result = await checkUniqueAttributeName(value.trim(), id);
     return !result;
   },
   message: (field) => field + ' đã tồn tại.',

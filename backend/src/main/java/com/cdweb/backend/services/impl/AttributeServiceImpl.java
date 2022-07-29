@@ -241,7 +241,8 @@ public class AttributeServiceImpl implements IAttributeService {
     }
 
     @Override
-    public Boolean existsByNameAndIsActive(String attributeName) {
-        return attributeRepository.existsByAttributeNameAndIsActiveTrue(attributeName);
+    public Boolean existsByNameAndIsActive(String attributeName, Long id) {
+           return attributeRepository.existsByAttributeNameAndIdNotAndIsActiveTrue(attributeName, id);
+
     }
 }

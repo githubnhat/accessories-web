@@ -97,9 +97,10 @@ public class AttributeController {
                 new ResponseObject("Failed", "Can not find brand", false));
     }
 
-    @GetMapping("/exists/{attributeName}")
-    ResponseEntity<?> existsAttributeByName(@PathVariable("attributeName") String attributeName) {
-        Boolean exists = attributeService.existsByNameAndIsActive(attributeName);
+    @GetMapping("/exists/{id}/{attributeName}")
+    ResponseEntity<?> existsAttributeByName(@PathVariable("id") Long id,
+                                            @PathVariable("attributeName") String attributeName) {
+        Boolean exists = attributeService.existsByNameAndIsActive(attributeName, id);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", "", exists));
     }
 }

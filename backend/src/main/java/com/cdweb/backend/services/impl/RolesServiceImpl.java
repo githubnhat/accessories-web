@@ -8,6 +8,8 @@ import com.cdweb.backend.services.IRoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -15,19 +17,6 @@ import java.util.Objects;
 public class RolesServiceImpl implements IRoleService {
     private final RoleRepository rolesRepository;
 
-//    @Override
-//    public List<RoleResponse> getAllRoles() {
-//        List<RoleResponse> response = new ArrayList<>();
-//        rolesRepository.findByIsActiveTrue().forEach(role -> response.add(RoleResponse.builder()
-//                .roleName(role.getRoleName())
-//                .id(role.getId())
-//                .createdBy(role.getCreatedBy())
-//                .createdDate(role.getCreatedDate())
-//                .modifiedBy(role.getModifiedBy())
-//                .modifiedDate(role.getModifiedDate())
-//                .build()));
-//        return response;
-//    }
 
     @Override
     public RoleResponse create(RoleRequest request) {
@@ -63,6 +52,23 @@ public class RolesServiceImpl implements IRoleService {
                 .modifiedBy(updatedRole.getModifiedBy())
                 .modifiedDate(updatedRole.getModifiedDate())
                 .build();
+    }
+
+    @Override
+    public List<RoleResponse> getAllRoles() {
+        List<RoleResponse> responses = new ArrayList<>();
+        List<Roles> roles = rolesRepository.findAll();
+        if (roles.size() > 0) {
+            roles.forEach(r -> {
+                responses.add(RoleResponse.builder()
+                        .id(r.getId())
+                        .roleName(r.getRoleName())
+                        .roleCode(r.getRoleCode())
+                        .build());
+            });
+            return responses;
+        }
+        return null;
     }
 
 
