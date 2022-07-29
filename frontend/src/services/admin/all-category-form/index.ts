@@ -16,13 +16,35 @@ type CategoryResponse = {
 type GetCategoryResponse = {
   data: CategoryResponse;
 };
-export async function getAllCategory(pageNumber: number, itemsPerPage: number) {
+
+type SortRequest = {
+  sortBy: string;
+  sortDesc: boolean;
+};
+export async function getAllCategory(
+  pageNumber: number,
+  itemsPerPage: number,
+  sort: Array<SortRequest>,
+) {
   try {
-    const { data, status } = await axios.get<GetCategoryResponse>(
-      `admin/category/page/${pageNumber}/limit/${itemsPerPage}`,
-      {
-        withCredentials: true,
-      },
+    let dataForm = null;
+    if (sort[0].sortBy != null) {
+      dataForm = {
+        page: pageNumber,
+        limit: itemsPerPage,
+        sort: sort,
+      };
+    } else {
+      dataForm = {
+        page: pageNumber,
+        limit: itemsPerPage,
+        sort: null,
+      };
+    }
+    const { data, status } = await axios.post<GetCategoryResponse>(
+      `admin/category/list`,
+      dataForm,
+      { withCredentials: true },
     );
     console.log('response status is: ', status);
     return data?.data;

@@ -7,10 +7,10 @@
         <span class="font-weight-light">Shop</span>
         <span>Accessories</span>
       </v-toolbar-title>
-
-      <v-spacer></v-spacer>
+      <v-spacer />
       <m-menu open-on-hover offset-y :btnTitle="titleCategory" :menuList="categories" />
       <m-menu open-on-hover offset-y :btnTitle="titleBrand" :menuList="brands" />
+      <v-spacer />
       <v-form v-if="hidden">
         <v-row>
           <v-btn @click="handleSubmit" icon><v-icon> mdi-magnify </v-icon></v-btn>
@@ -135,5 +135,13 @@ export default {
 <style scoped>
 header {
   height: 48px !important;
+}
+.grid {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  width: 100vw;
+}
+.grid-item {
+  padding: 20px;
 }
 </style>
