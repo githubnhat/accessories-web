@@ -3,7 +3,6 @@
     <div class="display-1 text-center mb-3">Đơn đặt hàng của bạn - Orders</div>
 
     <v-data-table
-      v-model="selectedItems"
       :page="page"
       :pageCount="totalPages"
       :server-items-length="totalItems"
@@ -97,6 +96,7 @@ export default {
 
   computed: {
     totalPendingOrder() {
+      if (this.data === null || this.data === undefined) return 0;
       return this.data.reduce((result, item) => {
         if (item.status === 'Chờ xác nhận') result++;
         return result;
@@ -132,8 +132,10 @@ export default {
       this.totalItems = data?.data?.totalItems;
       this.data = data?.data?.data;
 
-      console.log('data', data);
-      console.log('this.data', this.data);
+      if (this.data) {
+        alert('Bạn chưa có lịch sử đơn hàng nào! Đặt hàng ủng hộ đi nào...');
+        this.loading.table = false;
+      }
       this.loading.table = false;
     },
 
