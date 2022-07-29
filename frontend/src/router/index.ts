@@ -89,6 +89,18 @@ const routes: Array<RouteConfig> = [
       ...route.params,
       itemIds: [],
     }),
+    beforeEnter: (to, from, next) => {
+      const token: Token = jwt_decode(store.getters['_accessToken/getAccessToken']);
+
+      if (!token) {
+        next({ name: 'login' });
+      }
+      const goHome = from.name !== 'shopping-cart';
+      if (goHome) {
+        next({ name: 'home' });
+      }
+      next();
+    },
   },
 ];
 
