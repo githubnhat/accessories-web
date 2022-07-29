@@ -2,14 +2,13 @@
   <v-menu v-bind="$attrs" menu-props>
     <template v-slot:activator="{ on, attrs }">
       <v-btn
-        color="white"
-        class="primary--text ma-2"
+        color="primary"
+        class="white--text my-2 button-menu"
         elevation="0"
         dark
         v-bind="attrs"
         v-on="on"
         v-text="btnTitle"
-        disabled
       />
     </template>
 
@@ -36,4 +35,9 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.button-menu:hover {
+  font-weight: 900;
+  text-decoration: underline;
+}
+</style>
