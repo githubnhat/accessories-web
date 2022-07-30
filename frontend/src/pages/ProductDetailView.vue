@@ -185,10 +185,15 @@ export default {
           this.check = true;
         }
       });
+      if (this.data?.originalQuantity == 0) {
+        this.check = true;
+      }
+      console.log('Check', this.check);
       if (this.check) {
         this.discount = '';
         this.price = 'Hết hàng';
         this.quantity = 0;
+        this.quantityInput = 0;
         this.discountPrice = 'Hết hàng';
         this.disabledQuantity = true;
         this.disabledBtn = true;
@@ -199,7 +204,8 @@ export default {
         this.quantity = this.data?.originalQuantity;
       }
     },
-    addItem(attrName, variantName) {
+    async addItem(attrName, variantName) {
+      const id = this.$route.params.id;
       this.tranColorBtn(attrName, variantName);
       const item = {
         attributeName: attrName,
@@ -225,7 +231,6 @@ export default {
       } else {
         this.listAttrAndVari.push(item);
       }
-
       if (this.listAttrAndVari.length === this.attributes.length) {
         let productVariantName = '';
         this.listAttrAndVari.forEach((item, index) => {
@@ -235,7 +240,7 @@ export default {
             productVariantName = item.variantName;
           }
         });
-        const id = this.$route.params.id;
+
         this.readDataFromAPI(id, productVariantName);
       }
       if (this.listAttrAndVari.length < this.attributes.length) {
@@ -246,6 +251,12 @@ export default {
           this.discountPrice = 'Hết hàng';
           this.disabledQuantity = true;
           this.disabledBtn = true;
+        } else {
+          this.data = await getProductDetail(id);
+          this.discount = this.data?.discount;
+          this.price = this.data?.originalPrice;
+          this.discountPrice = toDiscountPrice(this.data?.originalPrice, this.discount);
+          this.quantity = this.data?.originalQuantity;
         }
       }
     },

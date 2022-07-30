@@ -14,6 +14,7 @@ import com.cdweb.backend.repositories.*;
 import com.cdweb.backend.services.ICartItemService;
 import com.cdweb.backend.services.IUsersService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements IUsersService {
     private final UserRepository usersRepository;
 
@@ -48,6 +50,8 @@ public class UserServiceImpl implements IUsersService {
     private final PasswordEncoder passwordEncoder;
 
     private final UserConverter userConverter;
+
+    private final ProductRepository productRepository;
 
     @Override
     public UserResponse getUser(Long id) {
@@ -128,17 +132,32 @@ public class UserServiceImpl implements IUsersService {
         order.setUser(user);
         Orders newEntity = orderRepository.save(order);
         List<OrderItemResponse> orderItems = orderItemService.saveOrderItemList(newEntity, orderRequest.getOrderItems());
-        orderItems.forEach(orderItem -> {
-            ProductCombinations productCombinations = productCombinationRepository
-                    .findByProductIdAndProductVariantName(
-                            orderItem.getProductId(),
-                            orderItem.getProductCombination()
-                    );
-            productCombinations.setQuantity(productCombinations.getQuantity() - orderItem.getQuantity());
-            productCombinationRepository.save(productCombinations);
-        });
+        if(orderItems.size() > 0) {
+            orderItems.forEach(orderItem -> {
+                ProductCombinations productCombinations;
+                Products product = productRepository.findByIdAndIsActiveTrue(orderItem.getProductId());
+                if (orderItem.getProductCombination() != null) {
+                    productCombinations = productCombinationRepository
+                            .findByProductAndProductVariantNameAndIsActiveTrue(
+                                    product,
+                                    orderItem.getProductCombination()
+                            );
+                } else {
+                    productCombinations = productCombinationRepository.findByProductAndProductVariantNameIsNull(product);
+                }
+                log.info("VariantName {}", productCombinations.getProductVariantName());
+                if(productCombinations.getProductVariantName() == null) {
+                    product.setOriginalQuantity(product.getOriginalQuantity() - orderItem.getQuantity());
+                    productRepository.save(product);
+                } else {
+                    productCombinations.setQuantity(productCombinations.getQuantity() - orderItem.getQuantity());
+                    productCombinationRepository.save(productCombinations);
+                }
+            });
+        }
         return orderConverter.toResponse(newEntity, orderItems);
     }
+
 
     @Override
     public Boolean updateOrderStatus(Long orderId, String status) {

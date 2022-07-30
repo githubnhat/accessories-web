@@ -33,15 +33,15 @@ public interface ProductCombinationRepository extends JpaRepository<ProductCombi
     ProductCombinations findByProductId(@Param("product_id") Long productId);
 
 
-    @Query(value =
-            "SELECT pc.* " +
-            "FROM product_combinations as pc " +
-            "WHERE " +
-                "pc.product_id = :product_id " +
-                "and pc.product_variant_name = :p_var_name " +
-                "and pc.is_active = true",
-            nativeQuery = true)
-    ProductCombinations findByProductIdAndProductVariantName(@Param("product_id") Long id, @Param("p_var_name") String productVariantName);
+//    @Query(value =
+//            "SELECT pc.* " +
+//            "FROM product_combinations as pc " +
+//            "WHERE " +
+//                "pc.product_id = :product_id " +
+//                "and pc.product_variant_name = :p_var_name " +
+//                "and pc.is_active = true",
+//            nativeQuery = true)
+//    ProductCombinations findByProductIdAndProductVariantName(@Param("product_id") Long id, @Param("p_var_name") String productVariantName);
 
 
     @Query(value = "SELECT product_combinations.* FROM product_combinations " +
@@ -53,5 +53,9 @@ public interface ProductCombinationRepository extends JpaRepository<ProductCombi
     List<ProductCombinations> findByVariantIdAndProductVariantNameAndIsActiveTrue(@Param("variant_id") Long variantId,
                                                                                   @Param("variant_name") String variantName,
                                                                                   @Param("attribute_id") Long attributeId);
-    }
+
+    ProductCombinations findByProductAndProductVariantNameIsNull(Products product);
+
+    ProductCombinations findByProductAndProductVariantNameAndIsActiveTrue(Products product, String productCombination);
+}
 
