@@ -45,4 +45,6 @@ public interface IUsersService {
     UserResponse saveNewAccount(UserRequest request);
 
     boolean delete(Long[] ids, Long id);
+
+    OrderResponse getOrderDetail(Long orderId);
 }

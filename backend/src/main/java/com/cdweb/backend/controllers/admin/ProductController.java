@@ -66,6 +66,14 @@ public class ProductController {
                         : new ResponseObject("Success", "Insert Product Successfully", response));
     }
 
+    @GetMapping("/{id}")
+    ResponseEntity<?> getProductDetails( @PathVariable("id") Long id) {
+        ProductResponse response = productService.findByProductIdAdmin(id);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                response == null ? new ResponseObject("Failed", "Not found!", "")
+                        : new ResponseObject("Success", null, response));
+    }
+
     @PutMapping("/{id}")
     ResponseEntity<?> updateProduct(@RequestBody ProductRequest request, @PathVariable("id") Long id) {
         request.setId(id);

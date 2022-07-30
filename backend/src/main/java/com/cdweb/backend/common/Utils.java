@@ -10,15 +10,15 @@ import java.util.regex.Pattern;
 
 public class Utils {
     public static String removeAccent(String s) {
-       if(s != null){
+        if (s != null) {
             String temp = s.trim().toLowerCase();
             temp = Normalizer.normalize(temp, Normalizer.Form.NFD);
             Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
             temp = pattern.matcher(temp).replaceAll("");
             return temp.replaceAll("đ", "d");
         } else {
-           return null;
-       }
+            return null;
+        }
     }
 
     public static String transNameToCode(String s) {
@@ -28,11 +28,10 @@ public class Utils {
     }
 
     public static String formatNumber(Double d) {
-        Locale locale  = new Locale("vi" , "VN");
+        Locale locale = new Locale("vi", "VN");
         String pattern = "###,###.###";
 
-        DecimalFormat decimalFormat = (DecimalFormat)
-                NumberFormat.getNumberInstance(locale);
+        DecimalFormat decimalFormat = (DecimalFormat) NumberFormat.getNumberInstance(locale);
         decimalFormat.applyPattern(pattern);
 
         String format = decimalFormat.format(d);
@@ -40,10 +39,11 @@ public class Utils {
     }
 
     public static String getUniqueStringId(String productVariantName) {
-        if (productVariantName != null){
+        if (productVariantName != null) {
             String[] list = removeAccent(productVariantName).split("-");
             String str1 = "";
             for (String str : list) {
+                str = str.replaceAll("\\s+", "");
                 str1 = str1 + str;
             }
             char[] listChars = str1.toCharArray();
