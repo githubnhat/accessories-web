@@ -29,6 +29,6 @@ public class OrderItems extends BaseEntity {
     private Brands brands;
 
     @ManyToOne
-    @JoinColumn(name = "oder_id")
+    @JoinColumn(name = "order_id")
     private Orders order;
 }
