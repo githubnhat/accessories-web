@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // import router from '@/router';
 import axios from 'axios';
 
@@ -10,16 +11,45 @@ type Address = {
   phone: string;
 };
 
-type GetUsersResponse = {
-  data: Address;
+type GetAddressesResponse = {
+  data: Array<Address>;
 };
 
-// login into system
+// get all addresses of the current user
 
 export async function getAddresses() {
   try {
     const path = '/user/info/addresses';
-    const { data, status } = await axios.get<GetUsersResponse>(path, {
+    const { data, status } = await axios.get<GetAddressesResponse>(path, {
+      withCredentials: true,
+    });
+    console.log(JSON.stringify(data, null, 10));
+    // router.push('/');
+    // 👇️ response status is: 200
+    console.log('response status is: ', status);
+
+    return { data, status };
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log('error message: ', error.message);
+      return error.message;
+    } else {
+      console.log('unexpected error: ', error);
+      return 'An unexpected error occurred';
+    }
+  }
+}
+
+// add new address
+
+type GetAddressResponse = {
+  data: Address;
+};
+
+export async function insertAddress(dataForm: any) {
+  try {
+    const path = '/user/info/address';
+    const { data, status } = await axios.post<GetAddressResponse>(path, dataForm, {
       withCredentials: true,
     });
     console.log(JSON.stringify(data, null, 10));

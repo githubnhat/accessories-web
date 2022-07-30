@@ -55,7 +55,7 @@
               <v-row dense align-content="center" v-if="isAnotherAddress">
                 <v-col cols="3"> <h4 class="text-right pa-3">Thông tin giao hàng mới:</h4> </v-col>
                 <v-col cols="4">
-                  <validation-provider name="Địa chỉ" rules="required|min:15" v-slot="{ errors }">
+                  <validation-provider name="Địa chỉ" rules="required" v-slot="{ errors }">
                     <v-text-field
                       v-model="newAddress"
                       :disabled="!isAnotherAddress"
@@ -204,7 +204,7 @@
 
 <script>
 import router from '@/router';
-import { getAddresses } from '@/services/user/accounts';
+import { getAddresses, insertAddress } from '@/services/user/accounts';
 import { toPriceValue, toPriceString } from '@/utils/index';
 import { insertOrder } from '@/services/user/orders';
 export default {
@@ -262,6 +262,21 @@ export default {
 
       const addressPayload = this.isAnotherAddress ? this.newAddress : this.selectedAddress.address;
       const phonePayload = this.isAnotherAddress ? this.newPhone : this.selectedAddress.phone;
+
+      try {
+        const addressRequest = {
+          address: this.addressPayload,
+          phone: this.phonePayload,
+          isMainAddress: this.isMainAddress,
+        };
+        const addressResponse = await insertAddress(addressRequest);
+        console.log('address process', addressResponse);
+      } catch (error) {
+        console.log('error: ' + error);
+        alert('Lỗi hệ thống! Vui lòng thử lại...');
+        return;
+      }
+
       const orderItemsPayload = this.checkoutItems.map((item) => ({
         productId: item.productId,
         price: parseFloat(toPriceValue(item.priceDiscount)),
