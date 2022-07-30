@@ -412,4 +412,44 @@ public class ProductServiceImpl implements IProductService {
         return response;
     }
 
+    @Override
+    public ProductResponse findByProductIdAdmin(Long id) {
+        Products entity = productRepository.findByIdAndIsActiveTrue(id);
+        if (entity != null) {
+            List<ThumbnailResponse> productThumbnails = productGalleryService.findByProductAndIsActiveTrue(entity);
+            List<String> imageLinks = new ArrayList<>();
+            productThumbnails.forEach(p -> imageLinks.add(p.getImageLink()));
+            List<AttributeResponse> attributes = attributeService.findByProductIdAndIsActive(entity.getId());
+            List<AttributeAndVariantsResponse> attrAndVarRs = new ArrayList<>();
+            attributes.forEach(a -> {
+                List<String> variants = variantService.findByProductIdAndIsActive(entity.getId(), a.getId())
+                        .stream().map(VariantResponse::getVariantName).collect(Collectors.toList());
+                AttributeAndVariantsResponse attrAndVar = AttributeAndVariantsResponse.builder()
+                        .attributeId(a.getId())
+                        .attributeName(a.getAttributeName())
+                        .variantNames(variants)
+                        .build();
+                attrAndVarRs.add(attrAndVar);
+            });
+            Categories category = categoryRepository.findByIdAndIsActiveTrue(entity.getCategories().getId());
+            Brands brand = brandRepository.findByIdAndIsActiveTrue(entity.getBrands().getId());
+            List<ProductCombinationResponse> proComRs = productCombinationService.findByProductAndIsActiveTrue(entity);
+            ProductResponse product = ProductResponse.builder()
+                    .id(entity.getId())
+                    .productName(entity.getProductName())
+                    .description(entity.getDescription())
+                    .originalPrice("₫" + Utils.formatNumber(entity.getOriginalPrice()))
+                    .originalQuantity(entity.getOriginalQuantity())
+                    .discount(entity.getDiscount())
+                    .attributeAndVariants(attrAndVarRs)
+                    .combinations(proComRs)
+                    .imageLinks(imageLinks)
+                    .categoryName(category.getName())
+                    .brandName(brand.getName())
+                    .build();
+            return product;
+        }
+        return null;
+    }
+
 }

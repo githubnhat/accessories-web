@@ -32,4 +32,6 @@ public interface IProductService {
 
 
     List<ProductResponse> findAllByBrandCodeForUser(String code, Pageable pageable);
+
+    ProductResponse findByProductIdAdmin(Long id);
 }

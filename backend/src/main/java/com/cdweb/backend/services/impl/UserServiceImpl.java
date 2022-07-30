@@ -39,6 +39,8 @@ public class UserServiceImpl implements IUsersService {
 
     private final OrderConverter orderConverter;
 
+    private final OrderItemRepository orderItemRepository;
+
     private final OrderItemConverter orderItemConverter;
 
     private final ICartItemService cartItemService;
@@ -106,7 +108,8 @@ public class UserServiceImpl implements IUsersService {
     @Override
     public Boolean deleteAddress(Long id, Users user) {
         boolean exists = true;
-        if (!addressRepository.existsById(id)) exists = false;
+        if (!addressRepository.existsById(id))
+            exists = false;
         addressRepository.deleteById(id);
         return exists;
     }
@@ -117,7 +120,8 @@ public class UserServiceImpl implements IUsersService {
         List<Orders> entities = orderRepository.findByUserOrderByModifiedDateDesc(user, pageable).getContent();
         if (entities.size() > 0) {
             entities.forEach(entity -> {
-                List<OrderItemResponse> orderItemResponses = orderItemService.findByOrderAndOrderByModifiedDateDesc(entity);
+                List<OrderItemResponse> orderItemResponses = orderItemService
+                        .findByOrderAndOrderByModifiedDateDesc(entity);
                 OrderResponse response = orderConverter.toResponse(entity, orderItemResponses);
                 responses.add(response);
             });
@@ -131,7 +135,8 @@ public class UserServiceImpl implements IUsersService {
         order.setStatus("Chờ xác nhận");
         order.setUser(user);
         Orders newEntity = orderRepository.save(order);
-        List<OrderItemResponse> orderItems = orderItemService.saveOrderItemList(newEntity, orderRequest.getOrderItems());
+        List<OrderItemResponse> orderItems = orderItemService.saveOrderItemList(newEntity,
+                orderRequest.getOrderItems());
         if (orderItems.size() > 0) {
             orderItems.forEach(orderItem -> {
                 ProductCombinations productCombinations;
@@ -139,10 +144,8 @@ public class UserServiceImpl implements IUsersService {
                 productCombinations = productCombinationRepository
                         .findByProductAndProductVariantNameAndIsActiveTrue(
                                 product,
-                                orderItem.getProductCombination()
-                        );
+                                orderItem.getProductCombination());
 
-                log.info("VariantName {}", productCombinations.getProductVariantName());
                 if (productCombinations.getProductVariantName() == null) {
                     product.setOriginalQuantity(product.getOriginalQuantity() - orderItem.getQuantity());
                     productRepository.save(product);
@@ -155,10 +158,9 @@ public class UserServiceImpl implements IUsersService {
         return orderConverter.toResponse(newEntity, orderItems);
     }
 
-
     @Override
     public Boolean updateOrderStatus(Long orderId, String status) {
-        Orders order = orderRepository.findById(orderId).orElseGet(null);
+        Orders order = orderRepository.findById(orderId).get();
         if (order != null) {
             order.setStatus(status);
             orderRepository.save(order);
@@ -251,7 +253,7 @@ public class UserServiceImpl implements IUsersService {
             throw new IllegalArgumentException("Username already exists!");
         }
         Roles role = rolesRepository.findByRoleCode(request.getRoleCode());
-        //save
+        // save
         Users userEntity = Users.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -286,5 +288,19 @@ public class UserServiceImpl implements IUsersService {
         return exists;
     }
 
+    @Override
+    public OrderResponse getOrderDetail(Long orderId) {
+        Orders orders = orderRepository.findById(orderId).get();
+        if (orders != null) {
+            List<OrderItems> orderItemsList = orderItemRepository.findByOrder_Id(orderId);
+            List<OrderItemResponse> orderItemsResponse = new ArrayList<>();
+            orderItemsList.forEach(e -> {
+                orderItemsResponse.add(orderItemConverter.toResponse(e));
+            });
+            OrderResponse response = orderConverter.toResponse(orders, orderItemsResponse);
+            return response;
+        }
+        return null;
+    }
 
 }

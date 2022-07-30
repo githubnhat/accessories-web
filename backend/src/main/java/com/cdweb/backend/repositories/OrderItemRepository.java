@@ -8,4 +8,7 @@ import java.util.List;
 
 public interface OrderItemRepository extends JpaRepository<OrderItems, Long> {
     List<OrderItems> findByOrderOrderByModifiedDateDesc(Orders order);
+
+
+    List<OrderItems> findByOrder_Id(Long orderId);
 }

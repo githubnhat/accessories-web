@@ -103,6 +103,15 @@ public class UserController {
                         : new ResponseObject("Success", "Have no order", null));
     }
 
+    @GetMapping("/orders/{id}")
+    ResponseEntity<?> getOrderDetail( @PathVariable("id") Long orderId) {
+        OrderResponse response = userService.getOrderDetail(orderId);
+        return  ResponseEntity.status(HttpStatus.OK).body(
+                (response != null)
+                        ? new ResponseObject("Success", null, response)
+                        : new ResponseObject("Success", "Not found order", null));
+    }
+
         private Users getUserFromRequest(HttpServletRequest httpRequest) {
         String authorizationHeader = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
         String token = authorizationHeader.substring(Constant.BEARER.length());
