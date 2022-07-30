@@ -26,9 +26,14 @@ const routes: Array<RouteConfig> = [
     component: () => import(/* webpackChunkName: "login" */ '@/pages/Login.vue'),
   },
   {
-    path: '/all',
-    name: 'all',
-    component: () => import(/* webpackChunkName: "all" */ '@/pages/AllProductView.vue'),
+    path: '/brand/:code',
+    name: 'brand',
+    component: () => import(/* webpackChunkName: "all" */ '@/pages/ProductsShow.vue'),
+  },
+  {
+    path: '/category/:code',
+    name: 'category',
+    component: () => import(/* webpackChunkName: "all" */ '@/pages/ProductsShow.vue'),
   },
   {
     path: '/profile',

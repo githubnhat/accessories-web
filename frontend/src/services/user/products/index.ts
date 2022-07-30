@@ -2,15 +2,15 @@
 // import router from '@/router';
 import axios from 'axios';
 
-type AttributeAndVariants ={
-  attributeId: number,
-  attributeName: string,
-  variantNames: VariantNames,
-}
+type AttributeAndVariants = {
+  attributeId: number;
+  attributeName: string;
+  variantNames: VariantNames;
+};
 
 type VariantNames = {
-  variantNames: Array<string>
-}
+  variantNames: Array<string>;
+};
 
 type Product = {
   id: string;
@@ -39,7 +39,7 @@ type GetProductsResponse = {
 
 export async function getHomePageProduct() {
   try {
-    const path = '/user/product/no-token/page/1/limit/12 ';
+    const path = '/user/product/no-token/page/1/limit/12';
     const { data, status } = await axios.get<GetProductsResponse>(path, {
       withCredentials: true,
     });
@@ -56,12 +56,12 @@ export async function getHomePageProduct() {
   }
 }
 type GetProductDetailResponse = {
-  data: Product
+  data: Product;
 };
 export async function getProductDetail(id: number) {
   try {
-    const path =`/user/product/no-token/${id}`;
-    const { data, status } = await axios.get<GetProductDetailResponse>(path, {
+    const path = `/user/product/no-token/${id}`;
+    const { data } = await axios.get<GetProductDetailResponse>(path, {
       withCredentials: true,
     });
     return data?.data;
@@ -77,21 +77,65 @@ export async function getProductDetail(id: number) {
 }
 
 type ProductCombination = {
-        price: string,
-        quantity: number
-}
+  price: string;
+  quantity: number;
+};
 
 type GetProductCombinationResponse = {
-  data: ProductCombination
-}
+  data: ProductCombination;
+};
 
-export async function getProductCombination (dataForm: object) {
+export async function getProductCombination(dataForm: object) {
   try {
-    const path =`/user/product/no-token/productCombination`;
+    const path = `/user/product/no-token/productCombination`;
     const { data, status } = await axios.post<GetProductCombinationResponse>(path, dataForm, {
       withCredentials: true,
     });
     console.log('combination: ', data?.data);
+    console.log('response status is: ', status);
+    return data?.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log('error message: ', error.message);
+      return error.message;
+    } else {
+      console.log('unexpected error: ', error);
+      return 'An unexpected error occurred';
+    }
+  }
+}
+
+// get product by category code
+
+export async function getProductByCategory(page: number, limit: number, categoryCode: string) {
+  try {
+    const path = `/user/product/no-token/page/${page}/limit/${limit}/category/${categoryCode}`;
+    const { data, status } = await axios.get<GetProductsResponse>(path, {
+      withCredentials: true,
+    });
+    console.log('product: ', data?.data);
+    console.log('response status is: ', status);
+    return data?.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log('error message: ', error.message);
+      return error.message;
+    } else {
+      console.log('unexpected error: ', error);
+      return 'An unexpected error occurred';
+    }
+  }
+}
+
+// get product by category code
+
+export async function getProductByBrand(page: number, limit: number, brandCode: string) {
+  try {
+    const path = `/user/product/no-token/page/${page}/limit/${limit}/brand/${brandCode}`;
+    const { data, status } = await axios.get<GetProductsResponse>(path, {
+      withCredentials: true,
+    });
+    console.log('product: ', data?.data);
     console.log('response status is: ', status);
     return data?.data;
   } catch (error) {
