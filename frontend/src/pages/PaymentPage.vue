@@ -263,20 +263,21 @@ export default {
       const addressPayload = this.isAnotherAddress ? this.newAddress : this.selectedAddress.address;
       const phonePayload = this.isAnotherAddress ? this.newPhone : this.selectedAddress.phone;
 
-      try {
-        const addressRequest = {
-          address: this.addressPayload,
-          phone: this.phonePayload,
-          isMainAddress: this.isMainAddress,
-        };
-        const addressResponse = await insertAddress(addressRequest);
-        console.log('address process', addressResponse);
-      } catch (error) {
-        console.log('error: ' + error);
-        alert('Lỗi hệ thống! Vui lòng thử lại...');
-        return;
+      if (this.isAnotherAddress) {
+        try {
+          const addressRequest = {
+            address: addressPayload,
+            phone: phonePayload,
+            isMainAddress: this.isMainAddress,
+          };
+          const addressResponse = await insertAddress(addressRequest);
+          console.log('address process', addressResponse);
+        } catch (error) {
+          console.log('error: ' + error);
+          alert('Lỗi hệ thống! Vui lòng thử lại...');
+          return;
+        }
       }
-
       const orderItemsPayload = this.checkoutItems.map((item) => ({
         productId: item.productId,
         price: parseFloat(toPriceValue(item.priceDiscount)),
@@ -295,6 +296,7 @@ export default {
         this.orderResponse = await insertOrder(this.payload);
 
         alert('Đặt hàng thành công!');
+        this.goToHome();
       } catch (error) {
         console.log('error: ' + error);
         alert('Lỗi hệ thống! Vui lòng thử lại...');
