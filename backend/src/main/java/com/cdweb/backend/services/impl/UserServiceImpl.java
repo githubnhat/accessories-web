@@ -132,21 +132,18 @@ public class UserServiceImpl implements IUsersService {
         order.setUser(user);
         Orders newEntity = orderRepository.save(order);
         List<OrderItemResponse> orderItems = orderItemService.saveOrderItemList(newEntity, orderRequest.getOrderItems());
-        if(orderItems.size() > 0) {
+        if (orderItems.size() > 0) {
             orderItems.forEach(orderItem -> {
                 ProductCombinations productCombinations;
                 Products product = productRepository.findByIdAndIsActiveTrue(orderItem.getProductId());
-                if (orderItem.getProductCombination() != null) {
-                    productCombinations = productCombinationRepository
-                            .findByProductAndProductVariantNameAndIsActiveTrue(
-                                    product,
-                                    orderItem.getProductCombination()
-                            );
-                } else {
-                    productCombinations = productCombinationRepository.findByProductAndProductVariantNameIsNull(product);
-                }
+                productCombinations = productCombinationRepository
+                        .findByProductAndProductVariantNameAndIsActiveTrue(
+                                product,
+                                orderItem.getProductCombination()
+                        );
+
                 log.info("VariantName {}", productCombinations.getProductVariantName());
-                if(productCombinations.getProductVariantName() == null) {
+                if (productCombinations.getProductVariantName() == null) {
                     product.setOriginalQuantity(product.getOriginalQuantity() - orderItem.getQuantity());
                     productRepository.save(product);
                 } else {
@@ -213,7 +210,7 @@ public class UserServiceImpl implements IUsersService {
     @Override
     public UserResponse update(RegistrationRequest request, Long id) {
         Users user = usersRepository.findByIdAndIsActiveTrue(id);
-        if(user != null){
+        if (user != null) {
             user.setFullName(request.getFullName());
             user.setGmail(request.getGmail());
             user.setThumbnail(request.getThumbnail());
@@ -230,7 +227,7 @@ public class UserServiceImpl implements IUsersService {
     @Override
     public UserResponse update(UserRequest request) {
         Users user = usersRepository.findByIdAndIsActiveTrue(request.getId());
-        if (user != null){
+        if (user != null) {
             user.setFullName(request.getFullName());
             user.setGmail(request.getGmail());
             Roles role = rolesRepository.findByRoleCode(request.getRoleCode());
@@ -273,7 +270,7 @@ public class UserServiceImpl implements IUsersService {
     public boolean delete(Long[] ids, Long id) {
         boolean exists = true;
         for (Long i : ids) {
-            if (i==id) {
+            if (i == id) {
                 throw new IllegalArgumentException("Không thể xoá tài khoản của mình!");
             } else if (!usersRepository.existsByIdAndIsActiveTrue(i)) {
                 exists = false;
