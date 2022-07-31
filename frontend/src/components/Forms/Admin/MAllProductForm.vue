@@ -263,9 +263,13 @@ export default {
     },
 
     editItem(item) {
-      this.editedIndex = this.data.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
+      const productId = item?.id;
+      this.$router.push({
+        name: 'update-product',
+        params: {
+          id: productId,
+        },
+      });
     },
 
     deleteItem(item) {
@@ -316,5 +320,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>
