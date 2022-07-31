@@ -198,9 +198,7 @@ public class ProductServiceImpl implements IProductService {
     public ProductResponse findByProductId(Long productId) {
         Products entity = productRepository.findByIdAndIsActiveTrue(productId);
         if (entity != null) {
-            List<ThumbnailResponse> productThumbnails = productGalleryService.findByProductAndIsActiveTrue(entity);
-            List<String> imageLinks = new ArrayList<>();
-            productThumbnails.forEach(p -> imageLinks.add(p.getImageLink()));
+            List<String> imageLinks = getProductThumbnail(entity);
             List<AttributeResponse> attributes = attributeService.findByProductIdAndIsActive(entity.getId());
             List<AttributeAndVariantsResponse> attrAndVarRs = new ArrayList<>();
             attributes.forEach(a -> {
@@ -363,14 +361,10 @@ public class ProductServiceImpl implements IProductService {
         if (entities.size() > 0) {
             entities.forEach(entity -> {
                 if (entity.isActive()) {
-                    List<ThumbnailResponse> productThumbnails = productGalleryService
-                            .findByProductAndIsActiveTrue(entity);
-                    List<String> imageLinks = new ArrayList<>();
-                    productThumbnails.forEach(p -> imageLinks.add(p.getImageLink()));
+                    List<String> imageLinks = getProductThumbnail(entity);
                     ProductResponse product = ProductResponse.builder()
                             .id(entity.getId())
                             .productName(entity.getProductName())
-                            // .description(entity.getDescription())
                             .originalPrice("₫" + Utils.formatNumber(entity.getOriginalPrice()))
                             .originalQuantity(entity.getOriginalQuantity())
                             .discount(entity.getDiscount())
@@ -416,9 +410,7 @@ public class ProductServiceImpl implements IProductService {
     public ProductResponse findByProductIdAdmin(Long id) {
         Products entity = productRepository.findByIdAndIsActiveTrue(id);
         if (entity != null) {
-            List<ThumbnailResponse> productThumbnails = productGalleryService.findByProductAndIsActiveTrue(entity);
-            List<String> imageLinks = new ArrayList<>();
-            productThumbnails.forEach(p -> imageLinks.add(p.getImageLink()));
+            List<String> imageLinks = getProductThumbnail(entity);
             List<AttributeResponse> attributes = attributeService.findByProductIdAndIsActive(entity.getId());
             List<AttributeAndVariantsResponse> attrAndVarRs = new ArrayList<>();
             attributes.forEach(a -> {
@@ -450,6 +442,39 @@ public class ProductServiceImpl implements IProductService {
             return product;
         }
         return null;
+    }
+
+    @Override
+    public List<ProductResponse> searchProducts(String keyword, Pageable pageable) {
+        List<ProductResponse> responses = new ArrayList<>();
+        List<Products> entities = productRepository
+                .findByProductNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+                        keyword, keyword, pageable).getContent();
+        if(!entities.isEmpty()){
+            entities.forEach(e -> {
+                List<String> imageLinks = getProductThumbnail(e);
+                ProductResponse response = productConverter.toResponse(e);
+                response.setImageLinks(imageLinks);
+                responses.add(response);
+            });
+            return responses;
+        }
+        return null;
+    }
+
+    @Override
+    public int totalItemSearch(String keyword, String keyword1) {
+        log.info("check {}", keyword);
+        keyword = String.valueOf(keyword);
+        return productRepository.countByProductNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+                keyword, keyword1);
+    }
+
+    private List<String> getProductThumbnail(Products entity) {
+        List<ThumbnailResponse> productThumbnails = productGalleryService.findByProductAndIsActiveTrue(entity);
+        List<String> imageLinks = new ArrayList<>();
+        productThumbnails.forEach(p -> imageLinks.add(p.getImageLink()));
+        return imageLinks;
     }
 
 }

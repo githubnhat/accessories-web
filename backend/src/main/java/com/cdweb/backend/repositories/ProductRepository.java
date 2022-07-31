@@ -25,13 +25,21 @@ public interface ProductRepository extends JpaRepository<Products, Long> {
     
     long countByIsActiveTrue();
 
-    @Query(value = "select p.* from products p join product_attributes pa on p.id = pa.product_id " +
-            "join product_attribute_variants pav on pa.id = pav.product_attribute_id" +
-            " join variants v on v.id = pav.variant_id " +
-            "where v.id = :variant_id", nativeQuery = true)
-    List<Products> findByVariantIdAndIsActive(@Param("variant_id") Long variantId);
+    int countByProductNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String productName,
+                                                                                String description);
+
+//    @Query(value = "select p.* from products p join product_attributes pa on p.id = pa.product_id " +
+//            "join product_attribute_variants pav on pa.id = pav.product_attribute_id" +
+//            " join variants v on v.id = pav.variant_id " +
+//            "where v.id = :variant_id", nativeQuery = true)
+//    List<Products> findByVariantIdAndIsActive(@Param("variant_id") Long variantId);
 
     List<Products> findByCategoriesAndIsActiveTrue(Categories category, Pageable pageable);
 
     List<Products> findByBrandsAndIsActiveTrue(Brands brand, Pageable pageable);
+
+    Page<Products> findByProductNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+            String productName,
+            String description,
+            Pageable pageable);
 }
