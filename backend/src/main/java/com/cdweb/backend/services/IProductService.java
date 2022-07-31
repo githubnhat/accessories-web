@@ -3,6 +3,7 @@ package com.cdweb.backend.services;
 
 import com.cdweb.backend.entities.Products;
 import com.cdweb.backend.payloads.requests.ProductRequest;
+import com.cdweb.backend.payloads.responses.OrderResponse;
 import com.cdweb.backend.payloads.responses.ProductResponse;
 import com.cdweb.backend.repositories.ProductRepository;
 import org.springframework.data.domain.Pageable;
@@ -34,4 +35,8 @@ public interface IProductService {
     List<ProductResponse> findAllByBrandCodeForUser(String code, Pageable pageable);
 
     ProductResponse findByProductIdAdmin(Long id);
+
+    List<ProductResponse> searchProducts(String keyword, Pageable pageable);
+
+    int totalItemSearch(String keyword, String keyword1);
 }
