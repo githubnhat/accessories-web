@@ -80,3 +80,28 @@ export async function getAllOrders(page: number, itemPerPage: number) {
     }
   }
 }
+
+// get infor of a order by id
+
+export async function getInforOrder(orderId: number) {
+  try {
+    const path = `/user/info/orders/${orderId}`;
+    const { data, status } = await axios.get<GetOrderResponse>(path, {
+      withCredentials: true,
+    });
+    // console.log(JSON.stringify(data, null, 10));
+
+    // 👇️ "response status is: 200"
+    console.log('response status is: ', status);
+
+    return { data, status };
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log('error message: ', error.message);
+      return error.message;
+    } else {
+      console.log('unexpected error: ', error);
+      return 'An unexpected error occurred';
+    }
+  }
+}
