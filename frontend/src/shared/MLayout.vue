@@ -3,7 +3,7 @@
     <div class="m-layout">
       <m-header />
       <div class="m-layout-container">
-        <v-container class="mt-10" fluid>
+        <v-container class="main-content mt-10" fluid>
           <slot />
         </v-container>
       </div>
@@ -24,6 +24,9 @@ export default {
 </script>
 
 <style scoped>
+.main-content {
+  height: 100vh;
+}
 .scrollable {
   overflow-y: scroll;
 }
