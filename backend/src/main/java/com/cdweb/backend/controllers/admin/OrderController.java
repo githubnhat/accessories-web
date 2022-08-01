@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-@RestController(value="categoriesControllerOfAdmin")
+@RestController(value="orderControllerOfAdmin")
 @RequestMapping("/api/v1/admin/order")
 @RequiredArgsConstructor
 @Slf4j
