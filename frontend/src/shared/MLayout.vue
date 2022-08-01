@@ -3,7 +3,7 @@
     <div class="m-layout">
       <m-header />
       <div class="m-layout-container">
-        <v-container class="main-content mt-10" fluid>
+        <v-container class="main-content my-10" fluid>
           <slot />
         </v-container>
       </div>
@@ -33,5 +33,6 @@ export default {
 .m-layout-container {
   background: #eceff1;
   min-height: 100%;
+  padding-bottom: 600px;
 }
 </style>

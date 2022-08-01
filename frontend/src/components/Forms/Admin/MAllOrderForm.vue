@@ -52,7 +52,7 @@
                           ></v-text-field>
                         </validation-provider>
                       </v-col>
-                      <v-col cols="4">
+                      <v-col cols="2">
                         <validation-provider
                           name="Số điện thoại"
                           rules="required|min:10|numeric"
@@ -67,9 +67,7 @@
                           ></v-text-field>
                         </validation-provider>
                       </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="6">
+                      <v-col cols="2">
                         <v-select
                           :items="statusList"
                           item-text="name"
@@ -80,6 +78,7 @@
                         ></v-select>
                       </v-col>
                     </v-row>
+                    <v-row> </v-row>
                     <v-list-item
                       class="mb-5 white"
                       v-for="(product, index) in selectedOrder.orderItems"
@@ -98,7 +97,7 @@
                           <v-col class="ma-auto">
                             <v-list-item>
                               <img
-                                :src="product.thumbnail"
+                                :src="product.imageLink"
                                 class="img-thumbnail mt-2 mb-2"
                                 height="100px"
                               /> </v-list-item

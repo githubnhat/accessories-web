@@ -52,7 +52,7 @@ public class OrderItemServiceImpl implements IOrderItemService {
             requests.forEach(item ->{
                 OrderItems newEntity = orderItemConverter.toEntity(item);
                 Products product = productRepository.findByIdAndIsActiveTrue(item.getProductId());
-                newEntity.setDescription(product.getDescription());
+                newEntity.setDescription("");
                 newEntity.setProductName(product.getProductName());
                 newEntity.setCategories(product.getCategories());
                 newEntity.setBrands(product.getBrands());

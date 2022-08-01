@@ -67,7 +67,7 @@
                       <v-col class="ma-auto">
                         <v-list-item>
                           <img
-                            :src="product.thumbnail"
+                            :src="product.imageLink"
                             class="img-thumbnail mt-2 mb-2"
                             height="100px"
                           /> </v-list-item

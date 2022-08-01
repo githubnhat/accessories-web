@@ -21,6 +21,7 @@ type OrderItem = {
   quantity: string;
   discount: string;
   brand: string;
+  imageLink: string;
   category: string;
 };
 

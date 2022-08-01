@@ -24,6 +24,8 @@ type SortRequest = {
     discount: string;
     brand: string;
     category: string;
+    imageLink: string
+
   };
   
   type GetOrderResponse = {

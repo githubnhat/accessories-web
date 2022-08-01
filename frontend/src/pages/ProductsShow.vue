@@ -1,6 +1,7 @@
 <template>
   <m-layout>
-    <h1>{{ namePage }}{{ title }}</h1>
+    <m-slide-banners></m-slide-banners>
+    <h1 class="text-center">{{ title }}</h1>
 
     <v-card
       v-if="products.length > 0"
@@ -23,6 +24,7 @@
 </template>
 
 <script>
+import MSlideBanners from '@/components/Slide/MSlideBanners.vue';
 import MLayout from '@/shared/MLayout.vue';
 import ProductItem from '@/components/ProductItem/ProductItem.vue';
 
@@ -35,7 +37,7 @@ export default {
       title: '',
       code: '',
       page: 1,
-      itemPerPage: 10,
+      itemPerPage: 12,
       totalPage: 1,
     };
   },
@@ -82,6 +84,7 @@ export default {
   components: {
     MLayout,
     ProductItem,
+    MSlideBanners,
   },
 };
 </script>
