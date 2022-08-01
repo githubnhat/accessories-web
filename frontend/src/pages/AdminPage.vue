@@ -12,8 +12,8 @@ import MAllProductForm from '@/components/Forms/Admin/MAllProductForm.vue';
 import MAllCategoryForm from '@/components/Forms/Admin/MAllCategoryForm.vue';
 import MAllBrandForm from '@/components/Forms/Admin/MAllBrandForm.vue';
 import MAllAccountForm from '@/components/Forms/Admin/MAllAccountForm.vue';
+import MAllOrderForm from '@/components/Forms/Admin/MAllOrderForm.vue';
 import { ADMIN_MENU } from '@/utils/mocks';
-
 
 export default {
   data() {
@@ -64,6 +64,7 @@ export default {
     MAllCategoryForm,
     MAllBrandForm,
     MAllAccountForm,
+    MAllOrderForm,
   },
   created() {
     // authentication

@@ -11,6 +11,15 @@ export const VARIANTS = [
   },
 ];
 
+export const STATUS_ORDER = 
+  [
+   "Chờ xác nhận",
+   "Đã xác nhận",
+   "Đang giao hàng",
+   "Đã giao hàng"
+  ];
+  
+
 export const USER_MENU = [
   {
     action: 'mdi-account-tie',
