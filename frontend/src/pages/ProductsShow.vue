@@ -77,7 +77,6 @@ export default {
         this.products = data?.data;
         this.totalPage = data?.totalPages;
       }
-      console.log('products', this.products);
     },
   },
   components: {

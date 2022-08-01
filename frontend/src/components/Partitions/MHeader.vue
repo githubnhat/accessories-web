@@ -115,7 +115,6 @@ export default {
       });
     },
     handleSubmit() {
-      console.log('click');
       if (this.searchInput !== '') {
         const link = `/search/${this.searchInput}`;
         router.push(link);
