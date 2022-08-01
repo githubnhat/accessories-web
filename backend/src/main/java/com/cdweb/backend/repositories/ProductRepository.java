@@ -42,4 +42,12 @@ public interface ProductRepository extends JpaRepository<Products, Long> {
             String productName,
             String description,
             Pageable pageable);
+
+    long countByCategories_code(String code);
+
+    long countByBrands_code(String code);
+
+    long countByBrands(Brands brand);
+
+    long countByCategories(Categories category);
 }

@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 
-
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -41,12 +40,13 @@ public class AuthController {
             AuthResponse authResponse = authService.loginForUser(request);
             Users user = jwtService.getUserFromToken(authResponse.getAccessToken());
             String refresh_token = jwtService.generateRefreshToken(user, request.getIsRememberMe());
-            addRefreshTokenToCookie(response, refresh_token, jwtService.getRefreshTokenLifeTimeHours(request.getIsRememberMe()) * 60);
+            addRefreshTokenToCookie(response, refresh_token,
+                    jwtService.getRefreshTokenLifeTimeHours(request.getIsRememberMe()) * 60);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseObject("success", null, authResponse));
         } catch (IllegalArgumentException ex) {
-            log.error("API /login: {}", ex);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("fail", ex.getMessage(), null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseObject("fail", ex.getMessage(), null));
         }
     }
 
@@ -56,12 +56,13 @@ public class AuthController {
             AuthResponse authResponse = authService.loginForAdmin(request);
             Users user = jwtService.getUserFromToken(authResponse.getAccessToken());
             String refresh_token = jwtService.generateRefreshToken(user, request.getIsRememberMe());
-            addRefreshTokenToCookie(response, refresh_token, jwtService.getRefreshTokenLifeTimeHours(request.getIsRememberMe()) * 60);
+            addRefreshTokenToCookie(response, refresh_token,
+                    jwtService.getRefreshTokenLifeTimeHours(request.getIsRememberMe()) * 60);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseObject("success", null, authResponse));
         } catch (IllegalArgumentException ex) {
-            log.error("API /login: {}", ex);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("fail", ex.getMessage(), null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseObject("fail", ex.getMessage(), null));
         }
     }
 
@@ -71,14 +72,16 @@ public class AuthController {
             UserResponse userResponse = authService.register(request);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", null, userResponse));
         } catch (IllegalArgumentException ex) {
-            log.error("API /register: {}", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("Fail", ex.getMessage(), null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseObject("Fail", ex.getMessage(), null));
         } catch (MessagingException ex) {
             ex.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("Fail", ex.getMessage(), null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseObject("Fail", ex.getMessage(), null));
         } catch (UnsupportedEncodingException ex) {
             ex.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("Fail", ex.getMessage(), null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseObject("Fail", ex.getMessage(), null));
         }
     }
 
@@ -87,7 +90,6 @@ public class AuthController {
         addRefreshTokenToCookie(response, "", 0);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-
 
     @PostMapping("/confirm")
     public ResponseEntity<?> confirmOTP(@RequestBody ConfirmRequest request, HttpServletResponse response) {
@@ -99,15 +101,15 @@ public class AuthController {
             addRefreshTokenToCookie(response, refresh_token, jwtService.getRefreshTokenLifeTimeHours(false) * 60);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", null, authResponse));
         } catch (IllegalArgumentException ex) {
-            log.error("API /register: {}", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("Fail", ex.getMessage(), null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseObject("Fail", ex.getMessage(), null));
         }
     }
 
     @GetMapping("/refresh-token")
     public ResponseEntity<?> refreshToken(@CookieValue(value = "refresh_token", required = false) String tokenCookie) {
         if (tokenCookie == null || jwtService.isNoneValidRefreshToken(tokenCookie)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                     new ResponseObject("Fail", "Refresh token đã hết hạn!", null));
         } else {
             Users user = jwtService.getUserFromToken(tokenCookie);
@@ -143,23 +145,23 @@ public class AuthController {
     public ResponseEntity<?> getInfor(HttpServletRequest request) {
         Users user = this.getUserFromRequest(request);
         UserResponse response = usersService.getUser(user.getId());
-        return response != null ?
-                ResponseEntity.status(HttpStatus.OK)
-                        .body(new ResponseObject("Success", null, response)) :
-                ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        return response != null ? ResponseEntity.status(HttpStatus.OK)
+                .body(new ResponseObject("Success", null, response))
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new ResponseObject("Failed", null, null));
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateInformation( @RequestBody RegistrationRequest request, HttpServletRequest httpRequest) {
+    public ResponseEntity<?> updateInformation(@RequestBody RegistrationRequest request,
+            HttpServletRequest httpRequest) {
         Users user = this.getUserFromRequest(httpRequest);
         UserResponse response = usersService.update(request, user.getId());
-        return response != null ?
-                ResponseEntity.status(HttpStatus.OK)
-                        .body(new ResponseObject("Success", null, response)) :
-                ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        return response != null ? ResponseEntity.status(HttpStatus.OK)
+                .body(new ResponseObject("Success", null, response))
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new ResponseObject("Failed", null, null));
     }
+
     private Users getUserFromRequest(HttpServletRequest httpRequest) {
         String authorizationHeader = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
         String token = authorizationHeader.substring(Constant.BEARER.length());
