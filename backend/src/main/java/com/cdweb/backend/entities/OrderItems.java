@@ -20,6 +20,7 @@ public class OrderItems extends BaseEntity {
     private String productCombination;
     private int quantity;
     private int discount;
+    private String imageLink;
     @ManyToOne
     @JoinColumn(name = "categories_id")
     private Categories categories;

@@ -10,6 +10,7 @@ import com.cdweb.backend.payloads.responses.ProductCombinationResponse;
 import com.cdweb.backend.payloads.responses.ProductResponse;
 import com.cdweb.backend.repositories.OrderItemRepository;
 import com.cdweb.backend.repositories.ProductRepository;
+import com.cdweb.backend.repositories.ThumbnailRepository;
 import com.cdweb.backend.services.ICartItemService;
 import com.cdweb.backend.services.IOrderItemService;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,8 @@ public class OrderItemServiceImpl implements IOrderItemService {
     private final ProductServiceImpl productService;
     private final OrderItemRepository orderItemRepository;
     private final OrderItemConverter orderItemConverter;
+    private final ThumbnailRepository thumbnailRepository;
+
 
     private final ICartItemService cartItemService;
     @Override
@@ -53,6 +56,10 @@ public class OrderItemServiceImpl implements IOrderItemService {
                 newEntity.setProductName(product.getProductName());
                 newEntity.setCategories(product.getCategories());
                 newEntity.setBrands(product.getBrands());
+
+                List<Thumbnails> thumbnails = thumbnailRepository.findByProductAndIsActiveTrue(product);
+                newEntity.setImageLink((thumbnails.size() == 0 ? null : thumbnails.get(0).getImageLink()));
+
                 newEntity.setOrder(order);
 
                 orderItemRepository.save(newEntity);
