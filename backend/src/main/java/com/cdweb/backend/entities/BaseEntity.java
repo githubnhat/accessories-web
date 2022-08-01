@@ -17,7 +17,7 @@ import java.util.Date;
 public abstract class BaseEntity {
     @Id
     @GeneratedValue(
-            strategy = GenerationType.IDENTITY
+            strategy = GenerationType.IDENTITY, generator = "sequence"
     )
     @Column(columnDefinition = "serial")
     protected Long id;

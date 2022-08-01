@@ -2,6 +2,7 @@ package com.cdweb.backend.entities;
 
 import lombok.*;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -13,6 +14,7 @@ import javax.persistence.ManyToOne;
 @Getter
 @Setter
 public class Thumbnails extends BaseEntity {
+    @Column(columnDefinition = "TEXT")
     private String imageLink;
     private boolean isActive;
     @ManyToOne

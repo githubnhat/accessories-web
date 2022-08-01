@@ -19,23 +19,6 @@
         showCurrentPage: true,
       }"
     >
-      <template v-slot:top="{ items }">
-        <div class="pa-4">
-          <v-badge
-            :content="items.length"
-            class="mr-3"
-            :value="items.length"
-            color="primary"
-            overlap
-          >
-            <v-chip color="primary" label outlined large> Tổng đơn </v-chip>
-          </v-badge>
-
-          <v-badge :content="totalPendingOrder" :value="totalPendingOrder" color="primary" overlap>
-            <v-chip color="info" label outlined large> Chờ xác nhận </v-chip>
-          </v-badge>
-        </div>
-      </template>
       <template v-slot:[`item.actions`]="{ item }">
         <v-icon small class="mr-2" @click="openInfoDialog(item)"> mdi-information </v-icon>
       </template>
@@ -54,6 +37,9 @@
               <v-card-text>
                 <v-row no-gutters dense>
                   <v-col cols="12">
+                    <v-row>
+                      <v-col cols="12">Tên khách hàng: {{ selectedOrder.customerName }}</v-col>
+                    </v-row>
                     <v-row>
                       <v-col cols="8">
                         <validation-provider name="Địa chỉ" rules="required" v-slot="{ errors }">
@@ -171,7 +157,7 @@
   </div>
 </template>
 <script>
-import { getAllOrder, getInforOrder, updateOrder } from '@/services/user/orders';
+import { getAllOrder, getInforOrder, updateOrder } from '@/services/admin/all-order-form';
 import { STATUS_ORDER } from '@/utils/mocks';
 export default {
   data: () => ({
@@ -227,15 +213,6 @@ export default {
     selectedOrder: {},
   }),
 
-  computed: {
-    totalPendingOrder() {
-      return this.data.reduce((result, item) => {
-        if (item.status === 'Chờ xác nhận') result++;
-        return result;
-      }, 0);
-    },
-  },
-
   watch: {
     options: {
       handler() {
@@ -261,13 +238,13 @@ export default {
       const sort = this.getSort();
       const { data } = await getAllOrder(page, itemsPerPage, sort);
 
-      this.page = data?.data?.page;
-      this.totalPages = data?.data?.totalPages;
-      this.totalItems = data?.data?.totalItems;
-      this.data = data?.data?.data;
+      this.page = data?.page;
+      this.totalPages = data?.totalPages;
+      this.totalItems = data?.totalItems;
+      this.data = data?.data;
 
-      // console.log('data', data);
-      // console.log('this.data', this.data);
+      console.log('data', data);
+      console.log('this.data', this.data);
       this.loading.table = false;
     },
 
@@ -306,10 +283,17 @@ export default {
       if (length > 0) {
         listParamSort = [];
         for (let i = 0; i < length; i++) {
-          listParamSort.push({
-            sortBy: this.options.sortBy[i],
-            sortDesc: this.options.sortDesc[i],
-          });
+          if (this.options.sortBy[i] === 'insertDate') {
+            listParamSort.push({
+              sortBy: 'createdDate',
+              sortDesc: this.options.sortDesc[i],
+            });
+          } else {
+            listParamSort.push({
+              sortBy: this.options.sortBy[i],
+              sortDesc: this.options.sortDesc[i],
+            });
+          }
         }
       } else {
         listParamSort.push({

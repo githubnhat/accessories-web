@@ -4,6 +4,7 @@ import com.cdweb.backend.converters.OrderConverter;
 import com.cdweb.backend.converters.OrderItemConverter;
 import com.cdweb.backend.entities.OrderItems;
 import com.cdweb.backend.entities.Orders;
+import com.cdweb.backend.payloads.requests.OrderRequest;
 import com.cdweb.backend.payloads.responses.OrderItemResponse;
 import com.cdweb.backend.payloads.responses.OrderResponse;
 import com.cdweb.backend.repositories.OrderItemRepository;
@@ -37,7 +38,7 @@ public class OrderServiceImpl implements IOrderService {
 
     @Override
     public List<OrderResponse> getAllOrdersPaging(Pageable pageable) {
-        List<OrderResponse> responses = orderRepository.findByOrderByModifiedDateDesc(pageable).getContent()
+        List<OrderResponse> responses = orderRepository.findAll(pageable).getContent()
                 .stream().map(orderConverter :: toResponse)
                 .collect(Collectors.toList());
         return responses;
@@ -56,5 +57,19 @@ public class OrderServiceImpl implements IOrderService {
             return response;
         }
         return null;
+    }
+
+    @Override
+    public OrderResponse update(OrderRequest orderRequest) {
+        Orders order = orderRepository.findById(orderRequest.getId()).get();
+        if (order != null) {
+            order.setStatus(orderRequest.getStatus());
+            order.setAddress(orderRequest.getAddress());
+            order.setPhone(orderRequest.getPhone());
+            Orders updated = orderRepository.save(order);
+            return orderConverter.toResponse(updated);
+        }
+        return null;
+
     }
 }

@@ -9,8 +9,10 @@ import java.util.List;
 @Getter
 @Setter
 public class OrderRequest {
+    private Long id;
     private String address;
     private String phone;
     private String totalBill;
+    private String status;
     private List<OrderItemRequest> orderItems;
 }

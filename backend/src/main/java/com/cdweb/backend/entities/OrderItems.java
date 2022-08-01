@@ -2,6 +2,7 @@ package com.cdweb.backend.entities;
 
 import lombok.*;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -20,6 +21,7 @@ public class OrderItems extends BaseEntity {
     private String productCombination;
     private int quantity;
     private int discount;
+    @Column(columnDefinition = "TEXT")
     private String imageLink;
     @ManyToOne
     @JoinColumn(name = "categories_id")
