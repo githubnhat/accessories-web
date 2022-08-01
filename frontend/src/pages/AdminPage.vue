@@ -14,6 +14,7 @@ import MAllBrandForm from '@/components/Forms/Admin/MAllBrandForm.vue';
 import MAllAccountForm from '@/components/Forms/Admin/MAllAccountForm.vue';
 import MAllOrderForm from '@/components/Forms/Admin/MAllOrderForm.vue';
 import { ADMIN_MENU } from '@/utils/mocks';
+import { mapState } from 'vuex';
 
 export default {
   data() {
@@ -26,8 +27,6 @@ export default {
   },
   methods: {
     handleControlAdmin(value) {
-      // do
-      console.log(value);
       switch (value) {
         case 'All orders':
           this.controler = 'm-all-order-form';
@@ -65,6 +64,19 @@ export default {
     MAllBrandForm,
     MAllAccountForm,
     MAllOrderForm,
+  },
+  watch: {
+    controller: {
+      handler() {
+        this.controler = this.controller;
+      },
+    },
+    deep: true,
+  },
+  computed: {
+    ...mapState({
+      controller: (state) => state._controlAdmin.state.controller,
+    }),
   },
   created() {
     // authentication
