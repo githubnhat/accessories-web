@@ -56,6 +56,15 @@ public class OrderController {
                         : new ResponseObject("Success", "Have no order", null));
     }
 
+    @GetMapping("/detail/{id}")
+    ResponseEntity<?> getOrderDetail( @PathVariable("id") Long orderId) {
+        OrderResponse response = orderService.getOrderDetail(orderId);
+        return  ResponseEntity.status(HttpStatus.OK).body(
+                (response != null)
+                        ? new ResponseObject("Success", null, response)
+                        : new ResponseObject("Success", "Not found order", null));
+    }
+
     @PutMapping("")
     public ResponseEntity<?> updateOrder(@RequestBody OrderRequest orderRequest) {
 

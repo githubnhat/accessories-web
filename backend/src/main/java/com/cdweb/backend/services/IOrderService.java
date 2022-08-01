@@ -9,4 +9,6 @@ public interface IOrderService {
     int totalOrder();
 
     List<OrderResponse> getAllOrdersPaging(Pageable pageable);
+
+    OrderResponse getOrderDetail(Long orderId);
 }
