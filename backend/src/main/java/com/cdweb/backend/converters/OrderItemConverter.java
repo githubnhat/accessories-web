@@ -33,6 +33,7 @@ public class OrderItemConverter {
                 .discount(entity.getDiscount())
                 .brand(entity.getBrands().getName())
                 .category(entity.getCategories().getName())
+                .imageLink(entity.getImageLink())
                 .build();
     }
 

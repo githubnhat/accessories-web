@@ -17,4 +17,5 @@ public class OrderItemResponse {
     private int discount;
     private String brand;
     private String category;
+    private String imageLink;
 }
