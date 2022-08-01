@@ -29,6 +29,7 @@ public class OrderConverter {
                 .status(entity.getStatus())
                 .insertDate(entity.getCreatedDate())
                 .orderItems(orderItems)
+                .customerName(entity.getUser().getFullName())
                 .build();
     }
 
