@@ -63,3 +63,11 @@ export const SELECT_ITEMS = [
     value: false,
   },
 ];
+
+export const SLIDE_LIST = [
+  'image/slide1.webp',
+  'image/slide2.webp',
+  'image/slide3.webp',
+  'image/slide4.webp',
+  'image/slide5.webp',
+];
