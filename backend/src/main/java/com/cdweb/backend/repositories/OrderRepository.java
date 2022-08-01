@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.net.ContentHandler;
+import java.util.List;
 import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Orders, Long> {
@@ -14,4 +16,6 @@ public interface OrderRepository extends JpaRepository<Orders, Long> {
     Long countByUser(Users user);
 
     Optional<Orders> findById(Long orderId);
+
+    Page<Orders> findAllOrderByModifiedDateDesc(Pageable pageable);
 }

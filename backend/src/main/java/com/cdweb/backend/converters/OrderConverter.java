@@ -31,4 +31,16 @@ public class OrderConverter {
                 .orderItems(orderItems)
                 .build();
     }
+
+    public OrderResponse toResponse(Orders entity) {
+        return OrderResponse.builder()
+                .id(entity.getId())
+                .address(entity.getAddress())
+                .phone(entity.getPhone())
+                .totalBill(entity.getTotalBill())
+                .status(entity.getStatus())
+                .insertDate(entity.getCreatedDate())
+                .orderItems(null)
+                .build();
+    }
 }
