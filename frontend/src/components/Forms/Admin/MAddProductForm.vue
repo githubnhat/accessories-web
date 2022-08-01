@@ -488,12 +488,13 @@ export default {
       // await this.upLoadFile();
 
       this.payload = await this.uploadFile();
-      console.log('this.images', this.images);
+      // console.log('this.images', this.images);
 
       const product = await insertProduct(this.payload);
       console.log('product', JSON.stringify(product, null, 10));
 
       // console.log('payload', JSON.stringify(this.payload, null, 10));
+      this.$store.commit('_controlAdmin/setController', 'm-all-product-form');
       this.loading.step3 = false;
     },
   },
