@@ -36,10 +36,10 @@
       </v-btn>
       <v-btn v-if="!accessToken" @click="handleToLogin" color="primary" elevation="5">
         <v-icon>mdi-login</v-icon>
-        <span class="px-2">Login</span>
+        <span class="px-2">Đăng nhập</span>
       </v-btn>
       <span v-else> {{ 'Hello ' + username }}</span>
-      <m-user-menu></m-user-menu>
+      <m-user-menu v-if="accessToken != null"></m-user-menu>
     </v-app-bar>
 
     <v-navigation-drawer fixed v-model="drawer" absolute bottom temporary app hide-overlay>
@@ -83,6 +83,7 @@ export default {
   }),
   created() {
     this.init();
+    console.log('this.accessToken', this.accessToken);
   },
 
   methods: {

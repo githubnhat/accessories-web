@@ -106,13 +106,13 @@
                   >
                     Thêm vào giỏ hàng
                   </v-btn>
-                  <v-btn
+                  <!-- <v-btn
                     color="deep-orange accent-3"
                     :disabled="disabledBtn"
                     class="mr-2 ma-2 white--text"
                   >
                     Mua ngay
-                  </v-btn>
+                  </v-btn> -->
                 </v-col>
               </v-row>
             </v-col>
@@ -137,6 +137,7 @@ import MLayout from '@/shared/MLayout.vue';
 import { getProductDetail, getProductCombination } from '@/services/user/products';
 import { toDiscountPrice } from '@/utils';
 import { addToCart } from '@/services/user/cart';
+import { mapState } from 'vuex';
 
 export default {
   data() {
@@ -262,27 +263,31 @@ export default {
     },
 
     async addToCart() {
-      const check = this.attributes.filter((e) => e.variantNames.length !== 0);
-      if (this.listAttrAndVari.length === check.length) {
-        let productVariantName = '';
-        this.listAttrAndVari.forEach((item, index) => {
-          if (index > 0) {
-            productVariantName = productVariantName + '-' + item.variantName;
-          } else {
-            productVariantName = item.variantName;
+      if (this.accessToken != null) {
+        const check = this.attributes.filter((e) => e.variantNames.length !== 0);
+        if (this.listAttrAndVari.length === check.length) {
+          let productVariantName = '';
+          this.listAttrAndVari.forEach((item, index) => {
+            if (index > 0) {
+              productVariantName = productVariantName + '-' + item.variantName;
+            } else {
+              productVariantName = item.variantName;
+            }
+          });
+          const id = this.$route.params.id;
+          const data = await addToCart({
+            productId: id,
+            productVariantName: productVariantName !== '' ? productVariantName : null,
+            quantity: this.quantityInput,
+          });
+          if (data != null) {
+            alert('Sản phẩm đã được thêm vào giỏ hàng!');
           }
-        });
-        const id = this.$route.params.id;
-        const data = await addToCart({
-          productId: id,
-          productVariantName: productVariantName !== '' ? productVariantName : null,
-          quantity: this.quantityInput,
-        });
-        if (data != null) {
-          alert('Sản phẩm đã được thêm vào giỏ hàng!');
+        } else {
+          alert('Vui lòng chọn phần loại!');
         }
       } else {
-        alert('Vui lòng chọn phần loại!');
+        alert('Vui lòng đăng nhập để thêm vào giỏ hàng!');
       }
     },
 
@@ -347,6 +352,11 @@ export default {
         this.quantityInput = this.quantity;
       }
     },
+  },
+  computed: {
+    ...mapState({
+      accessToken: (module) => module._accessToken.state.accessToken,
+    }),
   },
 };
 </script>
