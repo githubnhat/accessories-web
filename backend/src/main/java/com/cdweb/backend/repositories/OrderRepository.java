@@ -17,5 +17,4 @@ public interface OrderRepository extends JpaRepository<Orders, Long> {
 
     Optional<Orders> findById(Long orderId);
 
-    Page<Orders> findByOrderByModifiedDateDesc(Pageable pageable);
 }

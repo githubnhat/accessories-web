@@ -1,5 +1,6 @@
 package com.cdweb.backend.services;
 
+import com.cdweb.backend.payloads.requests.OrderRequest;
 import com.cdweb.backend.payloads.responses.OrderResponse;
 import org.springframework.data.domain.Pageable;
 
@@ -11,4 +12,6 @@ public interface IOrderService {
     List<OrderResponse> getAllOrdersPaging(Pageable pageable);
 
     OrderResponse getOrderDetail(Long orderId);
+
+    OrderResponse update(OrderRequest orderRequest);
 }

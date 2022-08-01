@@ -29,7 +29,7 @@ import java.util.List;
 public class OrderController {
     private final IOrderService orderService;
 
-    @GetMapping("list-orders")
+    @PostMapping("/list-orders")
     ResponseEntity<?> getOrdersPaging(@RequestBody PagesRequest request) {
         PageResponse<OrderResponse> response = new PageResponse<>();
         response.setPage(request.getPage());
@@ -67,7 +67,11 @@ public class OrderController {
 
     @PutMapping("")
     public ResponseEntity<?> updateOrder(@RequestBody OrderRequest orderRequest) {
-
-        return null;
+        OrderResponse response = orderService.update(orderRequest);
+       return response != null ?
+                ResponseEntity.status(HttpStatus.OK).body(
+                        new ResponseObject("Success", null, response)) :
+                ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                        new ResponseObject("Failed", null, null));
     }
 }

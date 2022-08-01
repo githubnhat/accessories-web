@@ -11,6 +11,7 @@ type SortRequest = {
     status: string;
     insertDate: string;
     totalBill: string;
+    customerName: string;
     orderItems: Array<OrderItem>;
   };
   
@@ -55,11 +56,11 @@ type SortRequest = {
           sort: null,
         };
       }
-      const { data, status } = await axios.post<GetOrderPageResponse>(`admin/order/list-order`, dataForm, {
+      const { data, status } = await axios.post<GetOrderPageResponse>(`admin/order/list-orders`, dataForm, {
         withCredentials: true,
       });
       console.log('response status is: ', status);
-      return data?.data;
+      return data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.log('error message: ', error.message);
@@ -97,7 +98,7 @@ type SortRequest = {
   export async function updateOrder(dataForm: object) {
     try {
       const path = `/admin/order`;
-      const { data, status } = await axios.put<GetOrderResponse>(path, {dataForm,
+      const { data, status } = await axios.put<GetOrderResponse>(path, dataForm,{
         withCredentials: true,
       });
       // console.log(JSON.stringify(data, null, 10));

@@ -41,6 +41,7 @@ public class OrderConverter {
                 .totalBill(entity.getTotalBill())
                 .status(entity.getStatus())
                 .insertDate(entity.getCreatedDate())
+                .customerName(entity.getUser().getFullName())
                 .orderItems(null)
                 .build();
     }
