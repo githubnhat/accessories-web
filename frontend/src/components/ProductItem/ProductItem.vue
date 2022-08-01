@@ -32,9 +32,7 @@ export default {
     };
   },
   created() {
-    const defaultLink =
-      'https://firebasestorage.googleapis.com/v0/b/minhnhat569-eecaa.appspot.com/o/images%2Fimage-not-found.png?alt=media&token=ae8ed2ef-b7ee-4921-b494-fe662aca6778';
-    this.imgLink = this.item.imageLinks[0] ? this.item.imageLinks[0] : defaultLink;
+    this.renderImage();
   },
   props: {
     item: {
@@ -46,6 +44,19 @@ export default {
     handleClickProduct() {
       console.log('click');
       this.$router.push('/detail/' + this.item.id);
+    },
+    renderImage() {
+      const defaultLink =
+        'https://firebasestorage.googleapis.com/v0/b/minhnhat569-eecaa.appspot.com/o/images%2Fimage-not-found.png?alt=media&token=ae8ed2ef-b7ee-4921-b494-fe662aca6778';
+      this.imgLink = this.item.imageLinks[0] ? this.item.imageLinks[0] : defaultLink;
+    },
+  },
+  watch: {
+    item: {
+      deep: true,
+      handler() {
+        this.renderImage();
+      },
     },
   },
   computed: {

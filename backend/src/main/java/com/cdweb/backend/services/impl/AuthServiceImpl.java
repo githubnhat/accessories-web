@@ -127,4 +127,9 @@ public class AuthServiceImpl implements IAuthService {
             return usersRepository.existsByGmail(gmail);
         }
     }
+
+    @Override
+    public Boolean existsByGmail(String gmail) {
+        return usersRepository.existsByGmail(gmail);
+    }
 }

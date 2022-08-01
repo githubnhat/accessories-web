@@ -128,7 +128,7 @@ public class AuthController {
 
     }
 
-    @GetMapping("/check-username/{userName}")
+    @GetMapping("/check-username/no-token/{userName}")
     public ResponseEntity<?> existsAccountByName(@PathVariable("userName") String userName) {
         Boolean exists = authService.existsByUserName(userName);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", "", exists));
@@ -138,6 +138,11 @@ public class AuthController {
     public ResponseEntity<?> existsAccountByGmail(@PathVariable("gmail") String gmail, HttpServletRequest request) {
         Users user = this.getUserFromRequest(request);
         Boolean exists = authService.existsByGmail(gmail, user.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", "", exists));
+    }
+    @GetMapping("/check-gmail/no-token/{gmail}")
+    public ResponseEntity<?> existsAccountNoTokenByGmail(@PathVariable("gmail") String gmail, HttpServletRequest request) {
+        Boolean exists = authService.existsByGmail(gmail);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("Success", "", exists));
     }
 

@@ -183,7 +183,7 @@
 
                             <validation-provider
                               name="Tên tài khoản"
-                              rules="required"
+                              rules="required|existedUsername"
                               v-slot="{ errors }"
                             >
                               <v-text-field
@@ -201,7 +201,7 @@
 
                             <validation-provider
                               name="Email"
-                              rules="required|email"
+                              rules="required|email|existedEmailres"
                               v-slot="{ errors }"
                             >
                               <v-text-field

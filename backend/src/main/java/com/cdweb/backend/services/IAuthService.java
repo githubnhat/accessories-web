@@ -22,4 +22,5 @@ public interface IAuthService {
     Boolean existsByUserName(String username);
 
     Boolean existsByGmail(String gmail, Long id);
+    Boolean existsByGmail(String gmail);
 }

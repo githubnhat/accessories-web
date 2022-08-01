@@ -244,6 +244,54 @@ export async function checkUniqueEmail(gmail: string) {
     }
   }
 }
+
+export async function checkUniqueEmailres(gmail: string) {
+  try {
+    const path = `auth/check-gmail/no-token/${gmail}`;
+    const { data, status } = await axios.get<CheckUniqueEmailResponse>(path, {
+      withCredentials: true,
+    });
+    // console.log(JSON.stringify(data, null, 10));
+
+    // 👇️ "response status is: 200"
+    console.log('response status is: ', status);
+    
+    return data?.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log('error message: ', error.message);
+      return error.message;
+    } else {
+      console.log('unexpected error: ', error);
+      return 'An unexpected error occurred';
+    }
+  }
+}
+type CheckUniqueNameResponse = {
+  data: boolean;
+};
+export async function checkUniqueName(name: string) {
+  try {
+    const path = `auth/check-username/no-token/${name}`;
+    const { data, status } = await axios.get<CheckUniqueNameResponse>(path, {
+      withCredentials: true,
+    });
+    // console.log(JSON.stringify(data, null, 10));
+
+    // 👇️ "response status is: 200"
+    console.log('response status is: ', status);
+    
+    return data?.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log('error message: ', error.message);
+      return error.message;
+    } else {
+      console.log('unexpected error: ', error);
+      return 'An unexpected error occurred';
+    }
+  }
+}
 // get brands for display to customer
 
 type Brand = {

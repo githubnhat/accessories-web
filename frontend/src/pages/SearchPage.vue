@@ -34,7 +34,7 @@ export default {
       products: [],
       keyword: '',
       page: 1,
-      itemPerPage: 5,
+      itemPerPage: 12,
       totalPage: 1,
       totalItem: 0,
     };

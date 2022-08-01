@@ -190,25 +190,27 @@ export default {
   methods: {
     async initialize() {
       const data = await getListCart();
-      this.data = data;
       let countCheck = 0;
-      this.data?.forEach((e) => {
-        e.priceDiscount = toOneDiscountPrice(e.price, e.discount);
-        e.price = formatNumber(e.price);
-        e.totalPrice = totalPrice(e.price, e.discount, e.quantity);
-        e.disabledCheckbox = e.quantity == 0 ? false : true;
-        e.disabledQuantity = e.quantity == 0 ? true : false;
-        e.disabledTotalPrice = e.quantity == 0 ? false : true;
-        if (e.quantity == 0) {
-          countCheck++;
-        }
-        e.thumbnail =
-          e.thumbnail !== null
-            ? e.thumbnail
-            : 'https://firebasestorage.googleapis.com/v0/b/minhnhat569-eecaa.appspot.com/o/images%2Fimage-not-found.png?alt=media&token=ae8ed2ef-b7ee-4921-b494-fe662aca6778';
-      });
-      if (countCheck == this.data.length) this.disabledCheckboxAll = false;
-      if (this.data == null) {
+      if (data != null) {
+        this.data = data;
+        this.data?.forEach((e) => {
+          e.priceDiscount = toOneDiscountPrice(e.price, e.discount);
+          e.price = formatNumber(e.price);
+          e.totalPrice = totalPrice(e.price, e.discount, e.quantity);
+          e.disabledCheckbox = e.quantity == 0 ? false : true;
+          e.disabledQuantity = e.quantity == 0 ? true : false;
+          e.disabledTotalPrice = e.quantity == 0 ? false : true;
+          if (e.quantity == 0) {
+            countCheck++;
+          }
+          e.thumbnail =
+            e.thumbnail !== null
+              ? e.thumbnail
+              : 'https://firebasestorage.googleapis.com/v0/b/minhnhat569-eecaa.appspot.com/o/images%2Fimage-not-found.png?alt=media&token=ae8ed2ef-b7ee-4921-b494-fe662aca6778';
+        });
+      }
+      if (data != null && countCheck == this.data.length) this.disabledCheckboxAll = false;
+      if (data == null) {
         this.data = [
           {
             id: '',

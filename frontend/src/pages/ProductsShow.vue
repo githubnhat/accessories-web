@@ -19,7 +19,7 @@
         </div>
       </v-col>
     </v-card>
-    <h2 v-else>Không có sản phẩm nào</h2>
+    <h2 v-else class="text-center">Không có sản phẩm nào</h2>
   </m-layout>
 </template>
 
