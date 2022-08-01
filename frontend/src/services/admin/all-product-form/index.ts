@@ -48,8 +48,6 @@ export async function getAllProducts(pageNumber: number, itemsPerPage:number, so
       }
       const { data, status } = await axios
       .post<GetProductResponse>(`admin/product/list-products`,dataForm,{withCredentials: true});
-      console.log(data?.data)
-      console.log('response status is: ', status);
       return data?.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -72,7 +70,6 @@ export async function getAllProducts(pageNumber: number, itemsPerPage:number, so
         data: ids,
         withCredentials: true
       });
-      console.log('response status is: ', status);
       return data?.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {

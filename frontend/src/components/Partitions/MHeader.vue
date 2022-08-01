@@ -83,7 +83,6 @@ export default {
   }),
   created() {
     this.init();
-    console.log('this.accessToken', this.accessToken);
   },
 
   methods: {

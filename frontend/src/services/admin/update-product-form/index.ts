@@ -10,9 +10,7 @@ export async function getInforProduct(productId: number) {
     const { data, status } = await axios.get<GetProductResponse>(path, {
       withCredentials: true,
     });
-    console.log(JSON.stringify(data, null, 10));
     // 👇️ "response status is: 200"
-    console.log('response status is: ', status);
 
     return data;
   } catch (error) {
@@ -44,10 +42,8 @@ export async function getProductAttributes() {
     const { data, status } = await axios.get<GetProductAttributeResponse>(path, {
       withCredentials: true,
     });
-    console.log(JSON.stringify(data, null, 10));
     // console.log('axios', data);
     // 👇️ "response status is: 200"
-    console.log('response status is: ', status);
 
     return data;
   } catch (error) {
@@ -78,10 +74,8 @@ export async function getBrands() {
     const path = '/admin/brand';
 
     const { data, status } = await axios.get<GetBrandsResponse>(path, { withCredentials: true });
-    console.log(JSON.stringify(data, null, 10));
     // console.log('axios', data);
     // 👇️ "response status is: 200"
-    console.log('response status is: ', status);
 
     return data;
   } catch (error) {
@@ -114,10 +108,8 @@ export async function getCategories() {
     const { data, status } = await axios.get<GetCategoriesResponse>(path, {
       withCredentials: true,
     });
-    console.log(JSON.stringify(data, null, 10));
     // console.log('axios', data);
     // 👇️ "response status is: 200"
-    console.log('response status is: ', status);
 
     return data;
   } catch (error) {
@@ -163,9 +155,7 @@ export async function insertProduct(dataForm: object) {
     const { data, status } = await axios.post<GetProductResponse>(path, dataForm, {
       withCredentials: true,
     });
-    // console.log(JSON.stringify(data, null, 10));
-    // localStorage.setItem('accessToken', data?.data?.accessToken || '');
-    // 👇️ "response status is: 200"
+
     console.log('response status is: ', status);
     if (status === 200) alert('Thêm sản phẩm thành công');
     else alert('Thêm sản phẩm không thành công');
@@ -194,11 +184,9 @@ export async function checkUniqueProductName(productName: string) {
     const { data, status, request } = await axios.get<CheckUniqueProductNameResponse>(path, {
       withCredentials: true,
     });
-    console.log(JSON.stringify(data, null, 10));
-    console.log('request', request);
 
     // 👇️ "response status is: 200"
-    console.log('response status is: ', status);
+
 
     return data?.data;
   } catch (error) {

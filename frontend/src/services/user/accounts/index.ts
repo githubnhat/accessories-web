@@ -23,10 +23,10 @@ export async function getAddresses() {
     const { data, status } = await axios.get<GetAddressesResponse>(path, {
       withCredentials: true,
     });
-    console.log(JSON.stringify(data, null, 10));
+    
     // router.push('/');
     // 👇️ response status is: 200
-    console.log('response status is: ', status);
+
 
     return { data, status };
   } catch (error) {
@@ -52,10 +52,7 @@ export async function insertAddress(dataForm: any) {
     const { data, status } = await axios.post<GetAddressResponse>(path, dataForm, {
       withCredentials: true,
     });
-    console.log(JSON.stringify(data, null, 10));
-    // router.push('/');
-    // 👇️ response status is: 200
-    console.log('response status is: ', status);
+
 
     return { data, status };
   } catch (error) {

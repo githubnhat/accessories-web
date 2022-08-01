@@ -189,7 +189,7 @@ export default {
       if (this.data?.originalQuantity == 0) {
         this.check = true;
       }
-      console.log('Check', this.check);
+
       if (this.check) {
         this.discount = '';
         this.price = 'Hết hàng';

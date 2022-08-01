@@ -391,7 +391,6 @@ export default {
 
     deleteImage(index, image) {
       this.files = this.files.filter((item, i) => i !== index);
-      console.log('remove: ', image);
     },
 
     handleAddAttribute() {
@@ -490,8 +489,8 @@ export default {
       this.payload = await this.uploadFile();
       // console.log('this.images', this.images);
 
-      const product = await insertProduct(this.payload);
-      console.log('product', JSON.stringify(product, null, 10));
+      await insertProduct(this.payload);
+      // console.log('product', JSON.stringify(product, null, 10));
 
       // console.log('payload', JSON.stringify(this.payload, null, 10));
       this.$store.commit('_controlAdmin/setController', 'm-all-product-form');

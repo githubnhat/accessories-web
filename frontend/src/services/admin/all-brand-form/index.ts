@@ -123,7 +123,6 @@ export async function checkUniqueBrandCode(code: string) {
     // console.log(JSON.stringify(data, null, 10));
 
     // 👇️ "response status is: 200"
-    console.log('response status is: ', status);
 
     return data?.data;
   } catch (error) {

@@ -42,7 +42,6 @@ export default {
   },
   methods: {
     handleClickProduct() {
-      console.log('click');
       this.$router.push('/detail/' + this.item.id);
     },
     renderImage() {

@@ -56,6 +56,9 @@ export async function insertOrder(dataForm: object) {
 
 //get all order
 type GetOrdersResponse = {
+  page:number,
+  totalPages: number,
+  totalItems: number,
   data: Array<Order>;
 };
 
@@ -70,7 +73,7 @@ export async function getAllOrders(page: number, itemPerPage: number) {
     // 👇️ "response status is: 200"
     console.log('response status is: ', status);
 
-    return { data, status };
+    return data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.log('error message: ', error.message);

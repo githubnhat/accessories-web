@@ -242,8 +242,6 @@ export default {
       this.totalItems = data?.totalItems;
       this.data = data?.data;
 
-      console.log('data', data);
-      console.log('this.data', this.data);
       this.loading.table = false;
     },
 
@@ -254,7 +252,7 @@ export default {
         phone: this.selectedOrder.phone,
         status: this.selectedOrder.status,
       };
-      console.log(dataForm);
+
       const data = await updateOrder(dataForm);
       if (data) {
         await this.readDataFromAPI();
@@ -267,7 +265,6 @@ export default {
       const orderId = item?.id;
       const orderResponse = await getInforOrder(orderId);
       this.selectedOrder = orderResponse?.data?.data;
-      console.log('selectedOrder', this.selectedOrder);
 
       this.dialog.info = true;
       this.loading.info = false;

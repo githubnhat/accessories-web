@@ -271,7 +271,6 @@ export default {
             isMainAddress: this.isMainAddress,
           };
           const addressResponse = await insertAddress(addressRequest);
-          console.log('address process', addressResponse);
         } catch (error) {
           console.log('error: ' + error);
           alert('Lỗi hệ thống! Vui lòng thử lại...');

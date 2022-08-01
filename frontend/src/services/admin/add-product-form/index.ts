@@ -56,10 +56,8 @@ export async function getBrands() {
     const path = '/admin/brand';
 
     const { data, status } = await axios.get<GetBrandsResponse>(path, { withCredentials: true });
-    console.log(JSON.stringify(data, null, 10));
     // console.log('axios', data);
     // 👇️ "response status is: 200"
-    console.log('response status is: ', status);
 
     return data;
   } catch (error) {
@@ -92,10 +90,8 @@ export async function getCategories() {
     const { data, status } = await axios.get<GetCategoriesResponse>(path, {
       withCredentials: true,
     });
-    console.log(JSON.stringify(data, null, 10));
     // console.log('axios', data);
     // 👇️ "response status is: 200"
-    console.log('response status is: ', status);
 
     return data;
   } catch (error) {
@@ -172,11 +168,8 @@ export async function checkUniqueProductName(productName: string) {
     const { data, status, request } = await axios.get<CheckUniqueProductNameResponse>(path, {
       withCredentials: true,
     });
-    console.log(JSON.stringify(data, null, 10));
-    console.log('request', request);
 
     // 👇️ "response status is: 200"
-    console.log('response status is: ', status);
 
     return data?.data;
   } catch (error) {

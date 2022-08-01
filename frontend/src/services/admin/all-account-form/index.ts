@@ -153,7 +153,6 @@ type Account = {
   export async function getAllRoles() {
     try {
       const { data, status } = await axios.get<GetRoleResponse>(`/admin/roles`,{withCredentials: true});
-      console.log(data?.data)
       return data?.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -173,7 +172,6 @@ type Account = {
   export async function addAccount(dataForm: object){
     try {
       const { data, status } = await axios.post<AccountResponse>(`/admin/account`, dataForm, {withCredentials: true});
-      console.log(data?.data)
       return data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -189,7 +187,6 @@ type Account = {
   export async function updateAccount(dataForm: object){
     try {
       const data = await axios.put<AccountResponse>(`/admin/account/update`, dataForm, {withCredentials: true});
-      console.log(data?.data)
       return data;
     } catch (error) {
       if (axios.isAxiosError(error)) {

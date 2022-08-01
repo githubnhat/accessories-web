@@ -92,10 +92,7 @@ export async function checkUniqueCategoryCode(code: string) {
     const { data, status } = await axios.get<CheckUniqueCategoryCodeResponse>(path, {
       withCredentials: true,
     });
-    // console.log(JSON.stringify(data, null, 10));
 
-    // 👇️ "response status is: 200"
-    console.log('response status is: ', status);
 
     return data?.data;
   } catch (error) {
@@ -122,10 +119,8 @@ export async function deleteCategories(ids: Array<number>) {
       data: ids,
       withCredentials: true,
     });
-    console.log(JSON.stringify(data, null, 10));
 
     // 👇️ "response status is: 200"
-    console.log('response status is: ', status);
 
     return data?.data;
   } catch (error) {

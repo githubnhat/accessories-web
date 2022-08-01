@@ -91,7 +91,7 @@ export async function getProductCombination(dataForm: object) {
     const { data, status } = await axios.post<GetProductCombinationResponse>(path, dataForm, {
       withCredentials: true,
     });
-    console.log('combination: ', data?.data);
+   
     console.log('response status is: ', status);
     return data?.data;
   } catch (error) {
@@ -113,7 +113,7 @@ export async function getProductByCategory(page: number, limit: number, category
     const { data, status } = await axios.get<GetProductsResponse>(path, {
       withCredentials: true,
     });
-    console.log('product: ', data?.data);
+    
     console.log('response status is: ', status);
     return data?.data;
   } catch (error) {
@@ -135,7 +135,7 @@ export async function getProductByBrand(page: number, limit: number, brandCode: 
     const { data, status } = await axios.get<GetProductsResponse>(path, {
       withCredentials: true,
     });
-    console.log('product: ', data?.data);
+   
     console.log('response status is: ', status);
     return data?.data;
   } catch (error) {
@@ -155,7 +155,7 @@ export async function searchProduct(page: number, limit: number, keyword: string
     const { data, status } = await axios.get<GetProductsResponse>(path, {
       withCredentials: true,
     });
-    console.log('product: ', data?.data);
+
     console.log('response status is: ', status);
     return data?.data;
   } catch (error) {

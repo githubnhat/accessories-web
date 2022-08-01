@@ -18,7 +18,7 @@
         showCurrentPage: true,
       }"
     >
-      <template v-slot:top="{ items }">
+      <!-- <template v-slot:top="{ items }">
         <div class="pa-4">
           <v-badge
             :content="items.length"
@@ -34,7 +34,7 @@
             <v-chip color="info" label outlined large> Chờ xác nhận </v-chip>
           </v-badge>
         </div>
-      </template>
+      </template> -->
       <template v-slot:[`item.actions`]="{ item }">
         <v-icon small class="mr-2" @click="openInfoDialog(item)"> mdi-information </v-icon>
       </template>
@@ -126,12 +126,12 @@
 import { getAllOrders, getInforOrder } from '@/services/user/orders';
 export default {
   data: () => ({
-    page: 0,
+    page: 1,
     totalItems: 0,
     totalPages: 0,
     options: {
       page: 1,
-      itemsPerPage: 5,
+      itemsPerPage: 10,
     },
     loading: {
       table: true,
@@ -175,14 +175,14 @@ export default {
     selectedOrder: {},
   }),
 
-  computed: {
-    totalPendingOrder() {
-      return this.data.reduce((result, item) => {
-        if (item.status === 'Chờ xác nhận') result++;
-        return result;
-      }, 0);
-    },
-  },
+  // computed: {
+  //   totalPendingOrder() {
+  //     return this.data.reduce((result, item) => {
+  //       if (item?.status === 'Chờ xác nhận') result++;
+  //       return result;
+  //     }, 0);
+  //   },
+  // },
 
   watch: {
     options: {
@@ -207,13 +207,12 @@ export default {
       const { page, itemsPerPage } = this.options;
       const { data } = await getAllOrders(page, itemsPerPage);
 
-      this.page = data?.data?.page;
-      this.totalPages = data?.data?.totalPages;
-      this.totalItems = data?.data?.totalItems;
-      this.data = data?.data?.data;
-
-      // console.log('data', data);
-      // console.log('this.data', this.data);
+      if (data != null) {
+        this.page = data?.page;
+        this.totalPages = data?.totalPages;
+        this.totalItems = data?.totalItems;
+        this.data = data?.data;
+      }
       this.loading.table = false;
     },
 
@@ -222,7 +221,6 @@ export default {
       const orderId = item?.id;
       const orderResponse = await getInforOrder(orderId);
       this.selectedOrder = orderResponse?.data?.data;
-      console.log('selectedOrder', this.selectedOrder);
 
       this.dialog.info = true;
       this.loading.info = false;

@@ -49,7 +49,6 @@ export default {
     },
     deleteImage(index, image) {
       this.files = this.files.filter((item, i) => i !== index);
-      console.log('remove: ', image);
     },
   },
 };

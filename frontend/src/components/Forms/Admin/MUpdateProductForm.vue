@@ -463,7 +463,6 @@ export default {
 
     deleteImage(index, image) {
       this.files = this.files.filter((item, i) => i !== index);
-      console.log('remove: ', image);
     },
 
     handleAddAttribute() {
@@ -484,7 +483,6 @@ export default {
         this.attributes.filter((e) => e.attributeName === this.selectedAttribute.attributeName)
           .length > 0;
       this.attributes = isExisted ? [...this.attributes] : [...this.attributes, newAttribute];
-      console.log('attribute', this.attributes);
     },
     handleAddNewVariant(name, index) {
       this.attributes = this.attributes.map((item) =>

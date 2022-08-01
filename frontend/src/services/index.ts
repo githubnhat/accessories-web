@@ -26,7 +26,6 @@ export async function doLogin(dataForm: object) {
 
     // router.push('/');
     // 👇️ "response status is: 200"
-    console.log('response status is: ', status);
 
     return { data, status };
   } catch (error) {
@@ -47,14 +46,7 @@ export async function doAdminLogin(dataForm: object) {
     const { data, status } = await axios.post<GetUsersResponse>(path, dataForm, {
       withCredentials: true,
     });
-    // console.log(JSON.stringify(data, null, 10));
-    // if (status === 200) {
-    //   localStorage.setItem('accessToken', data?.data?.accessToken || '');
-    // }
 
-    // router.push('/');
-    // 👇️ "response status is: 200"
-    console.log('response status is: ', status);
 
     return { data, status };
   } catch (error) {
@@ -93,7 +85,6 @@ export async function doRegister(dataForm: object) {
 
     const { data, status } = await axios.post<GetRegisterResponse>(path, dataForm);
 
-    console.log('response status is: ', status);
 
     return data;
   } catch (error) {
@@ -279,7 +270,6 @@ export async function checkUniqueName(name: string) {
     // console.log(JSON.stringify(data, null, 10));
 
     // 👇️ "response status is: 200"
-    console.log('response status is: ', status);
     
     return data?.data;
   } catch (error) {
@@ -342,9 +332,7 @@ export async function getCategoryList() {
     const { data, status } = await axios.get<GetCategoriesResponse>(path, {
       withCredentials: true,
     });
-    console.log(JSON.stringify(data, null, 10));
 
-    console.log('response status is: ', status);
 
     return data?.data;
   } catch (error) {
