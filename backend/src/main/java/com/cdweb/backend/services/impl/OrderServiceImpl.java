@@ -27,7 +27,7 @@ public class OrderServiceImpl implements IOrderService {
 
     @Override
     public List<OrderResponse> getAllOrdersPaging(Pageable pageable) {
-        List<OrderResponse> responses = orderRepository.findAllOrderByModifiedDateDesc(pageable).getContent()
+        List<OrderResponse> responses = orderRepository.findByOrderByModifiedDateDesc(pageable).getContent()
                 .stream().map(orderConverter :: toResponse)
                 .collect(Collectors.toList());
         return responses;

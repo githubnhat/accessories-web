@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Orders, Long> {
-    Page findByUserOrderByModifiedDateDesc(Users user, Pageable pageable);
+    Page<Orders> findByUserOrderByModifiedDateDesc(Users user, Pageable pageable);
 
     Long countByUser(Users user);
 
     Optional<Orders> findById(Long orderId);
 
-    Page<Orders> findAllOrderByModifiedDateDesc(Pageable pageable);
+    Page<Orders> findByOrderByModifiedDateDesc(Pageable pageable);
 }
