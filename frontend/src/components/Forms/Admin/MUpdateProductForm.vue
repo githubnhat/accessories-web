@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="display-1 text-center mb-3">Cập nhật sản phẩm</div>
+    <div class="display-1 text-center my-3">Cập nhật sản phẩm</div>
     <v-stepper :value="step">
       <v-stepper-header class="px-16">
         <v-stepper-step editable step="1" @click="step = 1"> Thông tin sản phẩm </v-stepper-step>
@@ -314,15 +314,9 @@
 import MTextField from '@/components/TextFields/MTextField.vue';
 import MAutoComplete from '@/components/TextFields/MAutoComplete.vue';
 import { VARIANTS, SELECT_ITEMS } from '@/utils/mocks/';
-import {
-  getProductAttributes,
-  getBrands,
-  getCategories,
-  insertProduct,
-} from '@/services/admin/add-product-form';
+import { getProductAttributes, getBrands, getCategories } from '@/services/admin/add-product-form';
 import { getInforProduct } from '@/services/admin/update-product-form';
 import { combineVariants } from '@/utils';
-import { upLoadImg } from '@/services/uploadFile';
 
 export default {
   data() {
@@ -447,7 +441,7 @@ export default {
     },
 
     async uploadFile() {
-      this.images = await upLoadImg(this.files);
+      // this.images = await upLoadImg(this.files);
 
       return {
         id: this.productId,
@@ -571,13 +565,31 @@ export default {
       this.loading.step3 = true;
       // await this.upLoadFile();
 
-      this.payload = await this.uploadFile();
-      console.log('this.images', this.images);
+      this.payload = {
+        id: this.productId,
+        productName: this.productName,
+        description: this.description,
+        originalPrice: this.originalPrice,
+        originalQuantity: this.originalQuantity,
+        // imageLinks: this.images,
+        imageLinks: null,
+        discount: parseInt(this.discount),
+        attributes: !this.isChangeAttribute
+          ? null
+          : this.attributes.map((item) => ({
+              attributeName: item.attributeName,
+              variantNames: item.selectedVariants,
+            })),
+        combinations: this.combineVariants,
+        brandName: this.brandName,
+        categoryName: this.categoryName,
+      };
+      // console.log('this.images', this.images);
 
-      const product = await insertProduct(this.payload);
-      console.log('product', JSON.stringify(product, null, 10));
+      // const product = await insertProduct(this.payload);
+      // console.log('product', JSON.stringify(product, null, 10));
 
-      // console.log('payload', JSON.stringify(this.payload, null, 10));
+      console.log('payload', JSON.stringify(this.payload, null, 10));
       this.loading.step3 = false;
     },
   },
