@@ -7,7 +7,7 @@
     v-bind="$attrs"
     fixed
   >
-    <v-btn>
+    <v-btn @click="backTo">
       <span>Recents</span>
 
       <v-icon>mdi-history</v-icon>
@@ -28,10 +28,16 @@
 </template>
 
 <script>
+import router from '@/router';
 export default {
   name: 'MFooter',
   props: {},
   data: () => ({ value: 1 }),
+  methods: {
+    backTo() {
+      router.go(-1);
+    },
+  },
 };
 </script>
 

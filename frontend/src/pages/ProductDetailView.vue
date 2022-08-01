@@ -48,7 +48,7 @@
                       <div class="mt-3">
                         <v-btn
                           :color="variantName.color"
-                          class="mr-2 mt-1"
+                          class="ma-2"
                           @click="addItem(attribute?.attributeName, variantName)"
                           v-for="(variantName, v) in attribute?.variantNames"
                           :key="v"

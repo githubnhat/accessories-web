@@ -77,7 +77,7 @@
                           ><h3 class="product-name">{{ product.productName }}</h3></v-list-item
                         >
                         <v-list-item class="product-variant-name"
-                          >Phân loại: {{ product.productVariantName }}</v-list-item
+                          >Phân loại: {{ product.productCombination }}</v-list-item
                         >
                       </v-col>
                       <v-col class="ma-auto">
@@ -91,7 +91,7 @@
                           <v-text-field
                             :disabled="product.disabledQuantity"
                             v-model="product.quantity"
-                            label="Quantity"
+                            label="Số lượng"
                             hide-spin-buttons
                             height="30"
                             @change="handleOnChangeQuantity(product.id)"

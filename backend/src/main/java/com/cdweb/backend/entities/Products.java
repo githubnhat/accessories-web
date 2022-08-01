@@ -14,6 +14,7 @@ import java.util.Set;
 @Setter
 public class Products extends BaseEntity {
     private String productName;
+    @Column(columnDefinition = "TEXT")
     private String description;
     private Double originalPrice;
     private int originalQuantity;
