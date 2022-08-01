@@ -22,7 +22,7 @@ type Product = {
   imageLinks: Array<string>;
   attributeAndVariants: Array<AttributeAndVariants>;
   combinations: any;
-  brandName: any;
+  brandName: string;
   categoryName: string;
   createdDate: string;
   modifiedDate: string;
@@ -132,6 +132,26 @@ export async function getProductByCategory(page: number, limit: number, category
 export async function getProductByBrand(page: number, limit: number, brandCode: string) {
   try {
     const path = `/user/product/no-token/page/${page}/limit/${limit}/brand/${brandCode}`;
+    const { data, status } = await axios.get<GetProductsResponse>(path, {
+      withCredentials: true,
+    });
+    console.log('product: ', data?.data);
+    console.log('response status is: ', status);
+    return data?.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log('error message: ', error.message);
+      return error.message;
+    } else {
+      console.log('unexpected error: ', error);
+      return 'An unexpected error occurred';
+    }
+  }
+}
+//search product
+export async function searchProduct(page: number, limit: number, keyword: string) {
+  try {
+    const path = `/user/product/no-token/search/page/${page}/limit/${limit}/key/${keyword}`;
     const { data, status } = await axios.get<GetProductsResponse>(path, {
       withCredentials: true,
     });

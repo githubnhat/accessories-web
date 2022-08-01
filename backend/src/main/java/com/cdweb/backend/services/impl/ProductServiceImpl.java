@@ -21,25 +21,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class ProductServiceImpl implements IProductService {
-
     private final ProductRepository productRepository;
-
     private final ProductConverter productConverter;
-
     private final CategoryRepository categoryRepository;
-
     private final BrandRepository brandRepository;
-
     private final IAttributeService attributeService;
-
     private final IVariantService variantService;
-
     private final IProductAttributeService productAttributeService;
-
     private final IThumbnailService productGalleryService;
-
     private final IProductAttributeVariantService productAttributeVariantService;
-
     private final IProductCombinationService productCombinationService;
 
     @Override
@@ -95,6 +85,8 @@ public class ProductServiceImpl implements IProductService {
                             .originalQuantity(entity.getOriginalQuantity())
                             .discount(entity.getDiscount())
                             .imageLinks(imageLinks)
+                            .brandName(entity.getBrands().getName())
+                            .categoryName(entity.getCategories().getName())
                             .build();
                     List<ProductCombinationResponse> proComRs = productCombinationService
                             .findByProductAndIsActiveTrue(entity);
@@ -152,6 +144,63 @@ public class ProductServiceImpl implements IProductService {
                             .originalQuantity(entity.getOriginalQuantity())
                             .discount(entity.getDiscount())
                             .imageLinks(imageLinks)
+                            .brandName(entity.getBrands().getName())
+                            .categoryName(entity.getCategories().getName())
+                            .build();
+                    List<ProductCombinationResponse> proComRs = productCombinationService
+                            .findByProductAndIsActiveTrue(entity);
+                    boolean check = true;
+                    if ((proComRs.size() == 1 && proComRs.get(0).getProductVariantName() == null)) {
+                        check = false;
+                    }
+                    if (check) {
+                        if (!proComRs.isEmpty()) {
+                            int quantity = 0;
+                            for (ProductCombinationResponse p : proComRs) {
+                                quantity += p.getQuantity();
+                            }
+                            product.setOriginalQuantity(quantity);
+                            Double maxPrice = productCombinationService.maxPrice(entity.getId());
+                            Double minPrice = productCombinationService.minPrice(entity.getId());
+                            if (maxPrice != null && minPrice != null) {
+                                if (maxPrice.equals(minPrice)) {
+                                    product.setOriginalPrice("₫" + Utils.formatNumber(maxPrice));
+                                } else {
+                                    product.setOriginalPrice("₫" + Utils.formatNumber(minPrice) + " - " + "₫"
+                                            + Utils.formatNumber(maxPrice));
+                                }
+                            }
+                        } else {
+                            product.setOriginalPrice("₫" + 0);
+                            product.setOriginalQuantity(0);
+                        }
+
+                    }
+                    response.add(product);
+                }
+            });
+        }
+        return response;
+    }
+
+    @Override
+    public List<ProductResponse> findAllByBrandCodeForUser(String code, Pageable pageable) {
+        List<ProductResponse> response = new ArrayList<>();
+        Brands brand = brandRepository.findByCodeAndIsActiveTrue(code);
+        List<Products> entities = productRepository.findByBrandsAndIsActiveTrue(brand, pageable);
+        if (entities.size() > 0) {
+            entities.forEach(entity -> {
+                if (entity.isActive()) {
+                    List<String> imageLinks = getProductThumbnail(entity);
+                    ProductResponse product = ProductResponse.builder()
+                            .id(entity.getId())
+                            .productName(entity.getProductName())
+                            .originalPrice("₫" + Utils.formatNumber(entity.getOriginalPrice()))
+                            .originalQuantity(entity.getOriginalQuantity())
+                            .discount(entity.getDiscount())
+                            .imageLinks(imageLinks)
+                            .brandName(entity.getBrands().getName())
+                            .categoryName(entity.getCategories().getName())
                             .build();
                     List<ProductCombinationResponse> proComRs = productCombinationService
                             .findByProductAndIsActiveTrue(entity);
@@ -353,58 +402,6 @@ public class ProductServiceImpl implements IProductService {
         return null;
     }
 
-    @Override
-    public List<ProductResponse> findAllByBrandCodeForUser(String code, Pageable pageable) {
-        List<ProductResponse> response = new ArrayList<>();
-        Brands brand = brandRepository.findByCodeAndIsActiveTrue(code);
-        List<Products> entities = productRepository.findByBrandsAndIsActiveTrue(brand, pageable);
-        if (entities.size() > 0) {
-            entities.forEach(entity -> {
-                if (entity.isActive()) {
-                    List<String> imageLinks = getProductThumbnail(entity);
-                    ProductResponse product = ProductResponse.builder()
-                            .id(entity.getId())
-                            .productName(entity.getProductName())
-                            .originalPrice("₫" + Utils.formatNumber(entity.getOriginalPrice()))
-                            .originalQuantity(entity.getOriginalQuantity())
-                            .discount(entity.getDiscount())
-                            .imageLinks(imageLinks)
-                            .build();
-                    List<ProductCombinationResponse> proComRs = productCombinationService
-                            .findByProductAndIsActiveTrue(entity);
-                    boolean check = true;
-                    if ((proComRs.size() == 1 && proComRs.get(0).getProductVariantName() == null)) {
-                        check = false;
-                    }
-                    if (check) {
-                        if (!proComRs.isEmpty()) {
-                            int quantity = 0;
-                            for (ProductCombinationResponse p : proComRs) {
-                                quantity += p.getQuantity();
-                            }
-                            product.setOriginalQuantity(quantity);
-                            Double maxPrice = productCombinationService.maxPrice(entity.getId());
-                            Double minPrice = productCombinationService.minPrice(entity.getId());
-                            if (maxPrice != null && minPrice != null) {
-                                if (maxPrice.equals(minPrice)) {
-                                    product.setOriginalPrice("₫" + Utils.formatNumber(maxPrice));
-                                } else {
-                                    product.setOriginalPrice("₫" + Utils.formatNumber(minPrice) + " - " + "₫"
-                                            + Utils.formatNumber(maxPrice));
-                                }
-                            }
-                        } else {
-                            product.setOriginalPrice("₫" + 0);
-                            product.setOriginalQuantity(0);
-                        }
-
-                    }
-                    response.add(product);
-                }
-            });
-        }
-        return response;
-    }
 
     @Override
     public ProductResponse findByProductIdAdmin(Long id) {
@@ -464,10 +461,20 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public int totalItemSearch(String keyword, String keyword1) {
-        log.info("check {}", keyword);
-        keyword = String.valueOf(keyword);
         return productRepository.countByProductNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
                 keyword, keyword1);
+    }
+
+    @Override
+    public int totalProductByBrandCode(String code) {
+        Brands brand = brandRepository.findByCodeAndIsActiveTrue(code);
+        return (int) productRepository.countByBrands(brand);
+    }
+
+    @Override
+    public int totalProductByCategoryCode(String code) {
+        Categories category = categoryRepository.findByCodeAndIsActiveTrue(code);
+        return (int) productRepository.countByCategories(category);
     }
 
     private List<String> getProductThumbnail(Products entity) {

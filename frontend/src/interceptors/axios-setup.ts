@@ -1,3 +1,4 @@
+import router from '@/router';
 import axios, { AxiosRequestConfig } from "axios";
 import store from '../store'
 
@@ -30,12 +31,15 @@ export function setup() {
         const originalConfig = err.config;
         if (originalConfig.url !== "/auth/login" && err.response) {
           // Access Token was expired
-          if (err.response.status === 403 && !originalConfig._retry) {
+          if (err.response.status === 401 && !originalConfig._retry) {
             originalConfig._retry = true;
             try {
               const {data, status} = await axios.get('/auth/refresh-token', {withCredentials: true})
               if(status===200){
                 store.commit('_accessToken/setAccessToken', data?.data?.accessToken);
+              } else if(status===403){
+                store.commit('_accessToken/resetAccessToken');
+                router.push('/login')
               }
               return axios(originalConfig);
             } catch (_error) {

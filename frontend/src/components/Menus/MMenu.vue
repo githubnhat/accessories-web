@@ -9,10 +9,11 @@
         v-bind="attrs"
         v-on="on"
         v-text="btnTitle"
+        @click="handleGoTo"
       />
     </template>
 
-    <v-list>
+    <v-list v-if="menuList.length > 0">
       <v-list-item v-for="(item, index) in menuList" :key="index" link :to="`${item.link}`">
         <v-list-item-title>{{ item.title }}</v-list-item-title>
       </v-list-item>
@@ -21,6 +22,7 @@
 </template>
 
 <script>
+import router from '@/router';
 export default {
   props: {
     btnTitle: {
@@ -30,6 +32,24 @@ export default {
     menuList: {
       type: Array,
       default: () => [],
+    },
+    link: {
+      type: String,
+      default: '',
+    },
+  },
+  methods: {
+    handleGoTo() {
+      if (this.link !== '') {
+        router.push(this.link).catch((error) => {
+          if (
+            error.name !== 'NavigationDuplicated' &&
+            !error.message.includes('Avoided redundant navigation to current location')
+          ) {
+            console.log(error);
+          }
+        });
+      }
     },
   },
 };

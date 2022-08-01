@@ -8,6 +8,7 @@
         <span>Accessories</span>
       </v-toolbar-title>
       <v-spacer />
+      <m-menu :btnTitle="titleHome" :link="'/'" />
       <m-menu open-on-hover offset-y :btnTitle="titleCategory" :menuList="categories" />
       <m-menu open-on-hover offset-y :btnTitle="titleBrand" :menuList="brands" />
       <v-spacer />
@@ -15,6 +16,7 @@
         <v-row>
           <v-btn @click="handleSubmit" icon><v-icon> mdi-magnify </v-icon></v-btn>
           <v-text-field
+            v-model="searchInput"
             class="mt-1"
             placeholder="Finding something..."
             v-bind="$attrs"
@@ -22,6 +24,7 @@
             dense
             hide-details="auto"
             color="white"
+            @keypress.enter="handleSubmit"
             autocomplete
           >
           </v-text-field>
@@ -64,6 +67,7 @@ export default {
   name: 'MHeader',
   data: () => ({
     username: '',
+    searchInput: '',
     hidden: false,
     drawer: false,
     links: [
@@ -75,6 +79,7 @@ export default {
     categories: [],
     titleBrand: 'Thương hiệu',
     titleCategory: 'Danh mục sản phẩm',
+    titleHome: 'Trang chủ',
   }),
   created() {
     this.init();
@@ -111,6 +116,10 @@ export default {
     },
     handleSubmit() {
       console.log('click');
+      if (this.searchInput !== '') {
+        const link = `/search/${this.searchInput}`;
+        router.push(link);
+      }
     },
     handleToLogin() {
       router.push('/login');

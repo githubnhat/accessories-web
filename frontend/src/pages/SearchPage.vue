@@ -1,6 +1,6 @@
 <template>
   <m-layout>
-    <h1>{{ namePage }}{{ title }}</h1>
+    <h1>Có {{ totalItem }} sản phẩm tìm được với từ khoá: "{{ keyword }}"</h1>
 
     <v-card
       v-if="products.length > 0"
@@ -26,17 +26,17 @@
 import MLayout from '@/shared/MLayout.vue';
 import ProductItem from '@/components/ProductItem/ProductItem.vue';
 
-import { getProductByBrand, getProductByCategory } from '@/services/user/products';
+import { searchProduct } from '@/services/user/products';
 export default {
   data() {
     return {
       namePage: '',
       products: [],
-      title: '',
-      code: '',
+      keyword: '',
       page: 1,
-      itemPerPage: 10,
+      itemPerPage: 5,
       totalPage: 1,
+      totalItem: 0,
     };
   },
 
@@ -44,9 +44,7 @@ export default {
     $route: {
       deep: true,
       handler() {
-        this.namePage = this.$route.name === 'brand' ? 'Brand: ' : 'Category: ';
-        this.page = 1;
-        this.code = this.$route.params.code;
+        this.keyword = this.$route.params.keyword;
         this.loadProductFromAPI();
       },
     },
@@ -58,26 +56,16 @@ export default {
     },
   },
   created() {
-    this.namePage = this.$route.name === 'brand' ? 'Brand: ' : 'Category: ';
-    this.page = 1;
-    this.code = this.$route.params.code;
+    this.keyword = this.$route.params.keyword;
     this.loadProductFromAPI();
   },
 
   methods: {
     async loadProductFromAPI() {
-      if (this.$route.name === 'brand') {
-        const data = await getProductByBrand(this.page, this.itemPerPage, this.code);
-        this.title = data?.data[0].brandName;
-        this.products = data?.data;
-        this.totalPage = data?.totalPages;
-      } else if (this.$route.name === 'category') {
-        const data = await getProductByCategory(this.page, this.itemPerPage, this.code);
-        this.title = data?.data[0].categoryName;
-        this.products = data?.data;
-        this.totalPage = data?.totalPages;
-      }
-      console.log('products', this.products);
+      const data = await searchProduct(this.page, this.itemPerPage, this.keyword);
+      this.products = data?.data;
+      this.totalPage = data?.totalPages;
+      this.totalItem = data?.totalItems;
     },
   },
   components: {

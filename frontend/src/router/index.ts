@@ -36,6 +36,11 @@ const routes: Array<RouteConfig> = [
     component: () => import(/* webpackChunkName: "all" */ '@/pages/ProductsShow.vue'),
   },
   {
+    path: '/search/:keyword',
+    name: 'search',
+    component: () => import('@/pages/SearchPage.vue'),
+  },
+  {
     path: '/profile',
     name: 'profile',
     component: () => import(/* webpackChunkName: "profile" */ '@/pages/UserProfilePage.vue'),

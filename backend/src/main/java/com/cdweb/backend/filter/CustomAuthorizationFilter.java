@@ -33,27 +33,28 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     private JwtService jwtService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (request.getServletPath().equals("/api/v1/auth/login") || request.getServletPath().equals("/api/v1/auth/admin/login")
-                || request.getServletPath().equals("/api/v1/auth/logout") || request.getServletPath().contains("no-token")
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        if (request.getServletPath().equals("/api/v1/auth/login")
+                || request.getServletPath().equals("/api/v1/auth/admin/login")
+                || request.getServletPath().equals("/api/v1/auth/logout")
+                || request.getServletPath().contains("no-token")
                 || request.getServletPath().equals("/api/v1/auth/refresh-token")) {
             filterChain.doFilter(request, response);
         } else {
             String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-            log.info("token{}", authorizationHeader);
             if (authorizationHeader != null && authorizationHeader.startsWith(Constant.BEARER)) {
                 try {
                     String token = authorizationHeader.substring(Constant.BEARER.length());
                     Users appUser = jwtService.getUserFromToken(token);
-                    UsernamePasswordAuthenticationToken authenticationToken =
-                            new UsernamePasswordAuthenticationToken(appUser.getUsername(), null,
-                                    Collections.singleton(new SimpleGrantedAuthority(appUser.getRoles().getRoleCode())));
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                            appUser.getUsername(), null,
+                            Collections.singleton(new SimpleGrantedAuthority(appUser.getRoles().getRoleCode())));
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                     filterChain.doFilter(request, response);
                 } catch (Exception exception) {
-                    log.error("Error request: {}", exception.getMessage());
                     response.setHeader("error", exception.getMessage());
-                    response.setStatus(HttpStatus.FORBIDDEN.value());
+                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
                     response.setContentType(APPLICATION_JSON_VALUE);
                     Map<String, String> error = new HashMap<>();
                     error.put("error", exception.getMessage());

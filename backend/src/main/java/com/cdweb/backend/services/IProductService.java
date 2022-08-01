@@ -39,4 +39,7 @@ public interface IProductService {
     List<ProductResponse> searchProducts(String keyword, Pageable pageable);
 
     int totalItemSearch(String keyword, String keyword1);
+
+    int totalProductByBrandCode(String code);
+    int totalProductByCategoryCode(String code);
 }
