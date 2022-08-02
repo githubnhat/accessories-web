@@ -107,7 +107,7 @@
                       <v-col cols="12">
                         <validation-provider
                           name="Tên người dùng"
-                          rules="required"
+                          rules="required|existedUsername"
                           v-slot="{ errors }"
                         >
                           <v-text-field
@@ -123,7 +123,7 @@
                       <v-col cols="12">
                         <validation-provider
                           name="Gmail"
-                          rules="required|email"
+                          rules="required|email|existedEmailres"
                           v-slot="{ errors }"
                         >
                           <v-text-field
